@@ -605,14 +605,14 @@
  */
 @font-face {
   font-family: "latepoint";
-  src: url("/w//wp-content/plugins/latepoint/public/fonts/latepoint-regular.woff2") format("woff2");
+  src: url("/w/wp-content/plugins/latepoint/public/fonts/latepoint-regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: "latepoint";
-  src: url("/w//wp-content/plugins/latepoint/public/fonts/latepoint-semibold.woff2") format("woff2");
+  src: url("/w/wp-content/plugins/latepoint/public/fonts/latepoint-semibold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: block;
@@ -6987,16 +6987,16 @@
   white-space: nowrap;
 }
 .add-to-calendar-types .atc-type.atc-type-apple .atc-type-image {
-  background-image: url(/w//wp-content/plugins/latepoint/public/images/apple-logo-compact.png);
+  background-image: url(/w/wp-content/plugins/latepoint/public/images/apple-logo-compact.png);
 }
 .add-to-calendar-types .atc-type.atc-type-google .atc-type-image {
-  background-image: url(/w//wp-content/plugins/latepoint/public/images/google-logo-compact.png);
+  background-image: url(/w/wp-content/plugins/latepoint/public/images/google-logo-compact.png);
 }
 .add-to-calendar-types .atc-type.atc-type-outlook .atc-type-image {
-  background-image: url(/w//wp-content/plugins/latepoint/public/images/outlook-logo-compact.png);
+  background-image: url(/w/wp-content/plugins/latepoint/public/images/outlook-logo-compact.png);
 }
 .add-to-calendar-types .atc-type.atc-type-office-365 .atc-type-image {
-  background-image: url(/w//wp-content/plugins/latepoint/public/images/office-365-logo-compact.jpg);
+  background-image: url(/w/wp-content/plugins/latepoint/public/images/office-365-logo-compact.jpg);
 }
 
 .latepoint-continue-intent-loading {
@@ -8930,7 +8930,7 @@ body.latepoint-lightbox-active .latepoint-lightbox-w {
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
-  background-image: url(/w//wp-content/plugins/latepoint/public/images/location-image.png);
+  background-image: url(/w/wp-content/plugins/latepoint/public/images/location-image.png);
   background-size: cover;
   border-radius: 6px;
 }
@@ -11834,14 +11834,14 @@ body.latepoint .os-form-phonefield-group:not(.has-value) .lp_iti {
   height: 15px;
   box-shadow: none;
   border-radius: 2px;
-  background-image: url("/w//wp-content/plugins/latepoint/public/images/intl-tel-input/flags.png");
+  background-image: url("/w/wp-content/plugins/latepoint/public/images/intl-tel-input/flags.png");
   background-repeat: no-repeat;
   background-color: #DBDBDB;
   background-position: 20px 0;
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .latepoint-admin .lp_iti__flag, .latepoint .lp_iti__flag {
-    background-image: url("/w//wp-content/plugins/latepoint/public/images/intl-tel-input/flags@2x.png");
+    background-image: url("/w/wp-content/plugins/latepoint/public/images/intl-tel-input/flags@2x.png");
   }
 }
 .latepoint-admin .lp_iti__flag.lp_iti__np, .latepoint .lp_iti__flag.lp_iti__np {
