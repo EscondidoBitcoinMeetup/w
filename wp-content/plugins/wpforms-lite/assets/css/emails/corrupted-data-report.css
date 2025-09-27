@@ -411,9 +411,12 @@ a, p, pre {
   word-break: break-word;
 }
 
-.content p {
+.content p, .content li {
   font-size: 16px;
   line-height: 24px;
+}
+
+.content p {
   margin-bottom: 0;
 }
 
@@ -430,255 +433,115 @@ a, p, pre {
   color: #444444;
 }
 
-/* Buttons */
-.button-container {
-  text-align: center;
-}
-
-.button-container .button-wrapper {
-  border-spacing: 24px;
-  margin: 0 auto;
-}
-
-.button-wrapper {
-  border-collapse: separate;
-}
-
-.button {
-  border-collapse: separate !important;
-  border-radius: 3px;
-  line-height: 16px;
-  padding: 11.5px 15px;
-  vertical-align: middle;
-}
-
-.button-link {
-  color: #ffffff;
-  line-height: 16px;
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0;
-  text-decoration: none;
-}
-
-.button-orange {
-  background: #e27730;
-  border: 1px solid #e27730;
-}
-
-.button-blue {
-  background: #036aab;
-  border: 1px solid #036aab;
-  color: #ffffff;
-}
-
-.button-blue-outline {
-  background: transparent;
-  border: 1px solid #036aab;
-}
-
-.button-blue-outline a {
-  color: #036aab;
-}
-
 /* Content */
-.content .summary-container > tbody > tr:last-child .summary-content {
+.content .corrupted-data-report-container > tbody > tr:last-child .corrupted-data-report-content {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-.content .summary-content {
+.content .corrupted-data-report-content {
   background-color: #ffffff;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   padding: 50px 30px;
 }
 
-.content .summary-content .summary-content-inner div {
+.content .corrupted-data-report-content .corrupted-data-report-content-inner div {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.content .summary-content .greeting {
+.corrupted-data-report-header {
+  width: 100%;
+}
+
+.corrupted-data-report-header p {
+  margin-bottom: 15px;
+}
+
+.corrupted-data-report-table {
+  width: 100%;
+}
+
+.corrupted-data-report-table table {
+  border: 1px solid #dddddd;
+}
+
+.corrupted-data-report-table table th, .corrupted-data-report-table table td {
+  border: 1px solid #dddddd;
+  font-size: 16px;
+}
+
+.corrupted-data-report-table table th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+  padding: 15px 20px;
+  vertical-align: middle;
+}
+
+.corrupted-data-report-table table td {
+  padding: 12px 20px;
+}
+
+.corrupted-data-reports-count {
+  color: #d63638;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.corrupted-data-reports-urls .corrupted-data-report-url-wrapper {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.corrupted-data-reports-urls .corrupted-data-report-url-wrapper:first-child {
+  padding-top: 0;
+}
+
+.corrupted-data-reports-urls > div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.corrupted-data-reports-urls .corrupted-data-report-urls-more,
+.corrupted-data-reports-urls .corrupted-data-report-urls-empty {
+  font-style: italic;
+  color: #777777;
+}
+
+.corrupted-data-reports-urls .corrupted-data-report-urls-more {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.corrupted-data-reports-urls .corrupted-data-report-urls-empty {
+  font-size: 14px;
+}
+
+.corrupted-data-report-url-count {
+  color: #777777;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.corrupted-data-report-recommendations {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.corrupted-data-report-recommendations h6 {
   font-size: 20px;
   line-height: 24px;
   margin-bottom: 24px;
 }
 
-.content .summary-trend td {
-  white-space: nowrap;
+.corrupted-data-report-recommendations p {
+  margin-bottom: 15px;
 }
 
-.content .email-summaries-wrapper {
-  margin-bottom: 1px;
-}
-
-.content .email-summaries-wrapper .summary-trend td {
-  line-height: 20px;
-}
-
-.content .summary-header,
-.content .email-summaries-overview-wrapper {
-  margin-bottom: 50px;
-}
-
-.content .email-summaries-overview {
-  background: #f8f8f8;
-  border: 1px solid #dddddd;
-  border-collapse: separate;
-  border-radius: 6px;
-}
-
-.content .email-summaries-overview td {
-  padding-bottom: 20px;
-  padding-top: 20px;
-  vertical-align: middle;
-}
-
-.content .email-summaries-overview .overview-icon {
-  vertical-align: top;
-}
-
-.content .email-summaries-overview .overview-icon img {
-  min-width: 52px;
-}
-
-.content .email-summaries-overview .overview-stats {
-  width: 90%;
-  vertical-align: top;
-}
-
-.content .email-summaries-overview .overview-stats h5 {
-  line-height: 30px;
-  margin-bottom: 0;
-}
-
-.content .email-summaries-overview .overview-stats p {
-  color: #777777;
-  line-height: 22px;
-}
-
-.content .email-summaries-overview .summary-trend td {
-  font-size: 16px;
-  line-height: 16px;
-}
-
-.content .email-summaries-overview .summary-trend td img {
-  min-width: 14px;
-}
-
-.content .email-summaries th {
-  background-color: #f8f8f8;
-  border: 1px solid #dddddd;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: 16px;
-  padding: 15px 20px 15px 20px;
-}
-
-.content .email-summaries td {
-  border: 1px solid #dddddd;
-  padding: 12px 20px 12px 20px;
-  vertical-align: middle;
-}
-
-.content .email-summaries .form-name {
-  font-size: 16px;
-  line-height: 24px;
-  width: 90%;
-}
-
-.content .email-summaries .entry-count {
-  color: #777777;
-  font-size: 16px;
-  line-height: 20px;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.content .email-summaries .entry-count a {
-  color: #777777;
-  text-decoration: underline;
-}
-
-.content .email-summaries .entry-count a:hover {
-  color: #777777;
-}
-
-.content .email-summaries .summary-trend td img {
-  min-width: 10px;
-}
-
-.content .summary-trend table {
-  border-collapse: separate;
-}
-
-.content .summary-trend table tr td {
-  padding: 0;
-  border: 0 !important;
-}
-
-.trend-upward td {
-  color: #46b450 !important;
-}
-
-.trend-downward td {
-  color: #d63637 !important;
-}
-
-/* Notice */
-.summary-notice {
-  text-align: center;
-}
-
-.summary-notice h4 {
-  line-height: 36px;
-  margin-bottom: 16px;
-}
-
-.summary-notice p {
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.summary-notice > td {
-  padding: 50px 50px 26px 50px;
-}
-
-.summary-notice:last-child > td {
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
-
-.summary-notice + .summary-notice {
-  margin-top: 1px;
-}
-
-tr:last-child > .summary-notice-content,
-.summary-notice-icon {
-  padding-bottom: 24px;
-}
-
-.summary-notice-divider {
-  height: 1px;
-  font-size: 0;
-  line-height: 1px;
-}
-
-/* Info Block */
-.summary-info-block {
-  background-color: #f7f0ed;
-}
-
-/* Notification Block */
-.summary-notification-block {
-  background-color: #edf3f7;
-}
-
-.summary-notification-block p a {
-  color: #036aab;
+.corrupted-data-report-recommendations ol li {
+  margin-bottom: 20px;
 }
 
 /* Footer */
@@ -697,73 +560,6 @@ tr:last-child > .summary-notice-content,
 
 .footer a:hover {
   color: #777777;
-}
-
-/* Direction */
-[dir="rtl"] th {
-  text-align: right;
-}
-
-[dir="rtl"] th:first-child {
-  border-left: 0 !important;
-}
-
-[dir="rtl"] th:last-child {
-  border-right: 0 !important;
-}
-
-[dir="rtl"] .summary-content-inner {
-  text-align: right;
-}
-
-[dir="rtl"] .summary-trend td:last-child {
-  padding-right: 5px;
-}
-
-[dir="rtl"] .email-summaries-overview .summary-trend,
-[dir="rtl"] .email-summaries-overview .overview-stats {
-  padding-right: 16px;
-}
-
-[dir="rtl"] .email-summaries-overview .overview-icon {
-  padding-right: 20px;
-}
-
-[dir="rtl"] .email-summaries-overview .summary-trend {
-  padding-left: 20px;
-}
-
-[dir="ltr"] th {
-  text-align: left;
-}
-
-[dir="ltr"] th:first-child {
-  border-right: 0 !important;
-}
-
-[dir="ltr"] th:last-child {
-  border-left: 0 !important;
-}
-
-[dir="ltr"] .summary-content-inner {
-  text-align: left;
-}
-
-[dir="ltr"] .summary-trend td:last-child {
-  padding-left: 5px;
-}
-
-[dir="ltr"] .email-summaries-overview .summary-trend,
-[dir="ltr"] .email-summaries-overview .overview-stats {
-  padding-left: 16px;
-}
-
-[dir="ltr"] .email-summaries-overview .overview-icon {
-  padding-left: 20px;
-}
-
-[dir="ltr"] .email-summaries-overview .summary-trend {
-  padding-right: 20px;
 }
 
 .wpforms-layout-table > td {
