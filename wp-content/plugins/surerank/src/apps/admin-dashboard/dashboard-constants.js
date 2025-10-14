@@ -16,6 +16,7 @@ import {
 	SureMailIcon,
 	SureFormsIcon,
 	UAE,
+	OttoKitLogo,
 } from '@GlobalComponents/icons';
 
 export const FETCH_STATUS = {
@@ -112,13 +113,6 @@ export const quickLinks = [
 	},
 ];
 
-export const dashboard_plugins_sequence = [
-	'ultimate-addons-for-gutenberg',
-	'sureforms',
-	'suremails',
-	'header-footer-elementor',
-];
-
 export const themesAndPlugins = [
 	{
 		name: __( 'Astra Theme', 'surerank' ),
@@ -162,6 +156,13 @@ export const themesAndPlugins = [
 		),
 		icon: UAE,
 		slug: 'header-footer-elementor',
+		type: 'plugin',
+	},
+	{
+		name: __( 'OttoKit', 'surerank' ),
+		description: __( 'All-in-One Automation Platform.', 'surerank' ),
+		icon: OttoKitLogo,
+		slug: 'suretriggers',
 		type: 'plugin',
 	},
 ];

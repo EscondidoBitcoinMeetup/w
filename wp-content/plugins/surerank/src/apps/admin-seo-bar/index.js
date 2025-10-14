@@ -1,6 +1,13 @@
 import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
-import { useState, Suspense, memo } from '@wordpress/element';
+import {
+	useState,
+	Suspense,
+	memo,
+	useEffect,
+	useRef,
+} from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 import {
 	Badge,
 	Skeleton,
@@ -15,9 +22,14 @@ import { SureRankFullLogo } from '@GlobalComponents/icons';
 import PageChecks from '@SeoPopup/components/page-seo-checks/page-checks';
 import { useDispatch, useSuspenseSelect } from '@wordpress/data';
 import PageChecksListSkeleton from '@/apps/seo-popup/components/page-seo-checks/page-checks-list-skeleton';
+import RenderQueue from '@Functions/render-queue';
 import { STORE_NAME } from '@Store/constants';
 import '@Store/store';
 import './style.scss';
+import { cn } from '@/functions/utils';
+
+// Initialize a global RenderQueue for sequential badge rendering
+const renderQueue = new RenderQueue();
 
 const SeoChecksDrawer = ( {
 	open,
@@ -28,7 +40,12 @@ const SeoChecksDrawer = ( {
 	postId,
 	postType,
 } ) => {
-	const { ignoreSeoBarCheck, restoreSeoBarCheck } = useDispatch( STORE_NAME );
+	const { ignoreSeoBarCheck, restoreSeoBarCheck, setPageSeoChecks } =
+		useDispatch( STORE_NAME );
+
+	useEffect( () => {
+		setPageSeoChecks( { hideFixHelpButtons: true } );
+	}, [] );
 
 	const handleCloseClick = ( e ) => {
 		e.preventDefault();
@@ -115,25 +132,52 @@ const SeoChecksDrawer = ( {
 	);
 };
 
-const CustomBadge = ( { id, spanElement, forceRefresh = null } ) => {
+const CustomBadge = ( {
+	id,
+	spanElement,
+	forceRefresh = null,
+	onRenderComplete,
+} ) => {
+	const postIdRef = useRef( id );
 	const [ drawerOpen, setDrawerOpen ] = useState( false );
 
 	const isTaxonomy = window?.surerank_seo_bar?.type === 'taxonomy';
-	const { checks: seoChecks, error: errorMessage } = useSuspenseSelect(
-		( select ) =>
-			select( STORE_NAME )?.getSeoBarChecks(
+	const {
+		checks: seoChecks,
+		error: errorMessage,
+		batchGeneration,
+	} = useSuspenseSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		const checksResult =
+			store?.getSeoBarChecks(
 				id,
 				isTaxonomy ? 'taxonomy' : 'post',
 				forceRefresh
-			),
-		[]
-	);
+			) || {};
+		const pageSeoChecks = store?.getPageSeoChecks() || {};
+
+		return {
+			...checksResult,
+			batchGeneration: pageSeoChecks.batchGeneration,
+		};
+	}, [] );
+
+	// Call onRenderComplete when data is loaded and component is rendered
+	useEffect( () => {
+		if ( typeof onRenderComplete !== 'function' ) {
+			return;
+		}
+		onRenderComplete();
+	}, [ onRenderComplete ] );
 
 	const title =
 		spanElement?.getAttribute( 'data-title' ) ||
 		__( 'Untitled', 'surerank' );
 
 	const handleBadgeClick = () => {
+		if ( batchStatus ) {
+			return;
+		}
 		setDrawerOpen( true );
 	};
 
@@ -144,7 +188,25 @@ const CustomBadge = ( { id, spanElement, forceRefresh = null } ) => {
 		className: 'w-fit',
 	};
 
-	if ( ! seoChecks || errorMessage ) {
+	// Batch generation status getter from filters
+	const getBatchGenerationStatus = applyFilters(
+		'surerank-pro.bulk-content-generation.badge-prop-getter',
+		null
+	);
+	// Check batch generation status first
+	let batchStatus = null;
+	if ( typeof getBatchGenerationStatus === 'function' ) {
+		batchStatus = getBatchGenerationStatus(
+			parseInt( postIdRef.current || 0 ),
+			batchGeneration
+		);
+	}
+	if ( batchStatus ) {
+		badgeProps = {
+			...badgeProps,
+			...batchStatus,
+		};
+	} else if ( ! seoChecks || errorMessage ) {
 		badgeProps = {
 			...badgeProps,
 			variant: 'red',
@@ -169,8 +231,11 @@ const CustomBadge = ( { id, spanElement, forceRefresh = null } ) => {
 			<div
 				onClick={ handleBadgeClick }
 				role="button"
-				tabIndex={ 0 }
-				className="inline-block cursor-pointer w-full"
+				tabIndex={ batchStatus ? -1 : 0 }
+				className={ cn(
+					'inline-block w-full',
+					batchStatus ? 'cursor-default' : 'cursor-pointer'
+				) }
 				onKeyDown={ ( e ) => {
 					if ( e.key === 'Enter' || e.key === ' ' ) {
 						handleBadgeClick( e );
@@ -207,46 +272,55 @@ const CustomBadgeMemoized = memo( CustomBadge );
 const rootInstances = new Map();
 
 const renderBadge = ( span, forceRefresh = false ) => {
-	const id = span.getAttribute( 'data-id' );
-	if ( ! id ) {
-		return;
-	}
+	return new Promise( ( resolve ) => {
+		const id = span.getAttribute( 'data-id' );
+		if ( ! id ) {
+			resolve();
+			return;
+		}
 
-	// Skip if already rendered and not forcing refresh
-	if ( ! forceRefresh && span.dataset.rendered === 'true' ) {
-		return;
-	}
+		// Skip if already rendered and not forcing refresh
+		if ( ! forceRefresh && span.dataset.rendered === 'true' ) {
+			resolve();
+			return;
+		}
 
-	// Cleanup existing root if it exists
-	const existingRoot = rootInstances.get( span );
-	if ( existingRoot ) {
+		// Cleanup existing root if it exists
+		const existingRoot = rootInstances.get( span );
+		if ( existingRoot ) {
+			try {
+				existingRoot.unmount();
+			} catch ( e ) {}
+			rootInstances.delete( span );
+		}
+
+		// Create new root and render
 		try {
-			existingRoot.unmount();
-		} catch ( e ) {}
-		rootInstances.delete( span );
-	}
-
-	// Create new root and render
-	try {
-		const root = createRoot( span );
-		rootInstances.set( span, root );
-		root.render(
-			<CustomBadgeMemoized
-				id={ id }
-				spanElement={ span }
-				forceRefresh={ forceRefresh }
-			/>
-		);
-		span.dataset.rendered = 'true'; // Mark as rendered
-	} catch ( e ) {}
+			const root = createRoot( span );
+			rootInstances.set( span, root );
+			root.render(
+				<CustomBadgeMemoized
+					id={ id }
+					spanElement={ span }
+					forceRefresh={ forceRefresh }
+					onRenderComplete={ resolve }
+				/>
+			);
+			span.dataset.rendered = 'true'; // Mark as rendered
+		} catch ( e ) {
+			resolve();
+		}
+	} );
 };
 
 const renderBadges = () => {
 	const spans = document.querySelectorAll(
 		'span.surerank-page-score[data-id]'
 	);
+
+	// Use queue for sequential rendering
 	spans.forEach( ( span ) => {
-		renderBadge( span, null );
+		renderQueue.enqueue( () => renderBadge( span, null ) );
 	} );
 };
 
@@ -287,7 +361,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 							);
 							spans.forEach( ( span ) => {
 								if ( ! span.dataset.rendered ) {
-									renderBadge( span, Date.now() ); // Force refresh for new terms
+									renderQueue.enqueue( () =>
+										renderBadge( span, Date.now() )
+									); // Force refresh for new terms
 								}
 							} );
 						}
@@ -336,7 +412,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 					`span.surerank-page-score[data-id="${ termId }"]`
 				);
 				if ( span ) {
-					renderBadge( span, Date.now() );
+					renderQueue.enqueue( () =>
+						renderBadge( span, Date.now() )
+					);
 				}
 			}, 3000 );
 

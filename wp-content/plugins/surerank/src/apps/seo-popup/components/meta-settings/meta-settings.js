@@ -1,7 +1,12 @@
-import { Fragment, memo, useState } from '@wordpress/element';
+import { Fragment, memo, useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { motion } from 'framer-motion';
-import { withSelect, withDispatch } from '@wordpress/data';
+import {
+	withSelect,
+	withDispatch,
+	useDispatch,
+	useSelect,
+} from '@wordpress/data';
 import { compose } from '@wordpress/compose';
 import { STORE_NAME } from '@Store/constants';
 import {
@@ -27,13 +32,25 @@ const MetaSettings = ( props ) => {
 	const { postMetaData, updatePostMetaData, initialized, globalDefaults } =
 		props;
 
-	const [ activeTab, setActiveTab ] = useState( 'meta' );
+	const { updateAppSettings } = useDispatch( STORE_NAME );
+	const { currentMetaTab } = useSelect( ( select ) =>
+		select( STORE_NAME ).getAppSettings()
+	);
+
+	const [ activeTab, setActiveTab ] = useState( currentMetaTab || 'meta' );
+
+	useEffect( () => {
+		if ( currentMetaTab && currentMetaTab !== activeTab ) {
+			setActiveTab( currentMetaTab );
+		}
+	}, [ currentMetaTab ] );
 
 	const handleChangeTab = ( { event, value: { slug } } ) => {
 		event.preventDefault();
 		event.stopPropagation();
 
 		setActiveTab( slug );
+		updateAppSettings( { currentMetaTab: slug } );
 	};
 
 	let tabContent = null;

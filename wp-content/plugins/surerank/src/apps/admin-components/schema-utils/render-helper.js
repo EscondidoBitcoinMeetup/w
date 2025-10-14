@@ -1,13 +1,164 @@
 import { __ } from '@wordpress/i18n';
-import { Select, EditorInput, Button, Label, Input, Text } from '@bsf/force-ui';
+import {
+	Select,
+	EditorInput,
+	Button,
+	Label,
+	Input,
+	Text,
+	DatePicker,
+} from '@bsf/force-ui';
 import { editorValueToString, stringValueToFormatJSON } from '@Functions/utils';
-import { Trash, Plus, Info } from 'lucide-react';
+import { Trash, Plus, Info, Calendar } from 'lucide-react';
 import { generateUUID } from '@AdminComponents/schema-utils/utils';
 import { SeoPopupTooltip } from '@AdminComponents/tooltip';
+import { useState, useEffect, useRef } from '@wordpress/element';
 
 const WORD_BREAK_ALL_EDITOR_INPUT = [ 'url', 'logo' ];
 const STYLES_OVERRIDE_FOR_EDITOR_INPUT = {
 	wordBreak: 'break-all',
+};
+
+// Custom DateTime component with DatePicker
+const DateTimeField = ( {
+	field,
+	currentValue,
+	onFieldChange,
+	placeholder,
+	variableSuggestions,
+} ) => {
+	const [ isDatePickerOpen, setIsDatePickerOpen ] = useState( false );
+	const [ keyCounter, setKeyCounter ] = useState( 0 );
+	const containerRef = useRef( null );
+
+	// Convert selected date to ISO string
+	const formatForOutput = ( selectedDate ) => {
+		if ( ! selectedDate ) {
+			return '';
+		}
+		try {
+			const date = new Date( selectedDate );
+			if ( isNaN( date.getTime() ) ) {
+				return '';
+			}
+			return date.toISOString();
+		} catch ( error ) {
+			return '';
+		}
+	};
+
+	// Convert ISO string to user-friendly display format
+	const formatForDisplay = ( isoString ) => {
+		if ( ! isoString ) {
+			return '';
+		}
+		try {
+			const date = new Date( isoString );
+			if ( isNaN( date.getTime() ) ) {
+				return '';
+			}
+			return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+		} catch ( error ) {
+			return '';
+		}
+	};
+
+	const handleDateApply = ( selectedDate ) => {
+		onFieldChange( field.id, formatForOutput( selectedDate ) );
+		setIsDatePickerOpen( false );
+		// Force EditorInput to re-render with new value
+		setKeyCounter( ( prev ) => prev + 1 );
+	};
+
+	const handleDateCancel = () => {
+		setIsDatePickerOpen( false );
+	};
+
+	useEffect( () => {
+		function handleClickOutside( event ) {
+			if (
+				isDatePickerOpen &&
+				containerRef.current &&
+				! containerRef.current.contains( event.target )
+			) {
+				setIsDatePickerOpen( false );
+			}
+		}
+
+		// Bind the event listener
+		document.addEventListener( 'mousedown', handleClickOutside );
+		return () => {
+			document.removeEventListener( 'mousedown', handleClickOutside );
+		};
+	}, [ isDatePickerOpen ] );
+
+	return (
+		<div ref={ containerRef } className="w-full relative">
+			<div className="flex items-center gap-2 w-full">
+				<EditorInput
+					key={ `${ field.id }-${ keyCounter }` }
+					by="label"
+					trigger="@"
+					options={ variableSuggestions }
+					placeholder={ placeholder }
+					defaultValue={ stringValueToFormatJSON(
+						// Show formatted date if it's an ISO string, otherwise show as-is for variables
+						currentValue &&
+							! currentValue.startsWith( '%' ) &&
+							! currentValue.includes( '@' )
+							? formatForDisplay( currentValue )
+							: currentValue,
+						variableSuggestions
+					) }
+					onChange={ ( value ) =>
+						onFieldChange(
+							field.id,
+							editorValueToString( value, variableSuggestions )
+						)
+					}
+					aria-label={ field.label }
+					className="flex-grow max-w-full"
+					size="md"
+					style={
+						WORD_BREAK_ALL_EDITOR_INPUT.includes( field.id )
+							? STYLES_OVERRIDE_FOR_EDITOR_INPUT
+							: {}
+					}
+				/>
+				<Button
+					variant="ghost"
+					size="md"
+					onClick={ () => setIsDatePickerOpen( ( prev ) => ! prev ) }
+					className="flex-shrink-0"
+					aria-label={ __( 'Open date picker', 'surerank' ) }
+					icon={
+						<Calendar
+							strokeWidth={ 1.5 }
+							className="text-icon-secondary"
+						/>
+					}
+				/>
+			</div>
+			{ isDatePickerOpen && (
+				<div className="absolute z-10 mb-2 rounded-lg shadow-lg right-0 bg-background-primary bottom-full">
+					<DatePicker
+						applyButtonText={ __( 'Apply', 'surerank' ) }
+						cancelButtonText={ __( 'Cancel', 'surerank' ) }
+						selectionType="single"
+						showOutsideDays={ false }
+						variant="normal"
+						onApply={ handleDateApply }
+						onCancel={ handleDateCancel }
+						selected={
+							currentValue && ! currentValue.startsWith( '%' )
+								? new Date( currentValue )
+								: null
+						}
+					/>
+				</div>
+			) }
+		</div>
+	);
 };
 
 // Common function to render cloneable group fields with stable ID management
@@ -165,7 +316,9 @@ export const renderCloneableGroupField = ( {
 							weight={ 500 }
 							className="text-text-primary"
 						>
-							{ field.cloneItemHeading || `Item ${ index + 1 }` }
+							{ field.cloneItemHeading
+								? `${ field.cloneItemHeading } ${ index + 1 }`
+								: `Item ${ index + 1 }` }
 						</Text>
 						{ itemsWithIds.length > 1 && (
 							<Button
@@ -190,33 +343,34 @@ export const renderCloneableGroupField = ( {
 						// Handle nested Group fields
 						if ( subField.type === 'Group' && subField.fields ) {
 							return (
-								<div
-									key={ subField.id }
-									className="space-y-1.5"
-								>
-									<div className="flex items-center justify-start gap-1.5 w-full">
-										<Label
-											tag="span"
-											size="sm"
-											className="space-x-0.5"
-											required={ subField.required }
-										>
-											{ subField.label }
-										</Label>
-										{ subField.tooltip && (
-											<SeoPopupTooltip
-												content={ subField.tooltip }
-												placement="top"
-												arrow
-												className="z-[99999]"
+								<div key={ subField.id } className="space-y-2">
+									{ subField.label && (
+										<div className="flex items-center justify-start gap-1.5 w-full">
+											<Label
+												tag="span"
+												size="sm"
+												className="space-x-0.5"
+												required={ subField.required }
 											>
-												<Info
-													className="size-4 text-icon-secondary"
-													title={ subField.tooltip }
-												/>
-											</SeoPopupTooltip>
-										) }
-									</div>
+												{ subField.label }
+											</Label>
+											{ subField.tooltip && (
+												<SeoPopupTooltip
+													content={ subField.tooltip }
+													placement="top"
+													arrow
+													className="z-[99999]"
+												>
+													<Info
+														className="size-4 text-icon-secondary"
+														title={
+															subField.tooltip
+														}
+													/>
+												</SeoPopupTooltip>
+											) }
+										</div>
+									) }
 									{ subField.fields.map( ( nestedField ) => {
 										if (
 											nestedField.hidden ||
@@ -487,29 +641,29 @@ export const renderCloneableField = ( {
 		onFieldChange( field.id, updatedValues );
 	};
 
+	const handleFieldChange = ( key, value ) => {
+		onFieldChange( field.id, {
+			...existingValues,
+			[ key ]: value,
+		} );
+	};
+
 	return (
 		<div className="flex flex-col gap-2 w-full">
 			{ Object.entries( existingValues ).map( ( [ key, value ] ) => (
 				<div key={ key } className="flex items-center gap-1.5 w-full">
-					<EditorInput
-						by="label"
-						trigger="@"
-						options={ variableSuggestions }
-						placeholder={ placeholder }
-						defaultValue={ stringValueToFormatJSON(
-							value,
-							variableSuggestions,
-							'value'
-						) }
-						onChange={ ( editorState ) => {
-							onFieldChange( field.id, {
-								...existingValues,
-								[ key ]: editorValueToString(
-									editorState.toJSON()
-								),
-							} );
-						} }
-					/>
+					{ renderFieldCommon( {
+						field: {
+							...field,
+							id: field.id,
+						},
+						getFieldValue: () => value || field.std || '',
+						onFieldChange: ( fieldId, newValue ) =>
+							handleFieldChange( key, newValue ),
+						variableSuggestions,
+						placeholder,
+						renderAsGroupComponent: false,
+					} ) }
 					<Button
 						variant="ghost"
 						size="md"
@@ -573,6 +727,58 @@ export function renderFieldCommon( {
 						onChange={ ( value ) =>
 							onFieldChange( field.id, value )
 						}
+					>
+						<Select.Button
+							render={ ( selectedValue ) => {
+								// Find the label for the selected value
+								const selectedOption = Object.entries(
+									options
+								).find( ( [ key ] ) => key === selectedValue );
+								return selectedOption
+									? selectedOption[ 1 ]
+									: selectedValue;
+							} }
+						/>
+						<Select.Options className="z-50">
+							{ Object.entries( options ).map(
+								( [ key, label ] ) => (
+									<Select.Option key={ key } value={ key }>
+										{ label }
+									</Select.Option>
+								)
+							) }
+						</Select.Options>
+					</Select>
+				</div>
+			);
+		}
+
+		case 'MultiSelect': {
+			const options = Array.isArray( field.options )
+				? field.options.reduce( ( acc, group ) => {
+						if ( group.options ) {
+							return { ...acc, ...group.options };
+						}
+						return acc;
+				  }, {} )
+				: field.options || {};
+
+			let currentValues = [];
+			if ( Array.isArray( currentFieldValue ) ) {
+				currentValues = currentFieldValue;
+			} else {
+				currentValues = currentFieldValue ? [ currentFieldValue ] : [];
+			}
+
+			return (
+				<div key={ field.id } className="w-full">
+					<Select
+						size="md"
+						value={ currentValues }
+						onChange={ ( values ) =>
+							onFieldChange( field.id, values )
+						}
+						multiple
 					>
 						<Select.Button />
 						<Select.Options className="z-50">
@@ -649,6 +855,20 @@ export function renderFieldCommon( {
 								'Search or select an option',
 								'surerank'
 							) }
+							render={ ( selectedValue ) => {
+								// Find the label for the selected value across all groups
+								for ( const group of groupOptions ) {
+									const selectedOption = Object.entries(
+										group.options
+									).find(
+										( [ key ] ) => key === selectedValue
+									);
+									if ( selectedOption ) {
+										return selectedOption[ 1 ];
+									}
+								}
+								return selectedValue;
+							} }
 						/>
 						<Select.Options>
 							{ groupOptions.map( ( group, index ) => (
@@ -671,6 +891,18 @@ export function renderFieldCommon( {
 						</Select.Options>
 					</Select>
 				</div>
+			);
+		}
+
+		case 'DateTime': {
+			return (
+				<DateTimeField
+					field={ field }
+					currentValue={ currentFieldValue }
+					onFieldChange={ onFieldChange }
+					placeholder={ placeholder }
+					variableSuggestions={ variableSuggestions }
+				/>
 			);
 		}
 

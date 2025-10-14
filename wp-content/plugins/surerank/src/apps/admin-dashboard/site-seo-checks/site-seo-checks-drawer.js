@@ -205,7 +205,13 @@ const CheckOverview = ( { selectedItem } ) => {
 					</Text>
 				) }
 			</div>
-			<SiteSeoChecksFixButton selectedItem={ selectedItem } size="sm" />
+			{ /* Only show fix button if check hasn't passed */ }
+			{ selectedItem?.status !== 'success' && (
+				<SiteSeoChecksFixButton
+					selectedItem={ selectedItem }
+					size="sm"
+				/>
+			) }
 		</>
 	);
 };

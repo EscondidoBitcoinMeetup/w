@@ -109,8 +109,10 @@ const Properties = ( { schema, type, handleFieldUpdate, schemaId } ) => {
 			const existingFields = currentSchema.fields || {};
 			const updatedFields = ( schemaTypeData[ schema ] || [] ).filter(
 				( field ) =>
-					// Keep fields that either exist or are required
-					existingFields[ field.id ] !== undefined || field.required
+					// Keep fields that either exist, are required, or have parent dependency
+					existingFields[ field.id ] !== undefined ||
+					field.required ||
+					( field.parent && field.parent_option )
 			);
 
 			setFields( updatedFields );
@@ -162,6 +164,49 @@ const Properties = ( { schema, type, handleFieldUpdate, schemaId } ) => {
 			updatedFields[ parent ] = filteredGroupFields;
 		} else {
 			updatedFields[ fieldId ] = newValue;
+
+			/**
+			 * Cleanup logic for any parent field - remove dependent fields when parent options are removed
+			 * Here fields will be removed if there is not any parent option selected. ( from meta settings )
+			 */
+			const allFields = schemaTypeData[ schema ] || [];
+			const hasDependentFields = allFields.some(
+				( field ) => field.parent === fieldId
+			);
+
+			if ( hasDependentFields ) {
+				const oldValue = getFieldValue( fieldId ) || [];
+				const newValueArray = Array.isArray( newValue ) ? newValue : [];
+				const oldValueArray = Array.isArray( oldValue ) ? oldValue : [];
+
+				const removedOptions = oldValueArray.filter(
+					( option ) => ! newValueArray.includes( option )
+				);
+
+				let optionsToRemove = removedOptions;
+				if (
+					! Array.isArray( newValue ) &&
+					! Array.isArray( oldValue ) &&
+					oldValue !== newValue
+				) {
+					/**
+					 * Single value field changed, remove dependencies of the old value
+					 */
+					optionsToRemove = oldValue ? [ oldValue ] : [];
+				}
+
+				if ( optionsToRemove.length > 0 ) {
+					const removedOptionSet = new Set( optionsToRemove );
+					allFields.forEach( ( field ) => {
+						if (
+							field.parent === fieldId &&
+							removedOptionSet.has( field.parent_option )
+						) {
+							delete updatedFields[ field.id ];
+						}
+					} );
+				}
+			}
 		}
 
 		setMetaSetting( 'schemas', {
@@ -256,7 +301,23 @@ const Properties = ( { schema, type, handleFieldUpdate, schemaId } ) => {
 	return (
 		<div className="space-y-4 w-full">
 			{ visibleFields.map( ( field ) => {
-				if ( ! field.required && ! field.show ) {
+				let shouldShowField = field.required || field.show;
+
+				/**
+				 * Check if field should be shown based on parent/parent_option conditional logic
+				 */
+				if ( field.parent && field.parent_option ) {
+					const parentValue = getFieldValue( field.parent );
+					if ( Array.isArray( parentValue ) ) {
+						shouldShowField = parentValue.includes(
+							field.parent_option
+						);
+					} else {
+						shouldShowField = parentValue === field.parent_option;
+					}
+				}
+
+				if ( ! shouldShowField ) {
 					return null;
 				}
 

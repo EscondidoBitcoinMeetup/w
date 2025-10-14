@@ -80,6 +80,13 @@ export function updateAppSettings( value ) {
 	};
 }
 
+export const setPageSeoChecks = ( payload ) => {
+	return {
+		type: actionTypes.SET_PAGE_SEO_CHECKS,
+		payload,
+	};
+};
+
 export const setPageSeoCheck = ( key, value ) => {
 	let payload = { [ key ]: value };
 
@@ -91,26 +98,59 @@ export const setPageSeoCheck = ( key, value ) => {
 
 		// Filter checks by allowed page checks to avoid filtering on every render
 		const allowedPageChecks = window?.surerank_seo_popup?.page_checks || [];
-		const allowedKeywordChecks = window?.surerank_seo_popup?.keyword_checks || [];
+		const allowedKeywordChecks =
+			window?.surerank_seo_popup?.keyword_checks || [];
 
 		const filterChecksByType = ( checksArray, allowedChecks ) => {
-			return checksArray.filter( ( check ) => allowedChecks.includes( check.id ) );
+			return checksArray.filter( ( check ) =>
+				allowedChecks.includes( check.id )
+			);
 		};
 
 		const filteredPageChecks = {
-			badChecks: filterChecksByType( categorizedChecks.badChecks || [], allowedPageChecks ),
-			fairChecks: filterChecksByType( categorizedChecks.fairChecks || [], allowedPageChecks ),
-			passedChecks: filterChecksByType( categorizedChecks.passedChecks || [], allowedPageChecks ),
-			ignoredChecks: filterChecksByType( categorizedChecks.ignoredChecks || [], allowedPageChecks ),
-			suggestionChecks: filterChecksByType( categorizedChecks.suggestionChecks || [], allowedPageChecks ),
+			badChecks: filterChecksByType(
+				categorizedChecks.badChecks || [],
+				allowedPageChecks
+			),
+			fairChecks: filterChecksByType(
+				categorizedChecks.fairChecks || [],
+				allowedPageChecks
+			),
+			passedChecks: filterChecksByType(
+				categorizedChecks.passedChecks || [],
+				allowedPageChecks
+			),
+			ignoredChecks: filterChecksByType(
+				categorizedChecks.ignoredChecks || [],
+				allowedPageChecks
+			),
+			suggestionChecks: filterChecksByType(
+				categorizedChecks.suggestionChecks || [],
+				allowedPageChecks
+			),
 		};
 
 		const filteredKeywordChecks = {
-			badChecks: filterChecksByType( categorizedChecks.badChecks || [], allowedKeywordChecks ),
-			fairChecks: filterChecksByType( categorizedChecks.fairChecks || [], allowedKeywordChecks ),
-			passedChecks: filterChecksByType( categorizedChecks.passedChecks || [], allowedKeywordChecks ),
-			ignoredChecks: filterChecksByType( categorizedChecks.ignoredChecks || [], allowedKeywordChecks ),
-			suggestionChecks: filterChecksByType( categorizedChecks.suggestionChecks || [], allowedKeywordChecks ),
+			badChecks: filterChecksByType(
+				categorizedChecks.badChecks || [],
+				allowedKeywordChecks
+			),
+			fairChecks: filterChecksByType(
+				categorizedChecks.fairChecks || [],
+				allowedKeywordChecks
+			),
+			passedChecks: filterChecksByType(
+				categorizedChecks.passedChecks || [],
+				allowedKeywordChecks
+			),
+			ignoredChecks: filterChecksByType(
+				categorizedChecks.ignoredChecks || [],
+				allowedKeywordChecks
+			),
+			suggestionChecks: filterChecksByType(
+				categorizedChecks.suggestionChecks || [],
+				allowedKeywordChecks
+			),
 		};
 
 		payload = {
@@ -233,26 +273,59 @@ export const setPageSeoChecksByIdAndType = (
 
 	// Filter checks by allowed page checks to avoid filtering on every render
 	const allowedPageChecks = window?.surerank_seo_popup?.page_checks || [];
-	const allowedKeywordChecks = window?.surerank_seo_popup?.keyword_checks || [];
+	const allowedKeywordChecks =
+		window?.surerank_seo_popup?.keyword_checks || [];
 
 	const filterChecksByType = ( checksArray, allowedChecks ) => {
-		return checksArray.filter( ( check ) => allowedChecks.includes( check.id ) );
+		return checksArray.filter( ( check ) =>
+			allowedChecks.includes( check.id )
+		);
 	};
 
 	const filteredPageChecks = {
-		badChecks: filterChecksByType( categorizedChecks.badChecks || [], allowedPageChecks ),
-		fairChecks: filterChecksByType( categorizedChecks.fairChecks || [], allowedPageChecks ),
-		passedChecks: filterChecksByType( categorizedChecks.passedChecks || [], allowedPageChecks ),
-		ignoredChecks: filterChecksByType( categorizedChecks.ignoredChecks || [], allowedPageChecks ),
-		suggestionChecks: filterChecksByType( categorizedChecks.suggestionChecks || [], allowedPageChecks ),
+		badChecks: filterChecksByType(
+			categorizedChecks.badChecks || [],
+			allowedPageChecks
+		),
+		fairChecks: filterChecksByType(
+			categorizedChecks.fairChecks || [],
+			allowedPageChecks
+		),
+		passedChecks: filterChecksByType(
+			categorizedChecks.passedChecks || [],
+			allowedPageChecks
+		),
+		ignoredChecks: filterChecksByType(
+			categorizedChecks.ignoredChecks || [],
+			allowedPageChecks
+		),
+		suggestionChecks: filterChecksByType(
+			categorizedChecks.suggestionChecks || [],
+			allowedPageChecks
+		),
 	};
 
 	const filteredKeywordChecks = {
-		badChecks: filterChecksByType( categorizedChecks.badChecks || [], allowedKeywordChecks ),
-		fairChecks: filterChecksByType( categorizedChecks.fairChecks || [], allowedKeywordChecks ),
-		passedChecks: filterChecksByType( categorizedChecks.passedChecks || [], allowedKeywordChecks ),
-		ignoredChecks: filterChecksByType( categorizedChecks.ignoredChecks || [], allowedKeywordChecks ),
-		suggestionChecks: filterChecksByType( categorizedChecks.suggestionChecks || [], allowedKeywordChecks ),
+		badChecks: filterChecksByType(
+			categorizedChecks.badChecks || [],
+			allowedKeywordChecks
+		),
+		fairChecks: filterChecksByType(
+			categorizedChecks.fairChecks || [],
+			allowedKeywordChecks
+		),
+		passedChecks: filterChecksByType(
+			categorizedChecks.passedChecks || [],
+			allowedKeywordChecks
+		),
+		ignoredChecks: filterChecksByType(
+			categorizedChecks.ignoredChecks || [],
+			allowedKeywordChecks
+		),
+		suggestionChecks: filterChecksByType(
+			categorizedChecks.suggestionChecks || [],
+			allowedKeywordChecks
+		),
 	};
 
 	return {

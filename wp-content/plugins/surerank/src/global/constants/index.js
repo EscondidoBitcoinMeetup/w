@@ -88,13 +88,14 @@ export const ENABLE_MIGRATION =
 	window?.surerank_globals?.enable_migration ?? false;
 
 // Content generation
-export {
-	REQUIRE_CONTENT_GENERATION,
-	CONTENT_GENERATION_MAPPING,
-} from './content-generation';
+export * from './content-generation';
 
 // Site SEO Fix Types
-export { SEO_FIX_TYPE_MAPPING } from './site-seo-fix';
+export * from './site-seo-fix';
 
 // Process status
-export { PROCESS_STATUSES } from './process-status';
+export * from './process-status';
+
+// Page SEO Checks
+export const PAGE_SEO_CHECKS_LEARN_MORE_URL =
+	'https://surerank.com/docs-category/page-seo-analysis/';

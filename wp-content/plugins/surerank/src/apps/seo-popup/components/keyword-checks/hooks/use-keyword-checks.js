@@ -1,4 +1,9 @@
-import { useState, useLayoutEffect, useRef, useCallback } from '@wordpress/element';
+import {
+	useState,
+	useLayoutEffect,
+	useRef,
+	useCallback,
+} from '@wordpress/element';
 import { useSelect, subscribe } from '@wordpress/data';
 import { debounce, isEqual } from 'lodash';
 import { STORE_NAME } from '@Store/constants';
@@ -43,101 +48,106 @@ export const useKeywordChecks = ( { focusKeyword, ignoredList = [] } ) => {
 	const lastKeyword = useRef( focusKeyword );
 	const lastIgnoredList = useRef( ignoredList );
 
-	const runKeywordChecks = useCallback( ( snapshot, seoMeta, keyword ) => {
-		if ( ! keyword ) {
-			setChecks( {
+	const runKeywordChecks = useCallback(
+		( snapshot, seoMeta, keyword ) => {
+			if ( ! keyword ) {
+				setChecks( {
+					badChecks: [],
+					fairChecks: [],
+					passedChecks: [],
+					suggestionChecks: [],
+					ignoredChecks: [],
+					hasBadOrFairChecks: false,
+				} );
+				return;
+			}
+
+			// variables array.
+			const variablesArray = flat( variables );
+
+			// title.
+			const resolvedTitle = replacement(
+				seoMeta.page_title || globalDefaults.page_title || '',
+				variablesArray,
+				postDynamicData
+			);
+
+			// description.
+			const resolvedDescription = replacement(
+				seoMeta.page_description ||
+					globalDefaults.page_description ||
+					'',
+				variablesArray,
+				postDynamicData
+			);
+
+			// permalink.
+			const resolvedUrl =
+				snapshot?.permalink ||
+				variables?.post?.permalink?.value ||
+				variables?.term?.permalink?.value ||
+				window.location.href ||
+				'';
+
+			// content.
+			const resolvedContent =
+				snapshot?.postContent || postDynamicData?.content || '';
+
+			const rawChecks = [];
+			rawChecks.push( checkKeywordInTitle( resolvedTitle, keyword ) );
+			rawChecks.push(
+				checkKeywordInDescription( resolvedDescription, keyword )
+			);
+			rawChecks.push( checkKeywordInUrl( resolvedUrl, keyword ) );
+			rawChecks.push( checkKeywordInContent( resolvedContent, keyword ) );
+
+			// Categorize checks
+			const categories = {
 				badChecks: [],
 				fairChecks: [],
 				passedChecks: [],
 				suggestionChecks: [],
 				ignoredChecks: [],
-				hasBadOrFairChecks: false,
+			};
+
+			rawChecks.forEach( ( check ) => {
+				// Check if this check is ignored
+				if ( ignoredList.includes( check.id ) ) {
+					categories.ignoredChecks.push( { ...check, ignore: true } );
+					return;
+				}
+
+				// Add ignore flag for non-ignored checks
+				const checkWithIgnoreFlag = { ...check, ignore: false };
+
+				switch ( check.status ) {
+					case 'error':
+						categories.badChecks.push( checkWithIgnoreFlag );
+						break;
+					case 'warning':
+						categories.fairChecks.push( checkWithIgnoreFlag );
+						break;
+					case 'success':
+						categories.passedChecks.push( checkWithIgnoreFlag );
+						break;
+					case 'suggestion':
+						categories.suggestionChecks.push( checkWithIgnoreFlag );
+						break;
+					default:
+						break;
+				}
 			} );
-			return;
-		}
 
-		// variables array.
-		const variablesArray = flat( variables );
+			// Add hasBadOrFairChecks flag
+			const hasBadOrFairChecks =
+				categories.badChecks.length > 0 ||
+				categories.fairChecks.length > 0 ||
+				categories.suggestionChecks.length > 0;
 
-		// title.
-		const resolvedTitle = replacement(
-			seoMeta.page_title || globalDefaults.page_title || '',
-			variablesArray,
-			postDynamicData
-		);
-
-		// description.
-		const resolvedDescription = replacement(
-			seoMeta.page_description || globalDefaults.page_description || '',
-			variablesArray,
-			postDynamicData
-		);
-
-		// permalink.
-		const resolvedUrl =
-			snapshot?.permalink ||
-			variables?.post?.permalink?.value ||
-			variables?.term?.permalink?.value ||
-			window.location.href ||
-			'';
-
-		// content.
-		const resolvedContent =
-			snapshot?.postContent || postDynamicData?.content || '';
-
-		const rawChecks = [];
-		rawChecks.push( checkKeywordInTitle( resolvedTitle, keyword ) );
-		rawChecks.push(
-			checkKeywordInDescription( resolvedDescription, keyword )
-		);
-		rawChecks.push( checkKeywordInUrl( resolvedUrl, keyword ) );
-		rawChecks.push( checkKeywordInContent( resolvedContent, keyword ) );
-
-		// Categorize checks
-		const categories = {
-			badChecks: [],
-			fairChecks: [],
-			passedChecks: [],
-			suggestionChecks: [],
-			ignoredChecks: [],
-		};
-
-		rawChecks.forEach( ( check ) => {
-			// Check if this check is ignored
-			if ( ignoredList.includes( check.id ) ) {
-				categories.ignoredChecks.push( { ...check, ignore: true } );
-				return;
-			}
-
-			// Add ignore flag for non-ignored checks
-			const checkWithIgnoreFlag = { ...check, ignore: false };
-
-			switch ( check.status ) {
-				case 'error':
-					categories.badChecks.push( checkWithIgnoreFlag );
-					break;
-				case 'warning':
-					categories.fairChecks.push( checkWithIgnoreFlag );
-					break;
-				case 'success':
-					categories.passedChecks.push( checkWithIgnoreFlag );
-					break;
-				case 'suggestion':
-					categories.suggestionChecks.push( checkWithIgnoreFlag );
-					break;
-				default:
-					break;
-			}
-		} );
-
-		// Add hasBadOrFairChecks flag
-		const hasBadOrFairChecks =
-			categories.badChecks.length > 0 ||
-			categories.fairChecks.length > 0 ||
-			categories.suggestionChecks.length > 0;
-
-		setChecks( { ...categories, hasBadOrFairChecks } );
-	}, [ variables, postDynamicData, globalDefaults, ignoredList ] );
+			setChecks( { ...categories, hasBadOrFairChecks } );
+		},
+		[ variables, postDynamicData, globalDefaults, ignoredList ]
+	);
 
 	// initial check.
 	useLayoutEffect( () => {

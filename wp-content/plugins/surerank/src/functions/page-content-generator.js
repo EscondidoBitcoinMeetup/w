@@ -361,9 +361,10 @@ const FormField = ( { field, formValues, setFormValues } ) => {
 		typeof field?.disabled === 'function'
 			? field.disabled( formValues )
 			: field?.disabled;
-	const className = typeof field?.className === 'function'
-		? field.className( formValues )
-		: field?.className;
+	const className =
+		typeof field?.className === 'function'
+			? field.className( formValues )
+			: field?.className;
 
 	const additionalProps = {
 		...( disabled && { disabled } ),

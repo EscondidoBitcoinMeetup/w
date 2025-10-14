@@ -112,7 +112,9 @@ const Analyze = () => {
 
 	// Determine default accordion value based on page check status
 	const hasPageCheckIssues = pageCheckStatus && pageCheckStatus !== 'success';
-	const defaultAccordionValue = hasPageCheckIssues ? 'page-checks' : 'keyword-checks';
+	const defaultAccordionValue = hasPageCheckIssues
+		? 'page-checks'
+		: 'keyword-checks';
 
 	// Early return if no valid component is found.
 	if ( ! ENABLE_PAGE_LEVEL_SEO || isBricksBuilder() ) {

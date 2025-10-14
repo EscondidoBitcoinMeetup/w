@@ -23,8 +23,7 @@ export const calculateCheckStatus = ( categorizedChecks = {} ) => {
 
 	// Calculate counts
 	const counts = {
-		errorAndWarnings:
-			badChecks.length + fairChecks.length,
+		errorAndWarnings: badChecks.length + fairChecks.length,
 		success: passedChecks.length,
 		error: badChecks.length,
 		warning: fairChecks.length,
@@ -45,16 +44,38 @@ export const calculateCombinedStatus = ( pageStatus, keywordStatus ) => {
 	// Create combined checks arrays
 	const combinedChecks = {
 		badChecks: [
-			...( pageStatus.counts?.error ? Array( pageStatus.counts.error ).fill( { status: 'error' } ) : [] ),
-			...( keywordStatus.counts?.error ? Array( keywordStatus.counts.error ).fill( { status: 'error' } ) : [] ),
+			...( pageStatus.counts?.error
+				? Array( pageStatus.counts.error ).fill( { status: 'error' } )
+				: [] ),
+			...( keywordStatus.counts?.error
+				? Array( keywordStatus.counts.error ).fill( {
+						status: 'error',
+				  } )
+				: [] ),
 		],
 		fairChecks: [
-			...( pageStatus.counts?.warning ? Array( pageStatus.counts.warning ).fill( { status: 'warning' } ) : [] ),
-			...( keywordStatus.counts?.warning ? Array( keywordStatus.counts.warning ).fill( { status: 'warning' } ) : [] ),
+			...( pageStatus.counts?.warning
+				? Array( pageStatus.counts.warning ).fill( {
+						status: 'warning',
+				  } )
+				: [] ),
+			...( keywordStatus.counts?.warning
+				? Array( keywordStatus.counts.warning ).fill( {
+						status: 'warning',
+				  } )
+				: [] ),
 		],
 		suggestionChecks: [
-			...( pageStatus.counts?.suggestion ? Array( pageStatus.counts.suggestion ).fill( { status: 'suggestion' } ) : [] ),
-			...( keywordStatus.counts?.suggestion ? Array( keywordStatus.counts.suggestion ).fill( { status: 'suggestion' } ) : [] ),
+			...( pageStatus.counts?.suggestion
+				? Array( pageStatus.counts.suggestion ).fill( {
+						status: 'suggestion',
+				  } )
+				: [] ),
+			...( keywordStatus.counts?.suggestion
+				? Array( keywordStatus.counts.suggestion ).fill( {
+						status: 'suggestion',
+				  } )
+				: [] ),
 		],
 	};
 

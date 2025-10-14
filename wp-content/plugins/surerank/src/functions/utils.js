@@ -823,6 +823,51 @@ export const getStatusIndicatorAriaLabel = ( errorAndWarnings ) => {
 };
 
 /**
+ * Extracts URL parameters from a given URL string and returns them as an object.
+ * Handles both absolute and relative URLs by using the current origin as a base for relative ones.
+ *
+ * @param {string} url   - The URL string to parse.
+ * @param {string} [key] - The specific key to retrieve from the URL parameters.
+ * @return {Object} An object containing the URL parameters, or an empty object if parsing fails.
+ */
+export const getURLParams = ( url, key = '' ) => {
+	try {
+		const fullUrl = new URL( url, window.location.origin );
+		const params = fullUrl.searchParams;
+		if ( key ) {
+			return params.get( key ) || '';
+		}
+		return Object.fromEntries( params.entries() );
+	} catch ( error ) {
+		return key ? '' : {};
+	}
+};
+
+/**
+ * Removes specified query parameters from a given URL string and returns the updated URL.
+ * Handles both absolute and relative URLs by using the current origin as a base for relative ones.
+ * If an array of keys is provided, removes all matching parameters; otherwise, removes the single key.
+ *
+ * @param {string}          url  - The URL string to modify.
+ * @param {string|string[]} keys - The key(s) of the query parameter(s) to remove.
+ * @return {string} The updated URL string with the specified parameters removed, or the original URL if parsing fails.
+ */
+export const removeQueryParams = ( url, keys ) => {
+	try {
+		const fullUrl = new URL( url, window.location.origin );
+		const params = fullUrl.searchParams;
+		if ( Array.isArray( keys ) ) {
+			keys.forEach( ( key ) => params.delete( key ) );
+		} else {
+			params.delete( keys );
+		}
+		return fullUrl.toString();
+	} catch ( error ) {
+		return url;
+	}
+};
+
+/**
  * Adds category property to each check item in the response
  *
  * @param {Object} response - The API response object

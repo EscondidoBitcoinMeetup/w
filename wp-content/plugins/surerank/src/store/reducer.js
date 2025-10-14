@@ -53,11 +53,20 @@ const DEFAULT_STATE = {
 		previousTab: '',
 		currentScreen: 'settings',
 		previousScreen: '',
+		// Content generation states
+		generateContentProcess: 'idle',
+		generatedContents: {}, // Changed from array to object to store per check/field
+		selectedCheckId: null,
+		selectedFieldKey: null,
+		error: null,
+		fixProcess: 'idle',
+		onUseThis: null,
 	},
 	// App settings end.
 
 	// Page SEO checks start.
 	pageSeoChecks: {
+		authenticated: window?.surerank_globals?.ai_authenticated || false,
 		initializing: true,
 		isCheckingLinks: false,
 		linkCheckProgress: {
@@ -67,6 +76,7 @@ const DEFAULT_STATE = {
 		refreshCalled: false,
 		postId: null,
 		checkType: null, // 'post' or 'term'.
+		hideFixHelpButtons: false,
 	},
 	// Page SEO checks end.
 };
@@ -184,7 +194,8 @@ function reducer( state = DEFAULT_STATE, action ) {
 							...action.payload.checks,
 						},
 						filteredPageChecks: action.payload.filteredPageChecks,
-						filteredKeywordChecks: action.payload.filteredKeywordChecks,
+						filteredKeywordChecks:
+							action.payload.filteredKeywordChecks,
 						sequence: action.payload.sequence,
 						error: action.payload.error,
 					},

@@ -3,9 +3,11 @@ import { Suspense, useMemo } from '@wordpress/element';
 import { Text } from '@bsf/force-ui';
 import { __ } from '@wordpress/i18n';
 import { PageChecks } from '..';
+import { PAGE_SEO_CHECKS_ID_TO_STATE_MAPPING } from '@Global/constants/content-generation';
 import { isBricksBuilder } from './analyzer/utils/page-builder';
 import { STORE_NAME } from '@/store/constants';
 import PageChecksListSkeleton from './page-checks-list-skeleton';
+import { PROCESS_STATUSES } from '@/global/constants';
 import { useKeywordChecks } from '@SeoPopup/components/keyword-checks/hooks/use-keyword-checks';
 
 const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
@@ -13,15 +15,28 @@ const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
 		( select ) => select( STORE_NAME ).getPageSeoChecks(),
 		[]
 	);
+	const {
+		ignorePageSeoCheck,
+		restorePageSeoCheck,
+		updateAppSettings,
+		updatePostSeoMeta,
+	} = useDispatch( STORE_NAME );
+	const { categorizedChecks } = pageSeoChecks;
 
 	// For keyword checks, we need focus keyword and ignored list
-	const { focusKeyword, ignoredList } = useSelect( ( select ) => {
-		const selectors = select( STORE_NAME );
-		return {
-			focusKeyword: selectors?.getPostSeoMeta?.()?.focus_keyword,
-			ignoredList: selectors.getCurrentPostIgnoredList(),
-		};
-	}, [] );
+	const { focusKeyword, ignoredList, currentScreen, currentTab } = useSelect(
+		( select ) => {
+			const selectors = select( STORE_NAME );
+			const appSettings = selectors.getAppSettings();
+			return {
+				focusKeyword: selectors?.getPostSeoMeta?.()?.focus_keyword,
+				ignoredList: selectors.getCurrentPostIgnoredList(),
+				currentScreen: appSettings?.currentScreen,
+				currentTab: appSettings?.currentTab,
+			};
+		},
+		[]
+	);
 
 	// Use keyword checks hook when type is keyword
 	const keywordChecksResult = useKeywordChecks( {
@@ -45,16 +60,61 @@ const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
 			return {};
 		}
 
-		return pageSeoChecks.filteredPageChecks;
-	}, [ type, keywordChecksResult, pageSeoChecks.filteredPageChecks, pageSeoChecks.filteredKeywordChecks ] );
-	const { ignorePageSeoCheck, restorePageSeoCheck } =
-		useDispatch( STORE_NAME );
+		const allowedChecks = window?.surerank_seo_popup?.page_checks || [];
+		const filterChecksByType = ( checks ) => {
+			return checks.filter( ( check ) =>
+				allowedChecks.includes( check.id )
+			);
+		};
+
+		return {
+			badChecks: filterChecksByType( categorizedChecks.badChecks || [] ),
+			fairChecks: filterChecksByType(
+				categorizedChecks.fairChecks || []
+			),
+			passedChecks: filterChecksByType(
+				categorizedChecks.passedChecks || []
+			),
+			ignoredChecks: filterChecksByType(
+				categorizedChecks.ignoredChecks || []
+			),
+			suggestionChecks: filterChecksByType(
+				categorizedChecks.suggestionChecks || []
+			),
+		};
+	}, [ type, keywordChecksResult, categorizedChecks ] );
 
 	const handleIgnoreCheck = ( checkId ) => {
 		ignorePageSeoCheck( checkId );
 	};
 	const handleRestoreCheck = ( checkId ) => {
 		restorePageSeoCheck( checkId );
+	};
+
+	const handleOnSuccess = ( { selectedCheckId, content } ) => {
+		// Get the proper state key from the mapping
+		const stateKey = PAGE_SEO_CHECKS_ID_TO_STATE_MAPPING[ selectedCheckId ];
+
+		if ( ! stateKey ) {
+			return;
+		}
+		// Update the state with the content used to fix the issue
+		updatePostSeoMeta( {
+			[ stateKey ]: content,
+		} );
+	};
+
+	const handleClickFix = ( checkId ) => {
+		updateAppSettings( {
+			selectedCheckId: checkId,
+			onSuccess: handleOnSuccess,
+			generateContentProcess: PROCESS_STATUSES.IDLE,
+			error: null,
+			fixProcess: PROCESS_STATUSES.IDLE,
+			currentScreen: 'fixItForMe',
+			previousScreen: currentScreen,
+			previousTab: currentTab,
+		} );
 	};
 
 	// Bricks builder doesn't support page level SEO checks
@@ -89,6 +149,7 @@ const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
 						} }
 						onIgnore={ handleIgnoreCheck }
 						onRestore={ handleRestoreCheck }
+						onFix={ handleClickFix }
 					/>
 				</Suspense>
 			</div>

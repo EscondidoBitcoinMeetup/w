@@ -127,8 +127,17 @@ const RobotsTxtEditorSettings = () => {
 				setRobotsTxtContent( content );
 				setHasUnsavedSettings( false );
 				toast.success(
-					__( 'Settings saved successfully.', 'surerank' )
+					__( 'Settings saved successfully', 'surerank' ),
+					{
+						description: __(
+							'To apply the new settings, the page will refresh automatically in 3 seconds.',
+							'surerank'
+						),
+					}
 				);
+				setTimeout( () => {
+					window.location.reload();
+				}, 1500 );
 			} catch ( error ) {
 				toast.error( error.message, {
 					description: __(

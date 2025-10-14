@@ -152,11 +152,12 @@ export const CheckCard = ( {
 	title,
 	data,
 	showImages,
-	showFixButton = true,
 	onIgnore,
 	showRestoreButton = false,
 	onRestore,
 	showIgnoreButton = false,
+	onFix,
+	fixItButtonProps = {},
 } ) => {
 	const [ showIgnoreDialog, setShowIgnoreDialog ] = useState( false );
 	const { data: descriptionData, listStyleClassName } = getData( data );
@@ -265,15 +266,18 @@ export const CheckCard = ( {
 						</ul>
 					) }
 
-				{ showFixButton && (
+				{ fixItButtonProps?.show && (
 					<FixButton
 						variant="link"
 						size="xs"
 						className="mr-auto min-w-fit shrink-0 underline"
 						tooltipProps={ { className: 'z-999999' } }
-					>
-						{ __( 'Help Me Fix', 'surerank' ) }
-					</FixButton>
+						hidden={ false }
+						onClick={ onFix }
+						{ ...( ( { show, ...rest } ) => rest )(
+							fixItButtonProps
+						) }
+					/>
 				) }
 			</div>
 

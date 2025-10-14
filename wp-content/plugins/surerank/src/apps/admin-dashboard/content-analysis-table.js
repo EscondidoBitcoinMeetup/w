@@ -9,12 +9,7 @@ import {
 	Text,
 	Pagination,
 } from '@bsf/force-ui';
-import {
-	ArrowUpRight,
-	ArrowUp,
-	ArrowDown,
-	AlertTriangle,
-} from 'lucide-react';
+import { ArrowUpRight, ArrowUp, ArrowDown, AlertTriangle } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from '@/admin-store/constants';

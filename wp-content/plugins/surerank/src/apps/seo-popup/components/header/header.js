@@ -5,25 +5,32 @@ import { X } from 'lucide-react';
 import { STORE_NAME } from '@/store/constants';
 import { TABS } from '@SeoPopup/modal/tabs';
 import { cn } from '@/functions/utils';
-import { createPortal, useEffect, useState } from '@wordpress/element';
+import { createPortal, memo, useEffect, useState } from '@wordpress/element';
 import PageCheckStatusIndicator from '@AdminComponents/page-check-status-indicator';
 import { usePageCheckStatus } from '@SeoPopup/hooks';
 
-const SeoPopupTabs = () => {
-	const tabs = Object.values( TABS ?? {} ).filter( ( tab ) => !! tab?.slug );
+/* global MutationObserver */
 
+const SeoPopupTabs = () => {
 	const { updateAppSettings } = useDispatch( STORE_NAME );
-	const screen = useSelect( ( select ) =>
+	const { currentTab, currentScreen } = useSelect( ( select ) =>
 		select( STORE_NAME ).getAppSettings()
 	);
 
+	// Hide tabs when in fixItForMe screen
+	if ( currentScreen === 'fixItForMe' ) {
+		return null;
+	}
+
+	const tabs = Object.values( TABS ?? {} ).filter( ( tab ) => !! tab?.slug );
+
 	const handleChangeTab = ( { value: { slug } } ) => {
-		if ( screen?.currentTab === slug ) {
+		if ( currentTab === slug || currentScreen !== 'settings' ) {
 			return;
 		}
 		updateAppSettings( {
 			currentTab: slug,
-			previousTab: screen?.currentTab || '',
+			previousTab: currentTab || '',
 		} );
 	};
 
@@ -32,7 +39,7 @@ const SeoPopupTabs = () => {
 			className="h-full [&_button]:h-full border-0"
 			size="sm"
 			variant="underline"
-			activeItem={ screen?.currentTab }
+			activeItem={ currentTab }
 			onChange={ handleChangeTab }
 		>
 			{ tabs.map( ( tab ) => (
@@ -56,13 +63,41 @@ const PageChecksStatus = () => {
 	const { status, initializing, counts } = usePageCheckStatus();
 
 	useEffect( () => {
-		const hostElement = document.querySelector(
-			'.surerank-page-checks-indicator'
+		// Initial check in case element already exists
+		const findHost = () =>
+			document.querySelector( '.surerank-page-checks-indicator' );
+
+		let currentHost = findHost();
+		if ( currentHost ) {
+			setHost( currentHost );
+		}
+
+		// Create a MutationObserver to watch for DOM changes that may add/remove the host element
+		const observer = new MutationObserver( () => {
+			const newHost = findHost();
+			// only update state when it actually changes to avoid re-renders
+			if ( newHost !== currentHost ) {
+				currentHost = newHost;
+				setHost( newHost );
+			}
+		} );
+
+		const metaBoxHeader = document.getElementById(
+			'surerank-metabox-header'
 		);
-		if ( ! hostElement ) {
+		if ( ! metaBoxHeader ) {
 			return;
 		}
-		setHost( hostElement );
+
+		observer.observe( metaBoxHeader, {
+			childList: true,
+			subtree: true,
+		} );
+
+		// Cleanup on unmount
+		return () => {
+			observer.disconnect();
+		};
 	}, [] );
 
 	return (
@@ -81,7 +116,10 @@ const PageChecksStatus = () => {
 
 const Header = ( { onClose } ) => {
 	return (
-		<div className="flex items-center justify-between gap-3 border-0 border-b-0.5 border-solid border-border-subtle">
+		<div
+			id="surerank-metabox-header"
+			className="flex items-center justify-between gap-3 border-0 border-b-0.5 border-solid border-border-subtle"
+		>
 			<div className="flex items-center py-3.5 px-4">
 				<SureRankLogo width={ 32 } height={ 20 } />
 			</div>
@@ -102,4 +140,4 @@ const Header = ( { onClose } ) => {
 	);
 };
 
-export default Header;
+export default memo( Header );

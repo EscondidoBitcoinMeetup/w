@@ -187,7 +187,8 @@ const TitleAndDescriptionSettings = () => {
 					title={ titleContentTruncated }
 					faviconURL={ faviconImageUrl }
 					description={
-						descriptionContentTruncated || getDefaultPageDescription()
+						descriptionContentTruncated ||
+						getDefaultPageDescription()
 					}
 					permalink={ siteSettings?.site?.site_url ?? '' }
 				/>

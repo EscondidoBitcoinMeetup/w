@@ -78,8 +78,20 @@ const SchemaTab = ( { postMetaData, globalDefaults, updatePostMetaData } ) => {
 					} );
 					acc[ field.id ] = [ defaultItem ];
 				} else {
-					// For non-cloneable groups, process recursively
-					acc[ field.id ] = processFields( field.fields );
+					// For non-cloneable groups, create a nested object structure
+					const groupFields = {};
+					field.fields.forEach( ( subField ) => {
+						if ( subField.type === 'Group' && subField.fields ) {
+							// Handle nested groups recursively
+							groupFields[ subField.id ] = processFields(
+								subField.fields
+							);
+						} else {
+							groupFields[ subField.id ] =
+								subField.std !== undefined ? subField.std : '';
+						}
+					} );
+					acc[ field.id ] = groupFields;
 				}
 			} else if ( field.std !== undefined ) {
 				acc[ field.id ] = field.std;
@@ -275,6 +287,101 @@ const SchemaTab = ( { postMetaData, globalDefaults, updatePostMetaData } ) => {
 										variableSuggestions,
 										fieldItemIds,
 										setFieldItemIds,
+									} ) }
+								</div>
+							);
+						}
+
+						if ( field.type === 'Group' && ! field.cloneable ) {
+							return (
+								<div className="flex flex-col w-full space-y-3 border border-border-subtle rounded-lg p-3">
+									{ field.fields.map( ( subField ) => {
+										if ( subField.type === 'Hidden' ) {
+											return null;
+										}
+
+										return (
+											<div
+												key={ subField.id }
+												className="flex flex-col items-start justify-start gap-1.5 w-full"
+											>
+												<div className="flex items-center gap-1.5">
+													<Label
+														tag="span"
+														size="sm"
+														required={
+															subField.required
+														}
+													>
+														{ subField.label }
+													</Label>
+													{ subField.tooltip && (
+														<SeoPopupTooltip
+															content={
+																subField.tooltip
+															}
+															placement="top"
+															arrow
+															className="z-[99999]"
+														>
+															<Info
+																className="size-4 text-icon-secondary"
+																title={
+																	subField.tooltip
+																}
+															/>
+														</SeoPopupTooltip>
+													) }
+												</div>
+												<div className="flex items-center gap-1.5 w-full">
+													{ renderFieldCommon( {
+														field: subField,
+														schemaType:
+															schemas[ schemaId ]
+																.type,
+														getFieldValue: (
+															fldId
+														) => {
+															const groupValue =
+																getFieldValue(
+																	schemaId,
+																	field.id
+																) || {};
+															return (
+																groupValue[
+																	fldId
+																] ||
+																subField.std ||
+																''
+															);
+														},
+														onFieldChange: (
+															fldId,
+															newVal
+														) => {
+															const currentGroupValue =
+																getFieldValue(
+																	schemaId,
+																	field.id
+																) || {};
+															const updatedGroupValue =
+																{
+																	...currentGroupValue,
+																	[ fldId ]:
+																		newVal,
+																};
+															onFieldChange(
+																schemaId,
+																field.id,
+																updatedGroupValue
+															);
+														},
+														variableSuggestions,
+														renderAsGroupComponent: false,
+													} ) }
+												</div>
+											</div>
+										);
 									} ) }
 								</div>
 							);

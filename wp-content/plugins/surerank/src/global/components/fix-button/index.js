@@ -2,7 +2,7 @@ import { SeoPopupTooltip } from '@/apps/admin-components/tooltip';
 import { Text, Button } from '@bsf/force-ui';
 import { __ } from '@wordpress/i18n';
 import { cn } from '@Functions/utils';
-const pricingLink = window?.surerank_globals?.surerank_url ?? '';
+const pricingLink = window?.surerank_globals?.pro_link ?? '';
 
 const FixButton = ( {
 	size = 'xs',
@@ -23,15 +23,23 @@ const FixButton = ( {
 		</>
 	),
 	link = pricingLink,
-	linkLabel = __( 'Join Waitlist', 'surerank' ),
+	linkLabel = __( 'Join the Beta Program', 'surerank' ),
 	iconPosition = 'left',
 	icon,
 	buttonLabel = __( 'Fix It for Me', 'surerank' ),
 	className,
 	hidden = true,
 	locked = true,
+	onClick,
 	...props
 } ) => {
+	const handleOnClick = () => {
+		if ( typeof onClick !== 'function' || locked ) {
+			return;
+		}
+		onClick();
+	};
+
 	const buttonComponent = (
 		<Button
 			className={ cn( 'w-fit', hidden && 'hidden', className ) }
@@ -39,6 +47,7 @@ const FixButton = ( {
 			icon={ icon }
 			iconPosition={ iconPosition }
 			{ ...props }
+			onClick={ handleOnClick }
 		>
 			{ buttonLabel }
 		</Button>

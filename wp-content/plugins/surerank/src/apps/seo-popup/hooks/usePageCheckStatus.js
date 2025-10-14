@@ -1,7 +1,10 @@
 import { useSelect } from '@wordpress/data';
 import { useMemo } from '@wordpress/element';
 import { STORE_NAME } from '@/store/constants';
-import { calculateCheckStatus, calculateCombinedStatus } from '../utils/calculate-check-status';
+import {
+	calculateCheckStatus,
+	calculateCombinedStatus,
+} from '../utils/calculate-check-status';
 import { useKeywordChecks } from '@SeoPopup/components/keyword-checks/hooks/use-keyword-checks';
 
 /**
@@ -35,31 +38,28 @@ const usePageCheckStatus = () => {
 		ignoredList,
 	} );
 
-	const { status, counts } = useMemo(
-		() => {
-			// Calculate page check status
-			const pageStatus = calculateCheckStatus( categorizedChecks ) ?? {
-				status: null,
-				initializing: true,
-				counts: { errorAndWarnings: 0 },
-			};
+	const { status, counts } = useMemo( () => {
+		// Calculate page check status
+		const pageStatus = calculateCheckStatus( categorizedChecks ) ?? {
+			status: null,
+			initializing: true,
+			counts: { errorAndWarnings: 0 },
+		};
 
-			const keywordStatus = calculateCheckStatus( keywordChecks ) ?? {
-				status: null,
-				initializing: true,
-				counts: { errorAndWarnings: 0 },
-			};
+		const keywordStatus = calculateCheckStatus( keywordChecks ) ?? {
+			status: null,
+			initializing: true,
+			counts: { errorAndWarnings: 0 },
+		};
 
-			// If no focus keyword, return only page status
-			if ( ! focusKeyword ) {
-				return pageStatus;
-			}
+		// If no focus keyword, return only page status
+		if ( ! focusKeyword ) {
+			return pageStatus;
+		}
 
-			// Calculate combined status from page and keyword checks
-			return calculateCombinedStatus( pageStatus, keywordStatus );
-		},
-		[ categorizedChecks, keywordChecks, focusKeyword ]
-	);
+		// Calculate combined status from page and keyword checks
+		return calculateCombinedStatus( pageStatus, keywordStatus );
+	}, [ categorizedChecks, keywordChecks, focusKeyword ] );
 
 	return { status, initializing, counts };
 };

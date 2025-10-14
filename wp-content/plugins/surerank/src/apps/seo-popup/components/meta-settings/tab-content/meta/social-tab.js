@@ -27,6 +27,7 @@ import { flat } from '@Functions/variables';
 import { SeoPopupTooltip } from '@AdminComponents/tooltip';
 import { XSocialIcon } from '@/global/components/icons';
 import MediaPreview from '@/apps/admin-components/media-preview';
+import MagicButton from '@/apps/seo-popup/components/fix-it-for-me/magic-button';
 import { createMediaFrame } from '@/global/utils/utils';
 
 const socialMedia = [
@@ -308,6 +309,18 @@ const SocialTab = ( { postMetaData, updatePostMetaData, globalDefaults } ) => {
 														) }
 													</span>
 												</Label>
+												<MagicButton
+													fieldKey={ `${ tabSlug }_title` }
+													onUseThis={ (
+														fieldKey,
+														content
+													) => {
+														handleUpdatePostMetaData(
+															fieldKey,
+															content
+														);
+													} }
+												/>
 											</div>
 											{ /* Input */ }
 											<EditorInput
@@ -357,6 +370,18 @@ const SocialTab = ( { postMetaData, updatePostMetaData, globalDefaults } ) => {
 														) }
 													</span>
 												</Label>
+												<MagicButton
+													fieldKey={ `${ tabSlug }_description` }
+													onUseThis={ (
+														fieldKey,
+														content
+													) => {
+														handleUpdatePostMetaData(
+															fieldKey,
+															content
+														);
+													} }
+												/>
 											</div>
 											{ /* Input */ }
 											<EditorInput

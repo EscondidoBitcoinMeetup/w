@@ -3,10 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { useEffect, useCallback } from '@wordpress/element';
 import { usePluginsAndThemes } from './use-plugins-and-themes';
 import { PluginCard } from './plugin-card';
-import {
-	themesAndPlugins,
-	dashboard_plugins_sequence,
-} from './dashboard-constants';
+import { themesAndPlugins } from './dashboard-constants';
 import { Ticket, MessageSquare, Star, Info } from 'lucide-react';
 import { SureRankMonoLogo } from '@/global/components/icons';
 import { SiteSeoChecksSummary } from './site-seo-checks';
@@ -52,7 +49,7 @@ const quickAccessLinks =
 		? [ ...onboardingSetup, ...quickLinks ]
 		: [ ...quickLinks ];
 
-const SequencedThemesAndPlugins = dashboard_plugins_sequence
+const SequencedThemesAndPlugins = surerank_globals.dashboard_plugins_sequence
 	.map( ( slug ) => themesAndPlugins.find( ( item ) => item.slug === slug ) )
 	.filter( Boolean );
 

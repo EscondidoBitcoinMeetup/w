@@ -3,6 +3,8 @@ import { addQueryArgs } from '@wordpress/url';
 import { TERM_SEO_DATA_URL, POST_SEO_DATA_URL } from '@Global/constants/api';
 import { isCurrentPage } from '@/functions/utils';
 
+const API_BASE_URL = '/surerank/v1';
+
 export const fetchMetaSettings = async () => {
 	const queryParams = new URLSearchParams();
 	if ( isCurrentPage( 'term.php' ) ) {
@@ -145,7 +147,49 @@ export const fetchImageDataByUrl = async ( imageUrl ) => {
  */
 export const getMigratedData = () => {
 	return apiFetch( {
-		path: `/surerank/v1/migration/migrated-data`,
+		path: `${ API_BASE_URL }/migration/migrated-data`,
 		method: 'GET',
+	} );
+};
+
+/**
+ * Fetch AI authentication status
+ * @return {Promise<Object>} The authentication status
+ */
+export const getAuth = () => {
+	return apiFetch( { path: `${ API_BASE_URL }/ai/auth` } );
+};
+
+/**
+ * Save AI access token
+ * @param {string} accessKey The access token
+ * @return {Promise<Object>} The response from the API
+ */
+export const saveAuthAccessToken = ( accessKey ) => {
+	return apiFetch( {
+		path: `${ API_BASE_URL }/ai/auth`,
+		method: 'POST',
+		data: { accessKey },
+	} );
+};
+
+/**
+ * Generate content
+ * @param {string} type         - The type of content to generate.
+ * @param {string} [postId]     - The optional post ID.
+ * @param {string} [isTaxonomy] - The optional taxonomy flag.
+ */
+export const generateContent = ( type, postId, isTaxonomy ) => {
+	const data = { type };
+	if ( postId ) {
+		data.post_id = postId;
+	}
+	if ( isTaxonomy ) {
+		data.is_taxonomy = isTaxonomy;
+	}
+	return apiFetch( {
+		path: `${ API_BASE_URL }/generate-content`,
+		method: 'POST',
+		data,
 	} );
 };
