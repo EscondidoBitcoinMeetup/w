@@ -239,6 +239,7 @@ export const checkBrokenLinks = async (
 			),
 			status: 'error',
 			data: brokenLinks,
+			type: 'page',
 		} );
 	}
 
@@ -247,6 +248,7 @@ export const checkBrokenLinks = async (
 		title: __( 'No broken links found on the page.', 'surerank' ),
 		status: 'success',
 		description: [],
+		type: 'page',
 	} );
 };
 
@@ -259,6 +261,7 @@ export const checkCanonicalUrl = ( canonical ) => {
 				'surerank'
 			),
 			status: 'warning',
+			type: 'page',
 		} );
 	}
 
@@ -266,6 +269,7 @@ export const checkCanonicalUrl = ( canonical ) => {
 		id: 'canonical_url',
 		title: __( 'Canonical tag is present on the page.', 'surerank' ),
 		status: 'success',
+		type: 'page',
 	} );
 };
 

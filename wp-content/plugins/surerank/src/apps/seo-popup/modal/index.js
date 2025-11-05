@@ -23,6 +23,7 @@ import { Header, Footer } from '@SeoPopup/components';
 import { fetchMetaSettings } from '@/functions/api';
 import { usePageChecks } from '@SeoPopup/hooks';
 import { SCREENS } from './screens';
+import { useKeywordChecks } from '@SeoPopup/components/keyword-checks/hooks/use-keyword-checks';
 
 // Define toast globally for PRO plugin.
 if ( window && ! window?.toast ) {
@@ -79,6 +80,7 @@ export const getEditorData = () => {
 };
 
 const IsolatePageChecksHook = () => {
+	useKeywordChecks();
 	usePageChecks();
 	return null;
 };

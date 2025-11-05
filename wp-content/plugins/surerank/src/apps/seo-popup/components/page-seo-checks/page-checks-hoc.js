@@ -12,6 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { Text } from '@bsf/force-ui';
 import PageChecksListSkeleton from './page-checks-list-skeleton';
 import { useKeywordChecks } from '@SeoPopup/components/keyword-checks/hooks/use-keyword-checks';
+import { getCheckTypeKey } from '@/functions/utils';
 
 const PageSeoChecksWrapper = ( { type = 'page' } ) => {
 	const {
@@ -38,26 +39,24 @@ const PageSeoChecksWrapper = ( { type = 'page' } ) => {
 		updatePostSeoMeta,
 	} = useDispatch( STORE_NAME );
 
-	// Use keyword checks hook when type is keyword
-	const keywordChecksResult = useKeywordChecks( {
+	// Use keyword checks hook when type is keyword to trigger keyword analysis
+	useKeywordChecks( {
 		focusKeyword: type === 'keyword' ? focusKeyword : null,
 		ignoredList,
 	} );
 
 	// Get the appropriate checks based on type
 	const checksData = useMemo( () => {
-		if ( type === 'keyword' ) {
-			// For keyword checks, return the client-side computed results
-			return keywordChecksResult;
-		}
+		const categorizedChecks = pageSeoChecks?.categorizedChecks || {
+			badChecks: [],
+			fairChecks: [],
+			passedChecks: [],
+			suggestionChecks: [],
+			ignoredChecks: [],
+		};
 
-		// For page checks, use pre-filtered checks from store
-		if ( ! pageSeoChecks.filteredPageChecks ) {
-			return {};
-		}
-
-		return pageSeoChecks.filteredPageChecks;
-	}, [ type, keywordChecksResult, pageSeoChecks.filteredPageChecks ] );
+		return pageSeoChecks[ getCheckTypeKey( type )?.categorizedType ] ?? { ...categorizedChecks };
+	}, [ type, pageSeoChecks?.checks ] );
 
 	const handleIgnoreCheck = ( checkId ) => {
 		ignorePageSeoCheck( checkId );

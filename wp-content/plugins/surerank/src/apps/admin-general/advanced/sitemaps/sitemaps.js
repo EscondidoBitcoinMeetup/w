@@ -1,5 +1,5 @@
 import PageContentWrapper from '@AdminComponents/page-content-wrapper';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Button, toast } from '@bsf/force-ui';
 import { useSuspenseSelect } from '@wordpress/data';
 import { STORE_NAME } from '@AdminStore/constants';
@@ -84,21 +84,79 @@ const SiteMaps = () => {
 
 	const SitemapButtons = () => {
 		const [ isGenerating, setIsGenerating ] = useState( false );
+		const [ progress, setProgress ] = useState( 0 );
+		const [ currentItem, setCurrentItem ] = useState( '' );
 		const isDisabled = ! metaSettings.enable_xml_sitemap;
 
 		const generateCache = async () => {
 			setIsGenerating( true );
-			try {
-				const result = await apiFetch( {
-					path: '/surerank/v1/sitemap/generate-cache',
-					method: 'POST',
-				} );
+			setProgress( 0 );
+			setCurrentItem( '' );
 
-				// Show success message (you might want to use a toast notification here)
-				toast.warning( result.message, {
-					description: result.description,
-					icon: <LoaderCircle className="animate-spin" />,
-				} );
+			try {
+				const cronsAvailable = surerank_admin_common?.crons_available;
+
+				if ( cronsAvailable ) {
+					// For cron-based generation, don't set currentItem or progress
+					const result = await apiFetch( {
+						path: '/surerank/v1/sitemap/generate-cache',
+						method: 'POST',
+					} );
+
+					toast.warning( result.message, {
+						description: result.description,
+						icon: <LoaderCircle className="animate-spin" />,
+					} );
+				} else {
+					// Use manual batch processing
+					toast.warning(
+						__( 'Sitemap cache generation started…', 'surerank' ),
+						{
+							description: __(
+								'Processing items in batches it will take some time, please stay on the page.',
+								'surerank'
+							),
+							icon: <LoaderCircle className="animate-spin" />,
+						}
+					);
+
+					//prepare
+					const response = await apiFetch( {
+						path: '/surerank/v1/prepare-cache',
+						method: 'GET',
+					} );
+
+					const items = response.data;
+
+					for ( let i = 0; i < items.length; i++ ) {
+						const item = items[ i ];
+						const progressPercentage = Math.round( ( ( i + 1 ) / items.length ) * 100 );
+
+						// Set current item being processed
+						setCurrentItem( `${ item.type }: ${ item.slug }` );
+						setProgress( progressPercentage );
+
+						await apiFetch( {
+							path: '/surerank/v1/sitemap/generate-cache-manual',
+							method: 'POST',
+							data: {
+								page: item.page,
+								slug: item.slug,
+								type: item.type,
+							},
+						} );
+					}
+
+					toast.success(
+						__( 'Sitemap cache generation completed!', 'surerank' ),
+						{
+							description: __(
+								'All content has been processed successfully.',
+								'surerank'
+							),
+						}
+					);
+				}
 			} catch ( error ) {
 				toast.error(
 					error.message ||
@@ -109,26 +167,53 @@ const SiteMaps = () => {
 				);
 			} finally {
 				setIsGenerating( false );
+				setProgress( 0 );
+				setCurrentItem( '' );
 			}
 		};
 
 		return (
 			<>
-				<Button
-					variant="outline"
-					size="md"
-					className={ cn( 'min-w-fit flex items-center gap-2', {
-						'cursor-not-allowed': isDisabled,
-					} ) }
-					disabled={ isDisabled || isGenerating }
-					onClick={ generateCache }
-					icon={
-						<RefreshCw
-							className={ cn( { 'animate-spin': isGenerating } ) }
-						/>
-					}
-					iconPosition="right"
-				/>
+				<Tooltip
+					className="max-w-[18rem]"
+					content={ ( () => {
+						if ( ! isGenerating ) {
+							return __( 'Generate sitemap cache', 'surerank' );
+						}
+						if ( currentItem ) {
+							return sprintf(
+								/* translators: 1: content type, 2: progress percentage */
+								__( 'Cache generation in progress for %1$s (%2$s%%)', 'surerank' ),
+								currentItem,
+								progress
+							);
+						}
+						return __( 'Sitemap cache generation is in progress…', 'surerank' );
+					} )() }
+					arrow
+				>
+					<Button
+						variant="outline"
+						size="md"
+						className={ cn( 'min-w-fit flex items-center gap-2', {
+							'cursor-not-allowed': isDisabled,
+						} ) }
+						disabled={ isDisabled || isGenerating }
+						onClick={ generateCache }
+						icon={
+							<RefreshCw
+								className={ cn( {
+									'animate-spin': isGenerating,
+								} ) }
+							/>
+						}
+						iconPosition="right"
+					>
+						{ isGenerating
+							? __( 'Generating…', 'surerank' )
+							: __( 'Generate Cache', 'surerank' ) }
+					</Button>
+				</Tooltip>
 				<Tooltip
 					className="max-w-[18rem]"
 					content={

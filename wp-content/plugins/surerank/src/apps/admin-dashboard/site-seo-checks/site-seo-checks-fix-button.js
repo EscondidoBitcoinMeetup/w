@@ -31,10 +31,20 @@ const SiteSeoChecksFixButton = ( { selectedItem, ...additionalProps } ) => {
 		}
 
 		const { runBeforeOnClick, runAfterOnClick, ...helpProps } = baseProps;
+		const handleCustomButtonClick = () => {
+			if ( selectedItem?.button_url ) {
+				window.location.href = selectedItem.button_url;
+			}
+		};
+
 		return {
 			...helpProps,
-			buttonLabel: __( 'Help Me Fix', 'surerank' ),
-			locked: true,
+			buttonLabel:
+				selectedItem?.button_label ?? __( 'Help Me Fix', 'surerank' ),
+			locked: ! selectedItem?.not_locked,
+			onClick: selectedItem?.button_url
+				? handleCustomButtonClick
+				: undefined,
 		};
 	}, [ selectedItem, additionalProps, SHOW_FIX_BUTTON_FOR ] );
 
@@ -42,13 +52,12 @@ const SiteSeoChecksFixButton = ( { selectedItem, ...additionalProps } ) => {
 		'surerank-pro.dashboard.site-seo-checks-fix-it-button'
 	);
 
-	return ProFixButton ? (
+	return ProFixButton && ! selectedItem?.not_locked ? (
 		<ProFixButton { ...fixItButtonProps } />
 	) : (
 		<FixButton
-			icon={ <LockIcon /> }
+			icon={ ! selectedItem?.not_locked ? <LockIcon /> : null }
 			tooltipProps={ { className: 'z-999999' } }
-			locked={ true }
 			{ ...fixItButtonProps }
 		/>
 	);

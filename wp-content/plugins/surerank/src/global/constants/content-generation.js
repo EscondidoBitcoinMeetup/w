@@ -23,7 +23,7 @@ const PAGE_CHECKS_CONTENT_GENERATION_MAPPING = applyFilters(
 
 export const PRO_PAGE_CHECKS_CONTENT_GENERATION_MAPPING = applyFilters(
 	'surerank-pro.pro-page-seo-checks-content-generation',
-	[ 'url_length' ]
+	[ 'url_length', 'search_engine_title', 'search_engine_description' ]
 );
 
 const FIELD_CONTENT_GENERATION_MAPPING = {

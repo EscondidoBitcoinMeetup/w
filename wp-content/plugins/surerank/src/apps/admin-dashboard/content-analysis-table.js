@@ -360,23 +360,27 @@ const ContentAnalysisTable = ( {
 
 	// Empty state when there is no content performance data
 	if ( ! filteredData?.length && ! loading ) {
-		let description;
+		const MSG_SITE_SELECTED = __(
+			"Once a site is selected, you'll see how your content is performing in search engines here.",
+			'surerank'
+		);
+		const MSG_NO_DATA = __(
+			'No content performance data available. Please check back later.',
+			'surerank'
+		);
+		const MSG_NOT_CONNECTED = __(
+			"Once connected to Google Search Console, you'll see how your content is performing in search engines here.",
+			'surerank'
+		);
+
+		let description = '';
 
 		if ( authenticated && ! hasSiteSelected ) {
-			description = __(
-				"Once a site is selected, you'll see how your content is performing in search engines here.",
-				'surerank'
-			);
+			description = MSG_SITE_SELECTED;
 		} else if ( authenticated && hasSiteSelected ) {
-			description = __(
-				'No content performance data available. Please check back later.',
-				'surerank'
-			);
+			description = MSG_NO_DATA;
 		} else {
-			description = __(
-				'Once connected to Google Search Console, you’ll see how your content is performing in search engines here.',
-				'surerank'
-			);
+			description = MSG_NOT_CONNECTED;
 		}
 
 		return <ContentPerformanceEmptyState description={ description } />;

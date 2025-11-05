@@ -1,4 +1,4 @@
-import { Badge, Label, Button } from '@bsf/force-ui';
+import { Badge, Label, Button, toast } from '@bsf/force-ui';
 import { cn, isURL } from '@/functions/utils';
 import FixButton from '@GlobalComponents/fix-button';
 import { __ } from '@wordpress/i18n';
@@ -7,8 +7,7 @@ import {
 	SeoPopupInfoTooltip,
 	SeoPopupTooltip,
 } from '@/apps/admin-components/tooltip';
-import { ConfirmationDialog } from '@GlobalComponents/confirmation-dialog';
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { fetchImageDataByUrl } from '@/functions/api';
 import DOMPurify from 'dompurify';
 
@@ -159,15 +158,23 @@ export const CheckCard = ( {
 	onFix,
 	fixItButtonProps = {},
 } ) => {
-	const [ showIgnoreDialog, setShowIgnoreDialog ] = useState( false );
 	const { data: descriptionData, listStyleClassName } = getData( data );
-	const handleIgnoreClick = () => {
-		setShowIgnoreDialog( true );
+	const handleIgnoreClick = async () => {
+		try {
+			await onIgnore();
+			toast.success( __( 'Check ignored successfully', 'surerank' ) );
+		} catch ( error ) {
+			toast.error( __( 'Failed to ignore check', 'surerank' ) );
+		}
 	};
 
-	const handleIgnoreConfirm = async () => {
-		await onIgnore();
-		setShowIgnoreDialog( false );
+	const handleRestoreClick = async () => {
+		try {
+			await onRestore();
+			toast.success( __( 'Check restored successfully', 'surerank' ) );
+		} catch ( error ) {
+			toast.error( __( 'Failed to restore check', 'surerank' ) );
+		}
 	};
 
 	return (
@@ -236,7 +243,7 @@ export const CheckCard = ( {
 						<Button
 							variant="outline"
 							type="button"
-							onClick={ onRestore }
+							onClick={ handleRestoreClick }
 							aria-label={ __(
 								'Restore this check',
 								'surerank'
@@ -280,21 +287,6 @@ export const CheckCard = ( {
 					/>
 				) }
 			</div>
-
-			<ConfirmationDialog
-				open={ showIgnoreDialog }
-				setOpen={ setShowIgnoreDialog }
-				title={ __( 'Ignore Page Checks', 'surerank' ) }
-				description={ __(
-					"We'll stop flagging this check in future scans. If it's not relevant, feel free to ignore it, you can always bring it back later if needed.",
-					'surerank'
-				) }
-				confirmLabel={ __( 'Ignore', 'surerank' ) }
-				cancelLabel={ __( 'Cancel', 'surerank' ) }
-				onConfirm={ handleIgnoreConfirm }
-				confirmVariant="primary"
-				confirmDestructive={ true }
-			/>
 		</>
 	);
 };

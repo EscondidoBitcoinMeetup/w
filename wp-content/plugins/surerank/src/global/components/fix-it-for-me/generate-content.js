@@ -24,6 +24,11 @@ const GeneratedContentItem = ( { item, onUseThis, globalFixing } ) => {
 		}
 	};
 
+	let buttonText = __( 'Use This', 'surerank' );
+	if ( isFixing ) {
+		buttonText = __( 'Fixing…', 'surerank' );
+	}
+
 	return (
 		<div className="flex flex-row self-stretch gap-1 p-2 bg-white rounded-md shadow-sm">
 			{ /* Text Content */ }
@@ -51,9 +56,7 @@ const GeneratedContentItem = ( { item, onUseThis, globalFixing } ) => {
 					disabled={ isFixing || globalFixing }
 					icon={ isFixing && <Loader size="sm" /> }
 				>
-					{ isFixing
-						? __( 'Fixing…', 'surerank' )
-						: __( 'Use This', 'surerank' ) }
+					{ buttonText }
 				</Button>
 			</div>
 		</div>
@@ -83,16 +86,17 @@ const GenerateContent = ( {
 
 	// Determine button text based on state
 	const getButtonText = () => {
+		let buttonText = __( 'Generate', 'surerank' );
 		if ( ! hasAnyContent && hasError ) {
-			return __( 'Retry', 'surerank' );
+			buttonText = __( 'Retry', 'surerank' );
 		}
 		if ( generating ) {
-			return __( 'Generating…', 'surerank' );
+			buttonText = __( 'Generating…', 'surerank' );
 		}
 		if ( hasAnyContent ) {
 			return __( 'Regenerate', 'surerank' );
 		}
-		return __( 'Generate', 'surerank' );
+		return buttonText;
 	};
 
 	// Determine empty state message

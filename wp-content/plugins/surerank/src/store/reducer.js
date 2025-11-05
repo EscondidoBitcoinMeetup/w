@@ -64,7 +64,7 @@ const DEFAULT_STATE = {
 	},
 	// App settings end.
 
-	// Page SEO checks start.
+		// Page SEO checks start.
 	pageSeoChecks: {
 		authenticated: window?.surerank_globals?.ai_authenticated || false,
 		initializing: true,
@@ -76,6 +76,17 @@ const DEFAULT_STATE = {
 		refreshCalled: false,
 		postId: null,
 		checkType: null, // 'post' or 'term'.
+		isRefreshing: false,
+		// Check type arrays - add new check types here as needed
+		pageChecks: [], // Array to store page-specific checks
+		keywordChecks: [], // Array to store keyword-specific checks
+		// Add new check types above (e.g., technicalChecks: [], accessibilityChecks: [])
+		brokenLinkState: {
+			isChecking: false,
+			checkedLinks: [], // Array instead of Set for Redux compatibility
+			brokenLinks: [], // Array instead of Set for Redux compatibility
+			allLinks: [],
+		},
 		hideFixHelpButtons: false,
 	},
 	// Page SEO checks end.
@@ -193,9 +204,6 @@ function reducer( state = DEFAULT_STATE, action ) {
 								?.checks,
 							...action.payload.checks,
 						},
-						filteredPageChecks: action.payload.filteredPageChecks,
-						filteredKeywordChecks:
-							action.payload.filteredKeywordChecks,
 						sequence: action.payload.sequence,
 						error: action.payload.error,
 					},

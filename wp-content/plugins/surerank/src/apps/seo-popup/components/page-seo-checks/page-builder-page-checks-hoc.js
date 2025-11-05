@@ -8,7 +8,7 @@ import { isBricksBuilder } from './analyzer/utils/page-builder';
 import { STORE_NAME } from '@/store/constants';
 import PageChecksListSkeleton from './page-checks-list-skeleton';
 import { PROCESS_STATUSES } from '@/global/constants';
-import { useKeywordChecks } from '@SeoPopup/components/keyword-checks/hooks/use-keyword-checks';
+import { getCheckTypeKey } from '@/functions/utils';
 
 const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
 	const pageSeoChecks = useSelect(
@@ -21,16 +21,14 @@ const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
 		updateAppSettings,
 		updatePostSeoMeta,
 	} = useDispatch( STORE_NAME );
-	const { categorizedChecks } = pageSeoChecks;
 
 	// For keyword checks, we need focus keyword and ignored list
-	const { focusKeyword, ignoredList, currentScreen, currentTab } = useSelect(
+	const { focusKeyword, currentScreen, currentTab } = useSelect(
 		( select ) => {
 			const selectors = select( STORE_NAME );
 			const appSettings = selectors.getAppSettings();
 			return {
 				focusKeyword: selectors?.getPostSeoMeta?.()?.focus_keyword,
-				ignoredList: selectors.getCurrentPostIgnoredList(),
 				currentScreen: appSettings?.currentScreen,
 				currentTab: appSettings?.currentTab,
 			};
@@ -38,51 +36,20 @@ const PageBuilderPageSeoChecksHoc = ( { type = 'page' } ) => {
 		[]
 	);
 
-	// Use keyword checks hook when type is keyword
-	const keywordChecksResult = useKeywordChecks( {
-		focusKeyword: type === 'keyword' ? focusKeyword : null,
-		ignoredList,
-	} );
-
 	// Get the appropriate checks based on type
 	const checksData = useMemo( () => {
-		if ( type === 'keyword' ) {
-			// For keyword checks, use pre-filtered keyword checks from store
-			if ( ! pageSeoChecks.filteredKeywordChecks ) {
-				return {};
-			}
-
-			return pageSeoChecks.filteredKeywordChecks;
-		}
-
-		// For page checks, use pre-filtered page checks from store
-		if ( ! pageSeoChecks.filteredPageChecks ) {
-			return {};
-		}
-
-		const allowedChecks = window?.surerank_seo_popup?.page_checks || [];
-		const filterChecksByType = ( checks ) => {
-			return checks.filter( ( check ) =>
-				allowedChecks.includes( check.id )
-			);
+		const categorizedChecks = pageSeoChecks?.categorizedChecks || {
+			badChecks: [],
+			fairChecks: [],
+			passedChecks: [],
+			suggestionChecks: [],
+			ignoredChecks: [],
 		};
 
-		return {
-			badChecks: filterChecksByType( categorizedChecks.badChecks || [] ),
-			fairChecks: filterChecksByType(
-				categorizedChecks.fairChecks || []
-			),
-			passedChecks: filterChecksByType(
-				categorizedChecks.passedChecks || []
-			),
-			ignoredChecks: filterChecksByType(
-				categorizedChecks.ignoredChecks || []
-			),
-			suggestionChecks: filterChecksByType(
-				categorizedChecks.suggestionChecks || []
-			),
-		};
-	}, [ type, keywordChecksResult, categorizedChecks ] );
+		const storeKeyByType = getCheckTypeKey( type )?.categorizedType;
+		// For page checks, filter by type
+		return pageSeoChecks[ storeKeyByType ] ?? { ...categorizedChecks };
+	}, [ type, pageSeoChecks?.checks ] );
 
 	const handleIgnoreCheck = ( checkId ) => {
 		ignorePageSeoCheck( checkId );

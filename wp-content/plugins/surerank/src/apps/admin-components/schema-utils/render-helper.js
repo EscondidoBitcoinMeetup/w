@@ -738,6 +738,7 @@ export function renderFieldCommon( {
 									? selectedOption[ 1 ]
 									: selectedValue;
 							} }
+							placeholder={ __( 'Select an option', 'surerank' ) }
 						/>
 						<Select.Options className="z-50">
 							{ Object.entries( options ).map(

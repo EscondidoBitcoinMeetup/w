@@ -33,7 +33,7 @@ const SiteSeoChecksSummary = ( { limit = 5, showViewAll = true } ) => {
 					size="md"
 				/>
 				<Button
-					variant="primary"
+					variant="outline"
 					size="sm"
 					icon={
 						<RefreshCw

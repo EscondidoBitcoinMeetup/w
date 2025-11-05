@@ -76,7 +76,7 @@ const SiteSeoChecksTitle = ( { isLoading, handleRunChecksAgain } ) => {
 			/>
 			<div></div>
 			<Button
-				variant="primary"
+				variant="outline"
 				size="sm"
 				icon={
 					<RefreshCw

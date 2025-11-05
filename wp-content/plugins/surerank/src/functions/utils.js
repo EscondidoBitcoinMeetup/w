@@ -8,6 +8,7 @@ import {
 import clsx from 'clsx';
 import { createRoot } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
+import { CHECK_TYPES } from '@/global/constants';
 
 export const cleanContent = ( postContent ) => {
 	// Get first paragraph. tag will be <p>.
@@ -883,4 +884,46 @@ export const addCategoryToSiteSeoChecks = ( response, category ) => {
 		} );
 	}
 	return response;
+};
+
+/**
+ * Merges all check types into a single array, updating the specified type with new values.
+ *
+ * @param {Object} state        - The current state containing pageSeoChecks.
+ * @param {string} updatedType  - The type of checks to update (e.g., 'keywordChecks', 'pageChecks').
+ * @param {Array}  updatedValue - The new array of checks for the specified type.
+ * @return {Array} - The merged array of all checks.
+ */
+export const mergeAllCheckTypes = ( state, updatedType, updatedValue ) => {
+	const allChecks = [];
+
+	// Add checks from all types except the one being updated
+	CHECK_TYPES.forEach( ( checkType ) => {
+		if ( checkType === updatedType ) {
+			// Use the new value for the type being updated
+			allChecks.push( ...updatedValue );
+		} else {
+			const checkTypeKey = getCheckTypeKey( checkType ).type;
+			// Use existing value from state for other types
+			const existingChecks = state.pageSeoChecks?.[ checkTypeKey ] || [];
+			allChecks.push( ...existingChecks );
+		}
+	} );
+
+	return allChecks;
+};
+
+/**
+ * Create checkType for state management
+ *
+ * @param {string} type - The type of check (e.g., 'keyword', 'page').
+ * @return {string} - The corresponding state key for the check type.
+ */
+export const getCheckTypeKey = ( type ) => {
+	return {
+		type: `${ type }Checks`,
+		categorizedType: `categorized${
+			type.charAt( 0 ).toUpperCase() + type.slice( 1 )
+		}Checks`,
+	};
 };

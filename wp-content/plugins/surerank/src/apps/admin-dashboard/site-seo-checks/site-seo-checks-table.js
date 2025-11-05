@@ -1,7 +1,13 @@
-import { Container, Badge, Button, Pagination, Table } from '@bsf/force-ui';
+import {
+	Container,
+	Badge,
+	Button,
+	Pagination,
+	Table,
+	toast,
+} from '@bsf/force-ui';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowRight, ArrowUpRight, Search, X } from 'lucide-react';
-import { ConfirmationDialog } from '@GlobalComponents/confirmation-dialog';
 import SiteSeoChecksFixButton from './site-seo-checks-fix-button';
 import { useSuspenseSiteSeoAnalysis } from './site-seo-checks-main';
 import {
@@ -13,6 +19,7 @@ import ContentPerformanceEmptyState from '../content-performance-empty-state';
 import { useState, useCallback, useMemo } from '@wordpress/element';
 import { Link } from '@tanstack/react-router';
 import apiFetch from '@wordpress/api-fetch';
+import { Tooltip } from '@/apps/admin-components/tooltip';
 
 const ITEMS_PER_PAGE = 20;
 const SUMMARY_ITEMS_COUNT = 5;
@@ -24,18 +31,21 @@ const SiteSeoChecksActionButtons = ( {
 	onIgnore,
 	showFixButton,
 } ) => {
-	const [ isDialogOpen, setIsDialogOpen ] = useState( false );
-
 	const ignoreCheck = useCallback(
 		async ( id ) => {
-			const response = await apiFetch( {
-				path: `/surerank/v1/checks/ignore-site-check`,
-				method: 'POST',
-				data: { id },
-			} );
-			if ( response.status === 'success' ) {
+			try {
+				const response = await apiFetch( {
+					path: `/surerank/v1/checks/ignore-site-check`,
+					method: 'POST',
+					data: { id },
+				} );
+				if ( response.status !== 'success' ) {
+					throw new Error( 'Failed to ignore check' );
+				}
 				onIgnore( id, true );
-				setIsDialogOpen( false );
+				toast.success( __( 'Check ignored successfully', 'surerank' ) );
+			} catch ( error ) {
+				toast.error( __( 'Failed to ignore check', 'surerank' ) );
 			}
 		},
 		[ onIgnore ]
@@ -43,13 +53,21 @@ const SiteSeoChecksActionButtons = ( {
 
 	const restoreCheck = useCallback(
 		async ( id ) => {
-			const response = await apiFetch( {
-				path: `/surerank/v1/checks/ignore-site-check`,
-				method: 'DELETE',
-				data: { id },
-			} );
-			if ( response.status === 'success' ) {
+			try {
+				const response = await apiFetch( {
+					path: `/surerank/v1/checks/ignore-site-check`,
+					method: 'DELETE',
+					data: { id },
+				} );
+				if ( response.status !== 'success' ) {
+					throw new Error( 'Failed to restore check' );
+				}
 				onIgnore( id, false );
+				toast.success(
+					__( 'Check restored successfully', 'surerank' )
+				);
+			} catch ( error ) {
+				toast.error( __( 'Failed to restore check', 'surerank' ) );
 			}
 		},
 		[ onIgnore ]
@@ -86,40 +104,36 @@ const SiteSeoChecksActionButtons = ( {
 			) }
 			{ item.status !== 'success' && item.status !== 'suggestion' && (
 				<>
+					<Tooltip
+						content={ __( 'Ignore', 'surerank' ) }
+						placement="top"
+						arrow
+					>
+						<Button
+							size="xs"
+							variant="outline"
+							icon={ <X /> }
+							iconPosition="right"
+							onClick={ () => ignoreCheck( item.id ) }
+						/>
+					</Tooltip>
+				</>
+			) }
+			<>
+				<Tooltip
+					content={ __( 'View Details', 'surerank' ) }
+					placement="top"
+					arrow
+				>
 					<Button
 						size="xs"
 						variant="outline"
-						icon={ <X /> }
+						icon={ <ArrowRight /> }
 						iconPosition="right"
-						onClick={ () => setIsDialogOpen( true ) }
-					>
-						{ __( 'Ignore', 'surerank' ) }
-					</Button>
-					<ConfirmationDialog
-						open={ isDialogOpen }
-						setOpen={ setIsDialogOpen }
-						title={ __( 'Ignore Site Check', 'surerank' ) }
-						description={ __(
-							"We'll stop flagging this check in future scans. If it's not relevant, feel free to ignore it, you can always bring it back later if needed.",
-							'surerank'
-						) }
-						confirmLabel={ __( 'Ignore', 'surerank' ) }
-						cancelLabel={ __( 'Cancel', 'surerank' ) }
-						onConfirm={ () => ignoreCheck( item.id ) }
-						confirmVariant="primary"
-						confirmDestructive={ true }
+						onClick={ onViewItem }
 					/>
-				</>
-			) }
-			<Button
-				size="xs"
-				variant="outline"
-				icon={ <ArrowRight /> }
-				iconPosition="right"
-				onClick={ onViewItem }
-			>
-				{ __( 'View', 'surerank' ) }
-			</Button>
+				</Tooltip>
+			</>
 		</Container>
 	);
 };

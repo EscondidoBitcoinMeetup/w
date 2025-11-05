@@ -87,6 +87,9 @@ export const ENABLE_SCHEMAS = window?.surerank_globals?.enable_schemas ?? false;
 export const ENABLE_MIGRATION =
 	window?.surerank_globals?.enable_migration ?? false;
 
+// Page & Keyword SEO Checks
+export const CHECK_TYPES = [ 'page', 'keyword' ];
+
 // Content generation
 export * from './content-generation';
 

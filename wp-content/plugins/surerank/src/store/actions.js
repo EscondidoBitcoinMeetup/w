@@ -2,7 +2,8 @@ import { pick } from 'lodash';
 import { select } from '@wordpress/data';
 import { STORE_NAME } from './constants';
 import * as actionTypes from './action-types';
-import { getCategorizedChecks } from '@/functions/utils';
+import { getCategorizedChecks, getCheckTypeKey, mergeAllCheckTypes } from '@/functions/utils';
+import { CHECK_TYPES } from '@/global/constants';
 /**
  * Returns an action object used in signalling that viewport queries have been
  * updated. Values are specified as an object of breakpoint query keys where
@@ -96,68 +97,25 @@ export const setPageSeoCheck = ( key, value ) => {
 
 		const categorizedChecks = getCategorizedChecks( value, ignoredList );
 
-		// Filter checks by allowed page checks to avoid filtering on every render
-		const allowedPageChecks = window?.surerank_seo_popup?.page_checks || [];
-		const allowedKeywordChecks =
-			window?.surerank_seo_popup?.keyword_checks || [];
-
-		const filterChecksByType = ( checksArray, allowedChecks ) => {
-			return checksArray.filter( ( check ) =>
-				allowedChecks.includes( check.id )
-			);
-		};
-
-		const filteredPageChecks = {
-			badChecks: filterChecksByType(
-				categorizedChecks.badChecks || [],
-				allowedPageChecks
-			),
-			fairChecks: filterChecksByType(
-				categorizedChecks.fairChecks || [],
-				allowedPageChecks
-			),
-			passedChecks: filterChecksByType(
-				categorizedChecks.passedChecks || [],
-				allowedPageChecks
-			),
-			ignoredChecks: filterChecksByType(
-				categorizedChecks.ignoredChecks || [],
-				allowedPageChecks
-			),
-			suggestionChecks: filterChecksByType(
-				categorizedChecks.suggestionChecks || [],
-				allowedPageChecks
-			),
-		};
-
-		const filteredKeywordChecks = {
-			badChecks: filterChecksByType(
-				categorizedChecks.badChecks || [],
-				allowedKeywordChecks
-			),
-			fairChecks: filterChecksByType(
-				categorizedChecks.fairChecks || [],
-				allowedKeywordChecks
-			),
-			passedChecks: filterChecksByType(
-				categorizedChecks.passedChecks || [],
-				allowedKeywordChecks
-			),
-			ignoredChecks: filterChecksByType(
-				categorizedChecks.ignoredChecks || [],
-				allowedKeywordChecks
-			),
-			suggestionChecks: filterChecksByType(
-				categorizedChecks.suggestionChecks || [],
-				allowedKeywordChecks
-			),
-		};
-
 		payload = {
 			checks: value,
 			categorizedChecks,
-			filteredPageChecks,
-			filteredKeywordChecks,
+		};
+	} else if ( CHECK_TYPES.includes( key ) ) {
+		// Handle any check type dynamically
+		const state = select( STORE_NAME ).getState();
+		const ignoredList = state.pageSeoChecks?.ignoredList || [];
+
+		const allChecks = mergeAllCheckTypes( state, key, value )?.filter( Boolean ) || [];
+		const categorizedChecks = getCategorizedChecks( allChecks, ignoredList );
+		const categorizedCheckType = getCategorizedChecks( value, ignoredList );
+		const storeKeys = getCheckTypeKey( key );
+
+		payload = {
+			[ storeKeys.type ]: value,
+			checks: allChecks,
+			categorizedChecks,
+			[ storeKeys.categorizedType ]: categorizedCheckType,
 		};
 	}
 
@@ -203,21 +161,23 @@ export function* restoreIgnoreCheck( checkId, actionType ) {
 		state.pageSeoChecks?.postId ||
 		state.variables?.post?.ID?.value ||
 		state.variables?.term?.ID?.value;
-	const checkType =
+	const postType =
 		window?.surerank_seo_popup?.is_taxonomy === '1' ? 'taxonomy' : 'post';
 
 	try {
 		const data = yield fetchFromAPI( {
 			path: 'surerank/v1/checks/ignore-page-check',
 			method: actionType === 'ignore' ? 'POST' : 'DELETE',
-			data: { post_id: postId, id: checkId, check_type: checkType },
+			data: { post_id: postId, id: checkId, check_type: postType },
 		} );
 
 		// Update ignoredList with the array of IDs
 		yield setCurrentPostIgnoredList( data?.checks );
 
-		const { checks } = select( STORE_NAME ).getPageSeoChecks();
-		yield setPageSeoCheck( 'checks', checks );
+		const seoChecksState = select( STORE_NAME ).getPageSeoChecks();
+		const checkType = seoChecksState.checks.find( ( check ) => check.id === checkId )?.type;
+		const storeKey = getCheckTypeKey( checkType )?.type || 'checks';
+		yield setPageSeoCheck( checkType, seoChecksState[ storeKey ] );
 	} catch ( error ) {
 		// Silently fail for aborted requests
 	}
@@ -271,71 +231,12 @@ export const setPageSeoChecksByIdAndType = (
 		}
 	);
 
-	// Filter checks by allowed page checks to avoid filtering on every render
-	const allowedPageChecks = window?.surerank_seo_popup?.page_checks || [];
-	const allowedKeywordChecks =
-		window?.surerank_seo_popup?.keyword_checks || [];
-
-	const filterChecksByType = ( checksArray, allowedChecks ) => {
-		return checksArray.filter( ( check ) =>
-			allowedChecks.includes( check.id )
-		);
-	};
-
-	const filteredPageChecks = {
-		badChecks: filterChecksByType(
-			categorizedChecks.badChecks || [],
-			allowedPageChecks
-		),
-		fairChecks: filterChecksByType(
-			categorizedChecks.fairChecks || [],
-			allowedPageChecks
-		),
-		passedChecks: filterChecksByType(
-			categorizedChecks.passedChecks || [],
-			allowedPageChecks
-		),
-		ignoredChecks: filterChecksByType(
-			categorizedChecks.ignoredChecks || [],
-			allowedPageChecks
-		),
-		suggestionChecks: filterChecksByType(
-			categorizedChecks.suggestionChecks || [],
-			allowedPageChecks
-		),
-	};
-
-	const filteredKeywordChecks = {
-		badChecks: filterChecksByType(
-			categorizedChecks.badChecks || [],
-			allowedKeywordChecks
-		),
-		fairChecks: filterChecksByType(
-			categorizedChecks.fairChecks || [],
-			allowedKeywordChecks
-		),
-		passedChecks: filterChecksByType(
-			categorizedChecks.passedChecks || [],
-			allowedKeywordChecks
-		),
-		ignoredChecks: filterChecksByType(
-			categorizedChecks.ignoredChecks || [],
-			allowedKeywordChecks
-		),
-		suggestionChecks: filterChecksByType(
-			categorizedChecks.suggestionChecks || [],
-			allowedKeywordChecks
-		),
-	};
-
 	return {
 		type: actionTypes.SET_PAGE_SEO_CHECKS_BY_ID_AND_TYPE,
 		payload: {
 			postId,
 			postType,
 			checks: categorizedChecks,
-			filteredPageChecks,
-			filteredKeywordChecks,
 			sequence,
 			error,
 		},

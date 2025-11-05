@@ -5,6 +5,7 @@ import { formatSeoChecks, cn } from '@/functions/utils';
 import { STORE_NAME } from '@/store/constants';
 import { fetchBrokenLinkStatus } from '../link-checks';
 import { RefreshCcw } from 'lucide-react';
+import { CHECK_TYPES } from '@/global/constants';
 
 // Function to check broken links for Elementor editor
 export const checkBrokenLinks = async (
@@ -76,6 +77,7 @@ export const checkBrokenLinks = async (
 					'surerank'
 				),
 				status: 'error',
+				type: 'page',
 				data: [
 					__(
 						'These broken links were found on the page:',
@@ -87,7 +89,9 @@ export const checkBrokenLinks = async (
 		}
 
 		// Update all SEO checks at once
-		setPageSeoCheck( 'checks', updatedChecks );
+		CHECK_TYPES.forEach( ( type ) => {
+			setPageSeoCheck( type, updatedChecks.filter( ( item ) => item.type === type ) );
+		} );
 		setPageSeoCheck( 'isCheckingLinks', false );
 		setPageSeoCheck( 'linkCheckProgress', {
 			current: totalLinks,
@@ -142,11 +146,16 @@ export const refreshPageChecks = async (
 		} );
 
 		const cleanedChecks = [ ...checks ].filter(
-			( c ) => c.id !== 'broken_links'
+			( item ) => item.id !== 'broken_links'
 		);
 
 		// Update pageSeoChecks with cleaned checks
-		setPageSeoCheck( 'checks', cleanedChecks );
+		CHECK_TYPES.forEach( ( type ) => {
+			setPageSeoCheck(
+				type,
+				cleanedChecks.filter( ( item ) => item.type === type )
+			);
+		} );
 
 		if ( allLinks.length === 0 ) {
 			setPageSeoCheck( 'isCheckingLinks', false );
