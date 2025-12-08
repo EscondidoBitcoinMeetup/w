@@ -18,7 +18,7 @@ const SeoPopupTabs = () => {
 	);
 
 	// Hide tabs when in fixItForMe screen
-	if ( currentScreen === 'fixItForMe' ) {
+	if ( currentScreen !== 'settings' ) {
 		return null;
 	}
 

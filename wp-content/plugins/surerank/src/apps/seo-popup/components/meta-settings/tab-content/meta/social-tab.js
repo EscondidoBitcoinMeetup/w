@@ -320,6 +320,10 @@ const SocialTab = ( { postMetaData, updatePostMetaData, globalDefaults } ) => {
 															content
 														);
 													} }
+													tooltip={ __(
+														'Generate with AI',
+														'surerank'
+													) }
 												/>
 											</div>
 											{ /* Input */ }
@@ -381,6 +385,10 @@ const SocialTab = ( { postMetaData, updatePostMetaData, globalDefaults } ) => {
 															content
 														);
 													} }
+													tooltip={ __(
+														'Generate with AI',
+														'surerank'
+													) }
 												/>
 											</div>
 											{ /* Input */ }

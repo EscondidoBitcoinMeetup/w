@@ -20,6 +20,7 @@ import {
 	whiteLabelEnabled,
 	storeCurrentState,
 	getAllSites,
+	trackOnboardingStep,
 } from '../../utils/functions';
 import { setURLParmsValue } from '../../utils/url-params';
 import SiteListSkeleton from './site-list-skeleton';
@@ -62,14 +63,15 @@ export const useFilteredSites = () => {
 		}
 
 		// Step 3: filter by builder
-		let sites = builder
-			? Object.fromEntries(
-					Object.entries( allSites ).filter(
-						( [ , site ] ) =>
-							site[ 'astra-site-page-builder' ] === builder
-					)
-			  )
-			: { ...allSites };
+		let sites =
+			builder && builder !== 'custom-templates'
+				? Object.fromEntries(
+						Object.entries( allSites ).filter(
+							( [ , site ] ) =>
+								site[ 'astra-site-page-builder' ] === builder
+						)
+				  )
+				: { ...allSites };
 
 		// Step 4: filter by site type
 		if ( siteType ) {
@@ -98,7 +100,16 @@ export const useFilteredSites = () => {
 			);
 		}
 
-		// Step 6: sort if latest
+		// Step 6: Filter custom templates builder sites to only include those with custom templates.
+		if ( builder === 'custom-templates' ) {
+			sites = Object.fromEntries(
+				Object.entries( sites ).filter(
+					( [ , site ] ) => site?.[ 'astra-sites-custom-template' ]
+				)
+			);
+		}
+
+		// Step 7: sort if latest
 		if ( siteOrder === 'latest' && Object.keys( sites ).length ) {
 			sites = sortBy( Object.values( sites ), 'publish-date' ).reverse();
 		}
@@ -157,6 +168,11 @@ const SiteList = () => {
 			sites: allFilteredSites,
 		} );
 	}, [ builder, siteType, spectraBlocksVersion, siteOrder, allSitesData ] );
+
+	useEffect( () => {
+		// Track template listing step when component mounts
+		trackOnboardingStep( 'template-listing' );
+	}, [] );
 
 	storeCurrentState( storedState );
 
@@ -287,14 +303,14 @@ const SiteList = () => {
 
 	const fetchSitesAndCategories = async () => {
 		try {
-			const syncUptoDate = await isSyncUptoDate();
-
 			dispatch( {
 				type: 'set',
 				syncPageInProgress: 0,
 				syncPageCount: 0,
+				bgSyncInProgress: !! astraSitesVars?.bgSyncInProgress,
 			} );
 
+			const syncUptoDate = await isSyncUptoDate();
 			if ( syncUptoDate ) {
 				dispatch( {
 					type: 'set',

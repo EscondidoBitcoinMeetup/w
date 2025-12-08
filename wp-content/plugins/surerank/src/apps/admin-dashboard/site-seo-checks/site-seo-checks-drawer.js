@@ -1,5 +1,5 @@
 import { Drawer, Container, Badge, Button, Text } from '@bsf/force-ui';
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
 import { useSuspenseSiteSeoAnalysis } from './site-seo-checks-main';
@@ -68,11 +68,11 @@ const CheckOverview = ( { selectedItem } ) => {
 	// Render the description as a list or paragraph
 	const renderDescription = useCallback(
 		( list, type = 'paragraph', isImage = false ) => {
-			if ( ! list || list?.length <= 0 ) {
+			if ( ! list || ! list?.filter( Boolean )?.length ) {
 				return;
 			}
 
-			if ( isImage ) {
+			if ( isImage && !! list?.filter( Boolean )?.length ) {
 				return (
 					<div className="my-4">
 						<ImageGrid images={ list } />
@@ -142,14 +142,15 @@ const CheckOverview = ( { selectedItem } ) => {
 								( nextItem?.img === true ||
 									nextItem?.img === 'true' );
 
-							return (
-								<div key={ idx }>
-									{ renderDescription(
-										item.list,
-										'list',
-										isImgFlag
-									) }
-								</div>
+							const render = renderDescription(
+								item.list,
+								'list',
+								isImgFlag
+							);
+							return !! render ? (
+								<div key={ idx }>{ render }</div>
+							) : (
+								<Fragment key={ idx } />
 							);
 						}
 

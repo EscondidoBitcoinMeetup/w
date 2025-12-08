@@ -10,7 +10,7 @@ import { PROCESS_STATUSES } from '@/global/constants';
 import { toast } from '@bsf/force-ui';
 import { getAuth } from '@/functions/api';
 import useAuthPolling from '@/global/hooks/use-auth-polling';
-import { PAGE_SEO_CHECKS_LEARN_MORE_URL as LEARN_MORE_URL } from '@Global/constants';
+import { LEARN_MORE_AI_AUTH as LEARN_MORE_URL } from '@Global/constants';
 
 const FixItForMe = () => {
 	const {

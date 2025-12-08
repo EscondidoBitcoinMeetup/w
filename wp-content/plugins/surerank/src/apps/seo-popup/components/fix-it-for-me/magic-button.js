@@ -3,8 +3,9 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { Button } from '@bsf/force-ui';
 import { STORE_NAME } from '@/store/constants';
 import { cn } from '@/functions/utils';
+import { SeoPopupTooltip } from '@AdminComponents/tooltip';
 
-const MagicButton = ( { fieldKey, onUseThis } ) => {
+const MagicButton = ( { fieldKey, onUseThis, tooltip } ) => {
 	const { currentScreen, currentTab, currentMetaTab, generatedContents } =
 		useSelect( ( select ) => {
 			const selector = select( STORE_NAME );
@@ -41,7 +42,7 @@ const MagicButton = ( { fieldKey, onUseThis } ) => {
 		} );
 	};
 
-	return (
+	const button = (
 		<Button
 			size="xs"
 			variant="ghost"
@@ -55,6 +56,16 @@ const MagicButton = ( { fieldKey, onUseThis } ) => {
 			onClick={ handleClick }
 		/>
 	);
+
+	if ( tooltip ) {
+		return (
+			<SeoPopupTooltip content={ tooltip } placement="top-end">
+				{ button }
+			</SeoPopupTooltip>
+		);
+	}
+
+	return button;
 };
 
 export default MagicButton;

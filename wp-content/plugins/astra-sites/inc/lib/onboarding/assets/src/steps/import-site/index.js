@@ -5,6 +5,7 @@ import PreviousStepLink from '../../components/util/previous-step-link/index';
 import DefaultStep from '../../components/default-step/index';
 import ImportLoader from '../../components/import-steps/import-loader';
 import ErrorScreen from '../../components/error/index';
+import { trackOnboardingStep } from '../../utils/functions';
 import { useStateValue } from '../../store/store';
 import lottieJson from '../../../images/website-building.json';
 import ICONS from '../../../icons';
@@ -158,7 +159,6 @@ const ImportSite = () => {
 		let formsStatus = false;
 		let customizerStatus = false;
 		let spectraStatus = false;
-		let sureCartStatus = false;
 
 		resetStatus = await resetOldSite();
 
@@ -187,10 +187,6 @@ const ImportSite = () => {
 		}
 
 		if ( spectraStatus ) {
-			sureCartStatus = await importSureCartSettings();
-		}
-
-		if ( sureCartStatus ) {
 			await importSiteContent();
 		}
 	};
@@ -199,12 +195,17 @@ const ImportSite = () => {
 	 * Start Import Part 2.
 	 */
 	const importPart2 = async () => {
+		let sureCartStatus = false;
 		let optionsStatus = false;
 		let widgetStatus = false;
 		let customizationsStatus = false;
 		let finalStepStatus = false;
 
-		optionsStatus = await importSiteOptions();
+		sureCartStatus = await importSureCartSettings();
+
+		if ( sureCartStatus ) {
+			optionsStatus = await importSiteOptions();
+		}
 
 		if ( optionsStatus ) {
 			widgetStatus = await importWidgets();
@@ -1936,6 +1937,11 @@ const ImportSite = () => {
 			return event;
 		}
 	};
+
+	useEffect( () => {
+		// Track template preview step when component mounts
+		trackOnboardingStep( 'import' );
+	}, [] );
 
 	useEffect( () => {
 		window.addEventListener( 'beforeunload', preventRefresh ); // eslint-disable-line

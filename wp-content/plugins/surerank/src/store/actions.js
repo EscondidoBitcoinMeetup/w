@@ -2,7 +2,11 @@ import { pick } from 'lodash';
 import { select } from '@wordpress/data';
 import { STORE_NAME } from './constants';
 import * as actionTypes from './action-types';
-import { getCategorizedChecks, getCheckTypeKey, mergeAllCheckTypes } from '@/functions/utils';
+import {
+	getCategorizedChecks,
+	getCheckTypeKey,
+	mergeAllCheckTypes,
+} from '@/functions/utils';
 import { CHECK_TYPES } from '@/global/constants';
 /**
  * Returns an action object used in signalling that viewport queries have been
@@ -106,8 +110,12 @@ export const setPageSeoCheck = ( key, value ) => {
 		const state = select( STORE_NAME ).getState();
 		const ignoredList = state.pageSeoChecks?.ignoredList || [];
 
-		const allChecks = mergeAllCheckTypes( state, key, value )?.filter( Boolean ) || [];
-		const categorizedChecks = getCategorizedChecks( allChecks, ignoredList );
+		const allChecks =
+			mergeAllCheckTypes( state, key, value )?.filter( Boolean ) || [];
+		const categorizedChecks = getCategorizedChecks(
+			allChecks,
+			ignoredList
+		);
 		const categorizedCheckType = getCategorizedChecks( value, ignoredList );
 		const storeKeys = getCheckTypeKey( key );
 
@@ -175,7 +183,9 @@ export function* restoreIgnoreCheck( checkId, actionType ) {
 		yield setCurrentPostIgnoredList( data?.checks );
 
 		const seoChecksState = select( STORE_NAME ).getPageSeoChecks();
-		const checkType = seoChecksState.checks.find( ( check ) => check.id === checkId )?.type;
+		const checkType = seoChecksState.checks.find(
+			( check ) => check.id === checkId
+		)?.type;
 		const storeKey = getCheckTypeKey( checkType )?.type || 'checks';
 		yield setPageSeoCheck( checkType, seoChecksState[ storeKey ] );
 	} catch ( error ) {

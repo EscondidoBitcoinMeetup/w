@@ -11,6 +11,9 @@ import {
 	Settings,
 	FileText,
 	ArrowUpDown,
+	ExternalLink,
+	CheckCheck,
+	Image,
 } from 'lucide-react';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
@@ -20,6 +23,7 @@ import { PAGE_CONTENT as GENERAL_PAGE_CONTENT } from '@AdminGeneral/social/gener
 import { PAGE_CONTENT as FACEBOOK_PAGE_CONTENT } from '@AdminGeneral/social/facebook/facebook';
 import { PAGE_CONTENT as TWITTER_PAGE_CONTENT } from '@AdminGeneral/social/twitter/twitter';
 import { PAGE_CONTENT as SITEMAPS_PAGE_CONTENT } from '@AdminGeneral/advanced/sitemaps/sitemaps';
+import { PAGE_CONTENT as IMAGE_SEO_PAGE_CONTENT } from '@AdminGeneral/advanced/image-seo/image-seo';
 import { PAGE_CONTENT as ARCHIVE_PAGES_PAGE_CONTENT } from '@/apps/admin-general/advanced/archive-pages/archive-pages';
 import { PAGE_CONTENT as ADVANCED_PAGE_CONTENT } from '@AdminGeneral/general/home-page/advanced';
 import { PAGE_CONTENT as SOCIAL_ACCOUNTS_PAGE_CONTENT } from '@AdminGeneral/social/account/account';
@@ -47,7 +51,7 @@ export const getNavLinks = () => {
 					icon: House,
 				},
 				{
-					label: __( 'Site SEO Analysis', 'surerank' ),
+					label: __( 'Site SEO Audit', 'surerank' ),
 					path: '/site-seo-analysis',
 					icon: House,
 				},
@@ -171,6 +175,28 @@ export const getNavLinks = () => {
 					pageContent: ROBOTS_TXT_PAGE_CONTENT,
 					migratable: false,
 				},
+				{
+					path: '/advanced/image-seo',
+					label: __( 'Image SEO', 'surerank' ),
+					icon: Image,
+					pageContent: IMAGE_SEO_PAGE_CONTENT,
+					migratable: true,
+				},
+				{
+					path: '/advanced/instant-indexing',
+					label: __( 'Instant Indexing', 'surerank' ),
+					icon: CheckCheck,
+					submenu: [
+						{
+							path: '/advanced/instant-indexing/settings',
+							label: __( 'Settings', 'surerank' ),
+						},
+						{
+							path: '/advanced/instant-indexing/logs',
+							label: __( 'Logs', 'surerank' ),
+						},
+					],
+				},
 			],
 		},
 		...( ENABLE_GOOGLE_CONSOLE
@@ -196,6 +222,18 @@ export const getNavLinks = () => {
 					},
 			  ]
 			: [] ),
+		{
+			section: __( 'Redirections', 'surerank' ),
+			sectionId: 'link-manager',
+			links: [
+				{
+					path: '/link-manager/redirection-manager',
+					label: __( 'Redirections', 'surerank' ),
+					icon: ExternalLink,
+					migratable: false,
+				},
+			],
+		},
 		{
 			section: __( 'Tools', 'surerank' ),
 			sectionId: 'tools',
@@ -232,5 +270,23 @@ export const getNavLinks = () => {
 		},
 	];
 
-	return applyFilters( 'surerank-pro.nav-links', links );
+	const filteredLinks = applyFilters( 'surerank-pro.nav-links', links );
+
+	const sectionMap = new Map();
+
+	filteredLinks.forEach( ( section ) => {
+		if ( section.links ) {
+			const linkMap = new Map();
+
+			section.links.forEach( ( link ) => {
+				linkMap.set( link.path, link );
+			} );
+
+			section.links = Array.from( linkMap.values() );
+		}
+
+		sectionMap.set( section.sectionId, section );
+	} );
+
+	return Array.from( sectionMap.values() );
 };

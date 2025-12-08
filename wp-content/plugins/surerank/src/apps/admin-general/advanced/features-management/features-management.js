@@ -6,6 +6,16 @@ import { createLazyRoute } from '@tanstack/react-router';
 import { applyFilters } from '@wordpress/hooks';
 
 // Base feature toggles
+const isWpSchemaProActive = surerank_globals?.wp_schema_pro_active || false;
+const wpSchemaProActiveLabel = __(
+	'WP Schema Pro is active. SureRank Schema has been disabled to avoid conflicts.',
+	'surerank'
+);
+const wpSchemaProInactiveLabel = __(
+	'Add structured data to improve how your site appears in search.',
+	'surerank'
+);
+
 const getBaseToggles = () => [
 	{
 		type: 'switch',
@@ -29,6 +39,7 @@ const getBaseToggles = () => [
 			'Connect with Google to track clicks and search rankings.',
 			'surerank'
 		),
+		pendingAction: [ false, true ],
 	},
 	{
 		type: 'switch',
@@ -37,10 +48,10 @@ const getBaseToggles = () => [
 		shouldReload: true,
 		dataType: 'boolean',
 		label: __( 'Schema', 'surerank' ),
-		description: __(
-			'Add structured data to improve how your site appears in search.',
-			'surerank'
-		),
+		disabled: isWpSchemaProActive,
+		description: isWpSchemaProActive
+			? wpSchemaProActiveLabel
+			: wpSchemaProInactiveLabel,
 	},
 	{
 		type: 'switch',
