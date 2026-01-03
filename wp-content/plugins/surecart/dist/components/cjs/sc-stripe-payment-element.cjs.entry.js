@@ -11,7 +11,7 @@ require('./watchers-06121df7.js');
 const getters = require('./getters-ae03ef93.js');
 const getters$1 = require('./getters-87b7ef91.js');
 const mutations$1 = require('./mutations-11c8f9a8.js');
-const getters$2 = require('./getters-66ca11f9.js');
+const getters$2 = require('./getters-1dbd9ae9.js');
 const addQueryArgs = require('./add-query-args-49dcb630.js');
 require('./index-bcdafe6e.js');
 require('./utils-2e91d46c.js');
@@ -21,7 +21,7 @@ require('./google-59d23803.js');
 require('./currency-71fce0f0.js');
 require('./price-5b1afcfe.js');
 require('./util-b877b2bd.js');
-require('./address-4c70d641.js');
+require('./address-e0c9b577.js');
 
 const scStripePaymentElementCss = "sc-stripe-payment-element{display:block}sc-stripe-payment-element [hidden]{display:none}.loader{display:grid;height:128px;gap:2em}.loader__row{display:flex;align-items:flex-start;justify-content:space-between;gap:1em}.loader__details{display:grid;gap:0.5em}";
 const ScStripePaymentElementStyle0 = scStripePaymentElementCss;

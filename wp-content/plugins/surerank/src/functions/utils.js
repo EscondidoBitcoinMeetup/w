@@ -219,6 +219,17 @@ export const stringValueToFormatJSON = (
 					...mentionObjectStructure,
 					data: { ...option },
 				} );
+			} else {
+				// If option not found, render as plain text (e.g., %custom_field.field_name%)
+				value.root.children[ 0 ].children.push( {
+					detail: 0,
+					format: 0,
+					mode: 'normal',
+					style: '',
+					text: item,
+					type: 'text',
+					version: 1,
+				} );
 			}
 		} else {
 			value.root.children[ 0 ].children.push( {
@@ -775,7 +786,7 @@ export const getSeoCheckLabel = ( type, counts ) => {
 	}
 	if ( type === 'warning' ) {
 		return sprintf(
-			// translators: %1$s is the number of issues detected, %2$s is the word "Issue".
+			// translators: %1$s is the number of warnings detected, %2$s is the word "Warning".
 			'%1$s %2$s',
 			counts,
 			_n( 'Warning', 'Warnings', counts, 'surerank' )
