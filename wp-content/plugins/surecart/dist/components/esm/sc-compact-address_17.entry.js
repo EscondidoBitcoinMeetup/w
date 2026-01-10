@@ -1,5 +1,5 @@
 import { r as registerInstance, c as createEvent, h, a as getElement, H as Host, F as Fragment } from './index-745b6bec.js';
-import { g as getCountryDetails, c as countryChoices } from './address-fb437e60.js';
+import { g as getCountryDetails, c as countryChoices } from './address-058376bf.js';
 import { r as reportChildrenValidity, F as FormSubmitController } from './form-data-76641f16.js';
 import { s as state, o as onChange, u as updateFormState } from './mutations-6bbbe793.js';
 import { f as formBusy, a as formLoading } from './getters-487612aa.js';
@@ -9,7 +9,7 @@ import { l as lockCheckout, b as unLockCheckout, r as removeCheckoutLineItem, a 
 import { c as createOrUpdateCheckout } from './index-5c73a1a2.js';
 import { s as speak } from './index-c5a96d53.js';
 import { i as intervalString, g as getFormattedPrice } from './price-af9f0dbf.js';
-import { f as fullShippingAddressRequired, s as shippingAddressRequired, a as checkoutIsLocked } from './getters-55b5768f.js';
+import { f as fullShippingAddressRequired, s as shippingAddressRequired, a as checkoutIsLocked } from './getters-5eb19bdc.js';
 import { c as createErrorNotice } from './mutations-ed6d0770.js';
 import { i as isRtl } from './page-align-0cdacf32.js';
 import './add-query-args-0e2a8393.js';
@@ -618,6 +618,7 @@ const ScOrderTaxIdInput = class {
         this.euVatLabel = undefined;
         this.helpText = undefined;
         this.taxIdTypes = undefined;
+        this.required = false;
         this.taxIdTypesData = [];
     }
     handleTaxIdTypesChange() {
@@ -654,16 +655,24 @@ const ScOrderTaxIdInput = class {
     componentWillLoad() {
         this.handleTaxIdTypesChange();
     }
-    required() {
-        var _a, _b, _c;
-        return ((_a = state.taxProtocol) === null || _a === void 0 ? void 0 : _a.eu_vat_required) && ((_c = (_b = state.checkout) === null || _b === void 0 ? void 0 : _b.tax_identifier) === null || _c === void 0 ? void 0 : _c.number_type) === 'eu_vat';
+    isRequired() {
+        var _a, _b, _c, _d;
+        // If the block has explicitly set required, use that value.
+        if (this.required) {
+            return true;
+        }
+        // Only apply EU VAT requirement if eu_vat is one of the allowed tax types.
+        // If taxIdTypesData is empty, all types are allowed.
+        const isEuVatAllowed = !((_a = this.taxIdTypesData) === null || _a === void 0 ? void 0 : _a.length) || this.taxIdTypesData.includes('eu_vat');
+        // Fall back to EU VAT protocol requirement only if EU VAT is an allowed type.
+        return isEuVatAllowed && ((_b = state.taxProtocol) === null || _b === void 0 ? void 0 : _b.eu_vat_required) && ((_d = (_c = state.checkout) === null || _c === void 0 ? void 0 : _c.tax_identifier) === null || _d === void 0 ? void 0 : _d.number_type) === 'eu_vat';
     }
     render() {
         var _a, _b, _c, _d, _e, _f, _g;
-        return (h("sc-tax-id-input", { key: '1b9da696ae1c015317ec9f9075035811291d936d', ref: el => (this.input = el), show: this.show, number: (_b = (_a = state.checkout) === null || _a === void 0 ? void 0 : _a.tax_identifier) === null || _b === void 0 ? void 0 : _b.number, type: ((_d = (_c = state.checkout) === null || _c === void 0 ? void 0 : _c.tax_identifier) === null || _d === void 0 ? void 0 : _d.number_type) || ((_e = this.taxIdTypesData) === null || _e === void 0 ? void 0 : _e[0]) || 'eu_vat', country: (_g = (_f = state.checkout) === null || _f === void 0 ? void 0 : _f.shipping_address) === null || _g === void 0 ? void 0 : _g.country, status: this.getStatus(), loading: formBusy(), onScChange: e => {
+        return (h("sc-tax-id-input", { key: '621a7eb23f1662a020cc3c5838794b7215bf2492', ref: el => (this.input = el), show: this.show, number: (_b = (_a = state.checkout) === null || _a === void 0 ? void 0 : _a.tax_identifier) === null || _b === void 0 ? void 0 : _b.number, type: ((_d = (_c = state.checkout) === null || _c === void 0 ? void 0 : _c.tax_identifier) === null || _d === void 0 ? void 0 : _d.number_type) || ((_e = this.taxIdTypesData) === null || _e === void 0 ? void 0 : _e[0]) || 'eu_vat', country: (_g = (_f = state.checkout) === null || _f === void 0 ? void 0 : _f.shipping_address) === null || _g === void 0 ? void 0 : _g.country, status: this.getStatus(), loading: formBusy(), onScChange: e => {
                 e.stopImmediatePropagation();
                 this.updateOrder(e.detail);
-            }, otherLabel: this.otherLabel, caGstLabel: this.caGstLabel, auAbnLabel: this.auAbnLabel, gbVatLabel: this.gbVatLabel, euVatLabel: this.euVatLabel, help: this.helpText, taxIdTypes: this.taxIdTypesData, required: this.required() }));
+            }, otherLabel: this.otherLabel, caGstLabel: this.caGstLabel, auAbnLabel: this.auAbnLabel, gbVatLabel: this.gbVatLabel, euVatLabel: this.euVatLabel, help: this.helpText, taxIdTypes: this.taxIdTypesData, required: this.isRequired() }));
     }
     static get watchers() { return {
         "taxIdTypes": ["handleTaxIdTypesChange"]

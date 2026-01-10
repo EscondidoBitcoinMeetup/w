@@ -10,7 +10,7 @@ require('./watchers-06121df7.js');
 const getters$1 = require('./getters-ae03ef93.js');
 const watchers = require('./watchers-2ad3abd1.js');
 const mutations$1 = require('./mutations-2db027c4.js');
-const getters$2 = require('./getters-1dbd9ae9.js');
+const getters$2 = require('./getters-a5fb26bc.js');
 const store = require('./store-4a539aea.js');
 const fetch = require('./fetch-d374a251.js');
 const index$2 = require('./index-fb76df07.js');
@@ -24,7 +24,7 @@ require('./google-59d23803.js');
 require('./currency-71fce0f0.js');
 require('./price-5b1afcfe.js');
 require('./util-b877b2bd.js');
-require('./address-e0c9b577.js');
+require('./address-258a7497.js');
 
 const scCheckoutStockAlertCss = ":host{display:block}sc-table{height:auto}h4{display:block;margin:0;font-weight:var(--sc-font-weight-bold);font-size:var(--sc-font-size-medium)}.stock-alert{--body-spacing:var(--sc-spacing-x-large);--width:500px}.stock-alert__image{width:50px;height:50px;object-fit:cover;margin-right:10px;display:block}.stock-alert__product-info{display:flex;flex-direction:column;gap:var(--sc-spacing-xx-small)}.stock-alert__variant{color:var(--sc-color-gray-500);font-size:var(--sc-font-size-small)}.stock-alert__quantity{color:var(--sc-color-gray-500);font-weight:var(--sc-font-weight-bold);display:flex;align-items:center;justify-content:flex-end;gap:var(--sc-spacing-xx-small)}";
 const ScCheckoutStockAlertStyle0 = scCheckoutStockAlertCss;

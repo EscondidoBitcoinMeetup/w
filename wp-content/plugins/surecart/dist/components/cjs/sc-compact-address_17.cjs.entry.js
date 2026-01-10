@@ -3,7 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-8acc3c89.js');
-const address = require('./address-e0c9b577.js');
+const address = require('./address-258a7497.js');
 const formData = require('./form-data-0da9940f.js');
 const mutations = require('./mutations-10a18c83.js');
 const getters = require('./getters-87b7ef91.js');
@@ -13,7 +13,7 @@ const mutations$1 = require('./mutations-2db027c4.js');
 const index$1 = require('./index-1f9e4c8e.js');
 const index$2 = require('./index-fb76df07.js');
 const price = require('./price-5b1afcfe.js');
-const getters$1 = require('./getters-1dbd9ae9.js');
+const getters$1 = require('./getters-a5fb26bc.js');
 const mutations$2 = require('./mutations-11c8f9a8.js');
 const pageAlign = require('./page-align-5a2ab493.js');
 require('./add-query-args-49dcb630.js');
@@ -622,6 +622,7 @@ const ScOrderTaxIdInput = class {
         this.euVatLabel = undefined;
         this.helpText = undefined;
         this.taxIdTypes = undefined;
+        this.required = false;
         this.taxIdTypesData = [];
     }
     handleTaxIdTypesChange() {
@@ -658,16 +659,24 @@ const ScOrderTaxIdInput = class {
     componentWillLoad() {
         this.handleTaxIdTypesChange();
     }
-    required() {
-        var _a, _b, _c;
-        return ((_a = mutations.state.taxProtocol) === null || _a === void 0 ? void 0 : _a.eu_vat_required) && ((_c = (_b = mutations.state.checkout) === null || _b === void 0 ? void 0 : _b.tax_identifier) === null || _c === void 0 ? void 0 : _c.number_type) === 'eu_vat';
+    isRequired() {
+        var _a, _b, _c, _d;
+        // If the block has explicitly set required, use that value.
+        if (this.required) {
+            return true;
+        }
+        // Only apply EU VAT requirement if eu_vat is one of the allowed tax types.
+        // If taxIdTypesData is empty, all types are allowed.
+        const isEuVatAllowed = !((_a = this.taxIdTypesData) === null || _a === void 0 ? void 0 : _a.length) || this.taxIdTypesData.includes('eu_vat');
+        // Fall back to EU VAT protocol requirement only if EU VAT is an allowed type.
+        return isEuVatAllowed && ((_b = mutations.state.taxProtocol) === null || _b === void 0 ? void 0 : _b.eu_vat_required) && ((_d = (_c = mutations.state.checkout) === null || _c === void 0 ? void 0 : _c.tax_identifier) === null || _d === void 0 ? void 0 : _d.number_type) === 'eu_vat';
     }
     render() {
         var _a, _b, _c, _d, _e, _f, _g;
-        return (index.h("sc-tax-id-input", { key: '1b9da696ae1c015317ec9f9075035811291d936d', ref: el => (this.input = el), show: this.show, number: (_b = (_a = mutations.state.checkout) === null || _a === void 0 ? void 0 : _a.tax_identifier) === null || _b === void 0 ? void 0 : _b.number, type: ((_d = (_c = mutations.state.checkout) === null || _c === void 0 ? void 0 : _c.tax_identifier) === null || _d === void 0 ? void 0 : _d.number_type) || ((_e = this.taxIdTypesData) === null || _e === void 0 ? void 0 : _e[0]) || 'eu_vat', country: (_g = (_f = mutations.state.checkout) === null || _f === void 0 ? void 0 : _f.shipping_address) === null || _g === void 0 ? void 0 : _g.country, status: this.getStatus(), loading: getters.formBusy(), onScChange: e => {
+        return (index.h("sc-tax-id-input", { key: '621a7eb23f1662a020cc3c5838794b7215bf2492', ref: el => (this.input = el), show: this.show, number: (_b = (_a = mutations.state.checkout) === null || _a === void 0 ? void 0 : _a.tax_identifier) === null || _b === void 0 ? void 0 : _b.number, type: ((_d = (_c = mutations.state.checkout) === null || _c === void 0 ? void 0 : _c.tax_identifier) === null || _d === void 0 ? void 0 : _d.number_type) || ((_e = this.taxIdTypesData) === null || _e === void 0 ? void 0 : _e[0]) || 'eu_vat', country: (_g = (_f = mutations.state.checkout) === null || _f === void 0 ? void 0 : _f.shipping_address) === null || _g === void 0 ? void 0 : _g.country, status: this.getStatus(), loading: getters.formBusy(), onScChange: e => {
                 e.stopImmediatePropagation();
                 this.updateOrder(e.detail);
-            }, otherLabel: this.otherLabel, caGstLabel: this.caGstLabel, auAbnLabel: this.auAbnLabel, gbVatLabel: this.gbVatLabel, euVatLabel: this.euVatLabel, help: this.helpText, taxIdTypes: this.taxIdTypesData, required: this.required() }));
+            }, otherLabel: this.otherLabel, caGstLabel: this.caGstLabel, auAbnLabel: this.auAbnLabel, gbVatLabel: this.gbVatLabel, euVatLabel: this.euVatLabel, help: this.helpText, taxIdTypes: this.taxIdTypesData, required: this.isRequired() }));
     }
     static get watchers() { return {
         "taxIdTypes": ["handleTaxIdTypesChange"]
