@@ -6,6 +6,7 @@ import {
 	useDispatch,
 	select as staticSelect,
 } from '@wordpress/data';
+import { applyFilters } from '@wordpress/hooks';
 import RefreshButtonPortal from '@SeoPopup/components/refresh-button-portal';
 import { STORE_NAME } from '@/store/constants';
 import PageChecksHoc from '@SeoPopup/components/page-seo-checks/page-checks-hoc';
@@ -19,6 +20,7 @@ import {
 	isSeoAnalysisDisabled,
 	isBricksBuilder,
 	isAvadaBuilder,
+	isFrontend,
 } from '@SeoPopup/components/page-seo-checks/analyzer/utils/page-builder';
 import { calculateCheckStatus } from '@SeoPopup/utils/calculate-check-status';
 
@@ -192,13 +194,13 @@ const Analyze = () => {
 	return (
 		<div className="space-y-2">
 			{ /* Show save message only for Elementor */ }
-			{ isElementorBuilder() && (
+			{ ( isElementorBuilder() || isFrontend() ) && (
 				<div className="[&_p.mr-10]:mr-0 m-1">
 					<Alert
 						variant="info"
 						content={
 							<span className="flex items-start gap-2">
-								<p>
+								<p className="m-0">
 									{ __(
 										'Please save changes in the editor before refreshing the checks.',
 										'surerank'
@@ -257,6 +259,8 @@ const Analyze = () => {
 						</div>
 					</Accordion.Content>
 				</Accordion.Item>
+				{ /* Pro Accordions - Link Manager, etc. */ }
+				{ applyFilters( 'surerank.analyze.pro_accordions', null ) }
 			</Accordion>
 		</div>
 	);
