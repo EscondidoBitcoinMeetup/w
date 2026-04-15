@@ -1,5 +1,5 @@
 import { r as registerInstance, c as createEvent, h, a as getElement, H as Host, F as Fragment } from './index-745b6bec.js';
-import { g as getCountryDetails, c as countryChoices } from './address-058376bf.js';
+import { g as getCountryDetails, c as countryChoices } from './address-6bd346f2.js';
 import { r as reportChildrenValidity, F as FormSubmitController } from './form-data-76641f16.js';
 import { o as onChange, s as state, u as updateFormState } from './mutations-6bbbe793.js';
 import { f as formBusy, a as formLoading } from './getters-487612aa.js';
@@ -9,7 +9,7 @@ import { l as lockCheckout, b as unLockCheckout, r as removeCheckoutLineItem, a 
 import { c as createOrUpdateCheckout } from './index-a7f5e198.js';
 import { s as speak } from './index-c5a96d53.js';
 import { i as intervalString, g as getFormattedPrice } from './price-af9f0dbf.js';
-import { f as fullShippingAddressRequired, s as shippingAddressRequired, a as checkoutIsLocked } from './getters-5eb19bdc.js';
+import { f as fullShippingAddressRequired, s as shippingAddressRequired, a as checkoutIsLocked } from './getters-347239e7.js';
 import { c as createErrorNotice } from './mutations-ed6d0770.js';
 import { i as isRtl } from './page-align-0cdacf32.js';
 import './add-query-args-0e2a8393.js';
@@ -116,10 +116,10 @@ const ScCompactAddress = class {
     }
     render() {
         var _a, _b, _c, _d, _e, _f, _g;
-        return (h("div", { key: '8687cbecb1a38ba04e1f2c69aef18cb22fd917fc', class: "sc-address", part: "base" }, h("sc-form-control", { key: '4f6393b874e426edc81b01cd2be153bb31d2a3f2', exportparts: "label, help-text, form-control", label: this.label, class: "sc-address__control", part: "control", required: this.required }, h("sc-select", { key: '152c3a52c5edf68ed04f2eea2dd1e6154f4c8b27', exportparts: "base:select__base, input, form-control, label, help-text, trigger, panel, caret, search__base, search__input, search__form-control, menu__base, spinner__base, empty", value: (_a = this.address) === null || _a === void 0 ? void 0 : _a.country, onScChange: (e) => {
+        return (h("div", { key: '4fb9e2d04eb03c3666ac6a0c38d7cbae67a552e6', class: "sc-address", part: "base" }, h("sc-form-control", { key: '59dbb9c97a89f4b115c51cb046fd1820c9c8c5ea', exportparts: "label, help-text, form-control", label: this.label, class: "sc-address__control", part: "control", required: this.required }, h("sc-select", { key: 'b3f767b87962935ce82f22de374fad200551e4bc', exportparts: "base:select__base, input, form-control, label, help-text, trigger, panel, caret, search__base, search__input, search__form-control, menu__base, spinner__base, empty", value: (_a = this.address) === null || _a === void 0 ? void 0 : _a.country, onScChange: (e) => {
                 this.clearAddress();
                 this.updateAddress({ country: e.target.value || null });
-            }, choices: this.countryChoices, autocomplete: 'country-name', placeholder: ((_b = this.placeholders) === null || _b === void 0 ? void 0 : _b.country) || wp.i18n.__('Select Your Country', 'surecart'), name: this.names.country, search: true, unselect: false, "squared-bottom": this.showState || this.showPostal, required: this.required }), h("div", { key: '28951980bb4b4aea4ed910e193b4031368d5bc6b', class: "sc-address__columns" }, this.showState && (h("sc-select", { key: 'db96d3a73a474d51e4134052be25e1cc60f1610b', exportparts: "base:select__base, input, form-control, label, help-text, trigger, panel, caret, search__base, search__input, search__form-control, menu__base, spinner__base, empty", placeholder: (_c = this.placeholders) === null || _c === void 0 ? void 0 : _c.state, name: this.names.state, autocomplete: 'address-level1', value: (_d = this === null || this === void 0 ? void 0 : this.address) === null || _d === void 0 ? void 0 : _d.state, onScChange: (e) => this.updateAddress({ state: e.target.value || null }), choices: this.regions, required: this.required, search: true, "squared-top": true, unselect: false, "squared-right": this.showPostal })), this.showPostal && (h("sc-input", { key: '79a8cbeb564a4763ca1fc885eed584b3d05e012b', exportparts: "base:input__base, input, form-control, label, help-text", placeholder: ((_e = this.placeholders) === null || _e === void 0 ? void 0 : _e.postal_code) || wp.i18n.__('Postal Code/Zip', 'surecart'), name: this.names.postal_code, onScChange: (e) => this.updateAddress({ postal_code: e.target.value || null }), onScInput: (e) => this.handleAddressInput({ postal_code: e.target.value || null }), autocomplete: 'postal-code', required: this.required, value: (_f = this === null || this === void 0 ? void 0 : this.address) === null || _f === void 0 ? void 0 : _f.postal_code, "squared-top": true, maxlength: ((_g = this.address) === null || _g === void 0 ? void 0 : _g.country) === 'US' ? 5 : undefined, pattern: this.postalCodeRegex, customValidity: this.postalCodeRegex ? wp.i18n.__('Please enter a valid postal code', 'surecart') : undefined, "squared-left": this.showState })))), this.loading && h("sc-block-ui", { key: '791a244a3fb4af36c07b9c614cdb657565109f87', exportparts: "base:block-ui, content:block-ui__content" })));
+            }, choices: this.countryChoices, autocomplete: 'country-name', placeholder: ((_b = this.placeholders) === null || _b === void 0 ? void 0 : _b.country) || wp.i18n.__('Select Your Country', 'surecart'), name: this.names.country, search: true, unselect: false, "squared-bottom": this.showState || this.showPostal, required: this.required }), h("div", { key: '03775b02eb1b1a0cfa291c56ae9433fda98acde8', class: "sc-address__columns" }, this.showState && (h("sc-select", { key: '4276b2efc3bd3b7d8dafeb1e1b58564e58e6902a', exportparts: "base:select__base, input, form-control, label, help-text, trigger, panel, caret, search__base, search__input, search__form-control, menu__base, spinner__base, empty", placeholder: (_c = this.placeholders) === null || _c === void 0 ? void 0 : _c.state, name: this.names.state, autocomplete: 'address-level1', value: (_d = this === null || this === void 0 ? void 0 : this.address) === null || _d === void 0 ? void 0 : _d.state, onScChange: (e) => this.updateAddress({ state: e.target.value || null }), choices: this.regions, required: this.required, search: true, "squared-top": true, unselect: false, "squared-right": this.showPostal })), this.showPostal && (h("sc-input", { key: '94bab9cf158b17f0ff88c37f027664f32292bfc9', exportparts: "base:input__base, input, form-control, label, help-text", placeholder: ((_e = this.placeholders) === null || _e === void 0 ? void 0 : _e.postal_code) || wp.i18n.__('Postal Code/Zip', 'surecart'), name: this.names.postal_code, onScChange: (e) => this.updateAddress({ postal_code: e.target.value || null }), onScInput: (e) => this.handleAddressInput({ postal_code: e.target.value || null }), autocomplete: 'postal-code', required: this.required, value: (_f = this === null || this === void 0 ? void 0 : this.address) === null || _f === void 0 ? void 0 : _f.postal_code, "squared-top": true, maxlength: ((_g = this.address) === null || _g === void 0 ? void 0 : _g.country) === 'US' ? 5 : undefined, pattern: this.postalCodeRegex, customValidity: this.postalCodeRegex ? wp.i18n.__('Please enter a valid postal code', 'surecart') : undefined, "squared-left": this.showState })))), this.loading && h("sc-block-ui", { key: 'b498d0b34195fadf07d3d1e690f87de002012208', exportparts: "base:block-ui, content:block-ui__content" })));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -853,13 +853,13 @@ const ScRadio = class {
     }
     render() {
         const Tag = this.edit ? 'div' : 'label';
-        return (h(Tag, { key: '279850402a98c8dcbead030c05940f00cf50e112', part: "base", class: {
+        return (h(Tag, { key: 'd99bbea0a965962572df3f72bd783e6fe0ae3e2f', part: "base", class: {
                 'radio': true,
                 'radio--checked': this.checked,
                 'radio--disabled': this.disabled,
                 'radio--focused': this.hasFocus,
                 'radio--editing': this.edit,
-            }, htmlFor: this.inputId, onKeyDown: e => this.handleKeyDown(e), onMouseDown: e => this.handleMouseDown(e) }, h("span", { key: '528e2f64e039cf16036542e42a598e66725b41fb', part: "control", class: "radio__control" }, h("span", { key: 'ed0dcb9db17f2db1de417a46314f8f040d07c873', part: "checked-icon", class: "radio__icon" }, h("svg", { key: '38f991f164553b997af4c714cb26c87a849db598', viewBox: "0 0 16 16" }, h("g", { key: 'a72c718051e0b1749f2639a31f267c1b3f992e4e', stroke: "none", "stroke-width": "1", fill: "none", "fill-rule": "evenodd" }, h("g", { key: '4463e21d6385436ed3226911caa4ca0d6e10d3db', fill: "currentColor" }, h("circle", { key: '8850c201408b775f4414b871de6e730ab585b693', cx: "8", cy: "8", r: "3.42857143" }))))), h("input", { key: 'cc27a88371757a3d0acac394db0c5cd7095348db', id: this.inputId, ref: el => (this.input = el), type: "radio", name: this.name, value: this.value, checked: this.checked, disabled: this.disabled, required: this.required, "aria-checked": this.checked ? 'true' : 'false', "aria-disabled": this.disabled ? 'true' : 'false', "aria-labelledby": this.labelId, onClick: () => this.handleClick(), onBlur: () => this.handleBlur(), onFocus: () => this.handleFocus() })), h("span", { key: 'a56662a22274192f74d2dc7b357f118ac67c7968', part: "label", id: this.labelId, class: "radio__label" }, h("slot", { key: 'b4eb8d98ef7fb600f2ae475bd84884d930d93a85' }), h("slot", { key: '7a822f13ef6274c1aa4329479069dd9ce91461ad', name: "description" }))));
+            }, htmlFor: this.inputId, onKeyDown: e => this.handleKeyDown(e), onMouseDown: e => this.handleMouseDown(e) }, h("span", { key: '01c4d4dac0b9d1c04e3eddc546d69ddf9245d845', part: "control", class: "radio__control" }, h("span", { key: '86e92e5cc4fdccecd5f6677c4659ebf6efb5ee9d', part: "checked-icon", class: "radio__icon" }, h("svg", { key: '6063d8e59d360660b88587079dd962de7e612232', viewBox: "0 0 16 16" }, h("g", { key: 'e47429ae4a6140074403e28ea891621912587309', stroke: "none", "stroke-width": "1", fill: "none", "fill-rule": "evenodd" }, h("g", { key: 'd9ed1fce11d289332663388cf6dbae5f2a0caad8', fill: "currentColor" }, h("circle", { key: '92c39b8c34a6f1e5bf9017ed3cd2b330d0fe9ea3', cx: "8", cy: "8", r: "3.42857143" }))))), h("input", { key: 'e3c0c09cc673f501c4d758f76578409683d5865f', id: this.inputId, ref: el => (this.input = el), type: "radio", name: this.name, value: this.value, checked: this.checked, disabled: this.disabled, required: this.required, "aria-checked": this.checked ? 'true' : 'false', "aria-disabled": this.disabled ? 'true' : 'false', "aria-labelledby": this.labelId, onClick: () => this.handleClick(), onBlur: () => this.handleBlur(), onFocus: () => this.handleFocus() })), h("span", { key: '1ef51bb9dd1c0046af819df6b85959e04376435c', part: "label", id: this.labelId, class: "radio__label" }, h("slot", { key: '6aebf60d8972c83128fb5fe189c7cadb8dddf373' }), h("slot", { key: 'b8b415dc73873e4f1d41b0fbb8f1071abe8479ae', name: "description" }))));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -907,12 +907,12 @@ const ScRadioGroup = class {
         });
     }
     render() {
-        return (h("fieldset", { key: '5b49f18dc4a05d87f0fa6a5492b068c46f0aba03', part: "base", class: {
+        return (h("fieldset", { key: '8bd58c819c211da7c51698b21e713902d58d02ab', part: "base", class: {
                 'radio-group': true,
                 'radio-group--invalid': this.invalid,
                 'radio-group--is-required': this.required,
                 'radio-group--is-rtl': isRtl(),
-            }, "aria-invalid": this.invalid, role: "radiogroup" }, h("legend", { key: '2528e85f4e44dd522c67e6365d906da39f46214a', part: "label", class: "radio-group__label" }, h("slot", { key: '77dfe4244914ceb81f9e1c16a63423756462da5e', name: "label" }, this.label)), h("input", { key: '231db95f2fedbe072631e07ba6880a365ade2d65', type: "text", class: "radio-group__hidden-input", ref: el => (this.input = el), required: this.required, value: this.value, tabindex: "-1" }), h("div", { key: '02a666723e7d58f9b9f3f9d9c94f8d8b2371d981', part: "items", class: "radio-group__items" }, h("slot", { key: '43538863b10715646b500d8ed075b5e91833ca4d' }))));
+            }, "aria-invalid": this.invalid, role: "radiogroup" }, h("legend", { key: '9f88af737634f9ff44edfbcf3792a4b8340dbc6d', part: "label", class: "radio-group__label" }, h("slot", { key: '6d3b5ca6dce5e1a66ba7bd2e697894a27f3b5e6f', name: "label" }, this.label)), h("input", { key: 'aacd44954b08158476773bed58018ead6f370ae4', type: "text", class: "radio-group__hidden-input", ref: el => (this.input = el), required: this.required, value: this.value, tabindex: "-1" }), h("div", { key: '12c3f5c6e704182102fb9256d340789c96b4741f', part: "items", class: "radio-group__items" }, h("slot", { key: '8b94009648800d7cbcdcc709b35b076c628ee0cb' }))));
     }
     get el() { return getElement(this); }
 };
@@ -926,6 +926,7 @@ const ScShippingChoices = class {
         registerInstance(this, hostRef);
         this.label = undefined;
         this.showDescription = true;
+        this.shippingChoices = undefined;
     }
     /** Maybe update the order. */
     async updateCheckout(selectedShippingChoiceId) {
@@ -953,20 +954,24 @@ const ScShippingChoices = class {
         }
     }
     render() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
-        // shipping choice is not rewquired.
-        if (!((_a = state === null || state === void 0 ? void 0 : state.checkout) === null || _a === void 0 ? void 0 : _a.selected_shipping_choice_required)) {
-            return h(Host, { style: { display: 'none' } });
+        var _a, _b, _c, _d, _e;
+        const choices = this.shippingChoices || ((_b = (_a = state === null || state === void 0 ? void 0 : state.checkout) === null || _a === void 0 ? void 0 : _a.shipping_choices) === null || _b === void 0 ? void 0 : _b.data);
+        // When not using prop override, apply checkout state guards.
+        if (!this.shippingChoices) {
+            // shipping choice is not required.
+            if (!((_c = state === null || state === void 0 ? void 0 : state.checkout) === null || _c === void 0 ? void 0 : _c.selected_shipping_choice_required)) {
+                return h(Host, { style: { display: 'none' } });
+            }
+            // no shipping choices but no country either
+            if (!(choices === null || choices === void 0 ? void 0 : choices.length) && !((_e = (_d = state === null || state === void 0 ? void 0 : state.checkout) === null || _d === void 0 ? void 0 : _d.shipping_address) === null || _e === void 0 ? void 0 : _e.country)) {
+                return (h("sc-form-control", { label: this.label || wp.i18n.__('Shipping', 'surecart') }, h("div", { class: "shipping-choice__empty" }, wp.i18n.__('To check available shipping choices, please provide your shipping country in the address section.', 'surecart'))));
+            }
+            // no shipping choices yet.
+            if (!(choices === null || choices === void 0 ? void 0 : choices.length)) {
+                return (h("sc-form-control", { part: "empty", label: this.label || wp.i18n.__('Shipping', 'surecart') }, h("div", { class: "shipping-choice__empty" }, wp.i18n.__('Sorry, we are not able to ship to your address.', 'surecart'))));
+            }
         }
-        // no shipping choices but no country either
-        if (!((_d = (_c = (_b = state === null || state === void 0 ? void 0 : state.checkout) === null || _b === void 0 ? void 0 : _b.shipping_choices) === null || _c === void 0 ? void 0 : _c.data) === null || _d === void 0 ? void 0 : _d.length) && !((_f = (_e = state === null || state === void 0 ? void 0 : state.checkout) === null || _e === void 0 ? void 0 : _e.shipping_address) === null || _f === void 0 ? void 0 : _f.country)) {
-            return (h("sc-form-control", { label: this.label || wp.i18n.__('Shipping', 'surecart') }, h("div", { class: "shipping-choice__empty" }, wp.i18n.__('To check available shipping choices, please provide your shipping country in the address section.', 'surecart'))));
-        }
-        // no shipping choices yet.
-        if (!((_j = (_h = (_g = state === null || state === void 0 ? void 0 : state.checkout) === null || _g === void 0 ? void 0 : _g.shipping_choices) === null || _h === void 0 ? void 0 : _h.data) === null || _j === void 0 ? void 0 : _j.length)) {
-            return (h("sc-form-control", { part: "empty", label: this.label || wp.i18n.__('Shipping', 'surecart') }, h("div", { class: "shipping-choice__empty" }, wp.i18n.__('Sorry, we are not able to ship to your address.', 'surecart'))));
-        }
-        return (h(Host, null, h("sc-radio-group", { part: "base", label: this.label || wp.i18n.__('Shipping', 'surecart'), class: "shipping-choices", onScChange: e => this.updateCheckout(e.detail) }, (((_l = (_k = state === null || state === void 0 ? void 0 : state.checkout) === null || _k === void 0 ? void 0 : _k.shipping_choices) === null || _l === void 0 ? void 0 : _l.data) || []).map(({ id, display_amount, shipping_method }) => {
+        return (h(Host, null, h("sc-radio-group", { part: "base", label: this.label || wp.i18n.__('Shipping', 'surecart'), class: "shipping-choices", onScChange: e => this.updateCheckout(e.detail) }, (choices || []).map(({ id, display_amount, shipping_method }) => {
             var _a;
             return (h("sc-radio", { key: id, checked: ((_a = state === null || state === void 0 ? void 0 : state.checkout) === null || _a === void 0 ? void 0 : _a.selected_shipping_choice) === id, exportparts: "base:radio__base,label:radio__label,control:radio__control,checked-icon:radio__checked-icon", class: "shipping-choice", value: id }, h("div", { class: "shipping-choice__text" }, h("div", { class: "shipping-choice__name" }, (shipping_method === null || shipping_method === void 0 ? void 0 : shipping_method.name) || wp.i18n.__('Standard Shipping', 'surecart')), this.showDescription && !!(shipping_method === null || shipping_method === void 0 ? void 0 : shipping_method.description) && (h("div", { class: "shipping-choice__description" }, shipping_method === null || shipping_method === void 0 ? void 0 : shipping_method.description))), h("div", { class: "shipping-choice__price" }, !!display_amount ? display_amount : wp.i18n.__('Free', 'surecart'))));
         })), checkoutIsLocked('selected_shipping_choice') && h("sc-block-ui", null)));

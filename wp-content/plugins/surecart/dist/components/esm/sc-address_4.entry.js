@@ -1,5 +1,5 @@
 import { r as registerInstance, c as createEvent, h, a as getElement, H as Host, F as Fragment } from './index-745b6bec.js';
-import { g as getCountryDetails, c as countryChoices } from './address-058376bf.js';
+import { g as getCountryDetails, c as countryChoices } from './address-6bd346f2.js';
 import { r as reportChildrenValidity, F as FormSubmitController } from './form-data-76641f16.js';
 import { i as isRtl } from './page-align-0cdacf32.js';
 import { a as applyFilters } from './index-871d88b8.js';
@@ -531,7 +531,7 @@ const ScTaxIdInput = class {
     }
     render() {
         var _a, _b, _c, _d, _e;
-        return (h(Fragment, { key: 'ca4df6ac90339ac9b0aa13521975b0513516de10' }, h("sc-input", { key: '49bbfb17732b6bee47a823fdd7f5eb81fc484cbd', name: "tax_identifier.number_type", required: this.required, value: this.type, style: { display: 'none' } }), h("sc-input", { key: 'c5974437d4ce93b76a36330694b0cdcd3751a7c8', ref: el => (this.input = el), label: this.getZoneLabel(), "aria-label": wp.i18n.__('Tax ID', 'surecart'), placeholder: wp.i18n.__('Enter Tax ID', 'surecart'), name: "tax_identifier.number", value: this.number, onScInput: (e) => {
+        return (h(Fragment, { key: '09421dace8755664f820e1598dcffc7f3d5eb82e' }, h("sc-input", { key: '3b851945b1be62ef6ba5ca48aa0f8e9b733939c1', name: "tax_identifier.number_type", required: this.required, value: this.type, style: { display: 'none' } }), h("sc-input", { key: '4d536d5aa34a4c97df9e3041ec72140657b8d51c', ref: el => (this.input = el), label: this.getZoneLabel(), "aria-label": wp.i18n.__('Tax ID', 'surecart'), placeholder: wp.i18n.__('Enter Tax ID', 'surecart'), name: "tax_identifier.number", value: this.number, onScInput: (e) => {
                 e.stopImmediatePropagation();
                 this.scInput.emit({
                     number: e.target.value,

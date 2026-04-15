@@ -131,8 +131,11 @@ export const refreshPageChecks = async (
 			method: 'GET',
 		} );
 
-		const checks = formatSeoChecks( response?.data[ dynamicPostId ]?.checks );
-		const allLinks = response.data[ dynamicPostId ]?.checks?.all_links || [];
+		const checks = formatSeoChecks(
+			response?.data[ dynamicPostId ]?.checks
+		);
+		const allLinks =
+			response.data[ dynamicPostId ]?.checks?.all_links || [];
 
 		// Reset brokenLinkState, keeping only broken links that still exist
 		setBrokenLinkState( ( prev ) => {
@@ -255,7 +258,7 @@ export const isPageBuilderActive = () => {
  * @return {boolean} True if SEO analysis should be disabled
  */
 export const isSeoAnalysisDisabled = () => {
-	return ! ENABLE_PAGE_LEVEL_SEO || isBricksBuilder() || isAvadaBuilder();
+	return ! ENABLE_PAGE_LEVEL_SEO || isAvadaBuilder();
 };
 
 export const RefreshButton = ( { isRefreshing, isChecking, onClick } ) => {

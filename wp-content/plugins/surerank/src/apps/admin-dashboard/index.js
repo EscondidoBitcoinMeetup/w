@@ -10,7 +10,7 @@ import NotFound from './not-found';
 import Dashboard from './dashboard';
 import { Toaster, toast } from '@bsf/force-ui';
 import { getNavLinks } from '@Global/constants/nav-links';
-import { Navigate } from '@tanstack/react-router';
+import { Navigate, useNavigate, useLocation } from '@tanstack/react-router';
 import SidebarLayout from '@AdminComponents/layout/sidebar-layout';
 import SearchConsole from '../admin-search-console';
 import {
@@ -18,11 +18,12 @@ import {
 	ENABLE_SCHEMAS,
 	ENABLE_MIGRATION,
 } from '@Global/constants';
-import { applyFilters } from '@wordpress/hooks';
+import { applyFilters, addFilter } from '@wordpress/hooks';
 import RedirectToFirstRoute from '@Global/components/redirect-to-first-route';
 
 // Import all the components directly
 import TitleAndDescriptionRoute from '@AdminGeneral/general/title-and-description/title-and-description';
+import SiteInformationRoute from '@AdminGeneral/general/site-information';
 import HomePageRoute from '@AdminGeneral/general/home-page/home-page';
 import ArchivePagesRoute from '@AdminGeneral/advanced/archive-pages/archive-pages';
 import SocialGeneralRoute from '@AdminGeneral/social/general/general';
@@ -43,6 +44,8 @@ import SchemaRoute from '@AdminGeneral/schema/schema';
 import ImportExportSettingsRoute from '@AdminGeneral/advanced/tools/import-export-settings';
 import RedirectionManager from '@AdminDashboard/link-manager/redirection-manager';
 import RoleManager from '@AdminDashboard/role-manager/index';
+import LinkManagerDashboard from '@AdminDashboard/link-manager/dashboard';
+import LinkManagerSettings from '@AdminDashboard/link-manager/settings';
 import LinkSuggestion from '@AdminDashboard/link-suggestion/link-suggestion';
 import InstantIndexingSettings from '@AdminDashboard/instant-indexing/settings';
 import InstantIndexingLogs from '@AdminDashboard/instant-indexing/logs';
@@ -58,6 +61,10 @@ if ( window && ! window?.toast ) {
 }
 
 // Routes
+const LegacySitemapsRedirect = () => (
+	<Navigate to="/general/sitemaps" replace />
+);
+
 const dashboardRoutes = [
 	// Default route redirects to dashboard
 	createRoute(
@@ -80,9 +87,18 @@ const dashboardRoutes = [
 
 const generalAndAdvancedRoutes = [
 	// General routes
-	createRoute( '/general', TitleAndDescriptionRoute, [], {
-		capability: 'surerank_global_setting',
-	} ),
+	createRoute(
+		'/general',
+		null,
+		[
+			createChildRoute( '/', TitleAndDescriptionRoute ),
+			createChildRoute( '/sitemaps', SitemapsRoute ),
+			createChildRoute( '/site-information', SiteInformationRoute ),
+		],
+		{
+			capability: 'surerank_global_setting',
+		}
+	),
 	createRoute(
 		'/general/homepage',
 		null,
@@ -129,7 +145,7 @@ const generalAndAdvancedRoutes = [
 		createChildRoute( '/email-reports', EmailReportsRoute, [], {
 			capability: 'surerank_global_setting',
 		} ),
-		createChildRoute( '/sitemaps', SitemapsRoute, [], {
+		createChildRoute( '/sitemaps', LegacySitemapsRedirect, [], {
 			capability: 'surerank_global_setting',
 		} ),
 		createChildRoute( '/image-seo', ImageSeoRoute, [], {
@@ -172,16 +188,45 @@ const siteSeoAnalysisRoutes = [
 
 // Link Manager routes
 const linkManagerRoutes = [
-	createRoute( '/link-manager', null, [
-		createChildRoute( '/redirection-manager', RedirectionManager, [], {
-			fullWidth: true,
-			navbarOnly: false,
-		} ),
-		createChildRoute( '/link-suggestion', LinkSuggestion, [], {
-			fullWidth: isProActive( 'pro' ) ? false : true,
-			navbarOnly: false,
-		} ),
-	] ),
+	createRoute(
+		'/link-manager',
+		null,
+		[
+			createChildRoute( '/redirection-manager', RedirectionManager, [], {
+				fullWidth: true,
+				navbarOnly: false,
+				capability: 'surerank_global_setting',
+			} ),
+			createChildRoute( '/link-suggestion', LinkSuggestion, [], {
+				fullWidth: isProActive( 'pro' ) ? false : true,
+				navbarOnly: false,
+				capability: 'surerank_global_setting',
+			} ),
+			createChildRoute(
+				'/link-manager/dashboard',
+				LinkManagerDashboard,
+				[],
+				{
+					fullWidth: true,
+					navbarOnly: false,
+					capability: 'surerank_global_setting',
+				}
+			),
+			createChildRoute(
+				'/link-manager/settings',
+				LinkManagerSettings,
+				[],
+				{
+					fullWidth: true,
+					navbarOnly: false,
+					capability: 'surerank_global_setting',
+				}
+			),
+		],
+		{
+			capability: 'surerank_global_setting',
+		}
+	),
 ];
 
 // Instant Indexing routes
@@ -246,6 +291,25 @@ const toolsRoutes = [
 		} ),
 	] ),
 ];
+// Register a HOC that provides TanStack Router utilities (navigate + location) as props.
+// Used by the Pro plugin to inject router context into its separately-bundled components.
+addFilter( 'surerank.router.with-router-props', 'surerank/router-props', () => {
+	return ( Component ) => {
+		function WithRouterProps( props ) {
+			const navigate = useNavigate();
+			const location = useLocation();
+			return (
+				<Component
+					{ ...props }
+					routerNavigate={ navigate }
+					routerLocation={ location }
+				/>
+			);
+		}
+		return WithRouterProps;
+	};
+} );
+
 // Combine all routes
 const baseRoutes = filterFalsyRoutes( [
 	...dashboardRoutes,

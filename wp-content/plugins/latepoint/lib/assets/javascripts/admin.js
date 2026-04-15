@@ -503,6 +503,32 @@ jQuery(document).ready(function( $ ) {
     return false;
   });
 
+  // WIZARD SKIP SETUP BUTTON CLICK LOGIC
+  jQuery('body.latepoint').on('click', '.os-wizard-skip-btn', function(e){
+    e.preventDefault();
+    var current_step_code = jQuery('#wizard_current_step_code').val();
+    var params = 'current_step_code=' + current_step_code;
+    var data = {
+      action: latepoint_helper.route_action,
+      route_name: jQuery(this).data('route-name'),
+      params: params,
+      layout: 'none',
+      return_format: 'json'
+    };
+    jQuery.ajax({
+      type: "post",
+      dataType: "json",
+      url: latepoint_timestamped_ajaxurl(),
+      data: data,
+      success: function(data){
+        if(data.status === "success" && data.redirect){
+          window.location.href = data.redirect;
+        }
+      }
+    });
+    return false;
+  });
+
   jQuery('.latepoint-content-w').on('change', '.os-widget .os-trigger-reload-widget', function(){
     latepoint_reload_widget(jQuery(this).closest('.os-widget'));
   });
@@ -570,7 +596,8 @@ jQuery(document).ready(function( $ ) {
     var data = { action: latepoint_helper.route_action,
                   route_name: $draggable_form_blocks_wrapper.data('order-update-route'),
                   params: {ordered_fields: blocks_order_data,
-                  fields_for: $draggable_form_blocks_wrapper.data('fields-for')},
+                  fields_for: $draggable_form_blocks_wrapper.data('fields-for'),
+                  _wpnonce: $draggable_form_blocks_wrapper.data('order-update-nonce')},
                   return_format: 'json' } 
     $draggable_form_blocks_wrapper.addClass('os-loading');
     jQuery.ajax({

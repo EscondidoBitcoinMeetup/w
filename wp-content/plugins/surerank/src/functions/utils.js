@@ -10,6 +10,12 @@ import { createRoot } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 import { CHECK_TYPES } from '@/global/constants';
 
+export { sanitizeHTML } from './sanitize-html';
+export {
+	filterHomepageChecks,
+	shouldFilterHomepageCheck,
+} from './homepage-filter';
+
 export const cleanContent = ( postContent ) => {
 	// Get first paragraph. tag will be <p>.
 	const content = postContent.match( /<p>(.*?)<\/p>/g );
@@ -46,6 +52,19 @@ export const truncateText = ( text, maxLength, suffix = '...' ) => {
 	return text.length <= maxLength
 		? text
 		: text.slice( 0, maxLength ) + suffix;
+};
+
+/**
+ * Count words in a string
+ *
+ * @param {string} text - Text to count words in
+ * @return {number} Word count
+ */
+export const countWords = ( text ) => {
+	if ( ! text || typeof text !== 'string' ) {
+		return 0;
+	}
+	return text.trim().split( /\s+/ ).filter( Boolean ).length;
 };
 
 /**
@@ -828,7 +847,7 @@ export const getStatusIndicatorClasses = ( status ) => {
 export const getStatusIndicatorAriaLabel = ( errorAndWarnings ) => {
 	if ( errorAndWarnings > 0 ) {
 		return sprintf(
-			/* translators: %1$d: number of errors and warnings */
+			/* translators: 1: number of errors and warnings, 2: singular or plural "issue"/"issues" */
 			__( '%1$d %2$s need attention.', 'surerank' ),
 			errorAndWarnings,
 			_n( 'issue', 'issues', errorAndWarnings, 'surerank' )
