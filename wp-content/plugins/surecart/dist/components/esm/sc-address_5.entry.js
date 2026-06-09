@@ -1,6 +1,7 @@
 import { r as registerInstance, c as createEvent, h, a as getElement, H as Host, F as Fragment } from './index-745b6bec.js';
 import { g as getCountryDetails, c as countryChoices, a as getCountryRegions } from './address-b8e2e4c8.js';
 import { r as reportChildrenValidity, F as FormSubmitController } from './form-data-76641f16.js';
+import { g as getCurrentUserCountryCode, a as getAddressLabels, t as transformPlaceDetails, b as getStreetAddress } from './google-maps-e8b00ffd.js';
 import { c as createErrorNotice } from './mutations-ed6d0770.js';
 import { i as isRtl } from './page-align-0cdacf32.js';
 import { a as applyFilters } from './index-871d88b8.js';
@@ -10,202 +11,6 @@ import './add-query-args-0e2a8393.js';
 import './index-06061d4e.js';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-/**
- * Helper function to find an address component by type.
- */
-const findAddressComponent = (addressComponents, type) => {
-    return (addressComponents || []).find(component => { var _a; return (_a = component.types) === null || _a === void 0 ? void 0 : _a.includes(type); });
-};
-/**
- * Find the city from address components using a fallback chain.
- *
- * Google Places API returns the city under different component types depending on the country:
- * - `locality` — most countries (e.g. US, CA, AU)
- * - `administrative_area_level_2` — Brazil (município), parts of Italy, etc.
- * - `postal_town` — UK, Sweden, and some other European countries
- */
-const findCity = (addressComponents) => {
-    var _a, _b;
-    return ((_b = (_a = findAddressComponent(addressComponents, 'locality')) !== null && _a !== void 0 ? _a : findAddressComponent(addressComponents, 'administrative_area_level_2')) !== null && _b !== void 0 ? _b : findAddressComponent(addressComponents, 'postal_town'));
-};
-/**
- * Build a street address from address components (street_number + route).
- */
-function getStreetAddress(addressComponents) {
-    var _a, _b;
-    if (!addressComponents)
-        return '';
-    const streetNumber = ((_a = findAddressComponent(addressComponents, 'street_number')) === null || _a === void 0 ? void 0 : _a.longText) || '';
-    const route = ((_b = findAddressComponent(addressComponents, 'route')) === null || _b === void 0 ? void 0 : _b.longText) || '';
-    return [streetNumber, route].filter(Boolean).join(' ');
-}
-/**
- * Normalize a string for fuzzy matching:
- *  - strip trailing periods (Google abbreviates, e.g. "Yuc." for "Yucatán")
- *  - remove diacritics (Google may return "Yucatan" while we store "Yucatán")
- *  - lowercase
- */
-const normalizeForMatch = (value) => (value || '')
-    .replace(/\.$/, '')
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-/**
- * Try to find a matching region from a Google address component.
- *
- * Match precedence:
- *  1. component.shortText === region.value  (exact code match)
- *  2. component.longText  ≈  region.label   (case-insensitive label match)
- */
-const findRegionMatch = (component, regions) => {
-    if (!component || !(regions === null || regions === void 0 ? void 0 : regions.length))
-        return undefined;
-    // 1. Exact code match (e.g. "GO" === "GO", "RM" === "RM").
-    const byCode = regions.find(r => r.value === component.shortText);
-    if (byCode)
-        return byCode;
-    // 2. Case-insensitive label match (e.g. "Yucatán" ≈ "Yucatán").
-    const normalizedLong = normalizeForMatch(component.longText);
-    if (normalizedLong) {
-        const byLabel = regions.find(r => normalizeForMatch(r.label) === normalizedLong);
-        if (byLabel)
-            return byLabel;
-    }
-    return undefined;
-};
-/**
- * Get the state/province from address components using a fallback chain.
- *
- * Google Places maps states/provinces to different administrative levels depending on the country:
- *  - `administrative_area_level_1` — most countries (US, BR, CA, AU, MX)
- *  - `administrative_area_level_2` — Spain (province codes like "B"), Italy (province codes like "RM")
- *
- * For some countries (e.g. Mexico) the shortText is abbreviated ("Yuc.") while SureCart stores
- * ISO codes ("YUC"), so we also attempt a label-based match using the longText.
- */
-const getState = (addressComponents, regions) => {
-    var _a, _b, _c;
-    const adminLevel1 = (_a = findAddressComponent(addressComponents, 'administrative_area_level_1')) !== null && _a !== void 0 ? _a : null;
-    const adminLevel2 = (_b = findAddressComponent(addressComponents, 'administrative_area_level_2')) !== null && _b !== void 0 ? _b : null;
-    // Try level 1 first (covers US, BR, CA, AU, MX, etc.), then fall back to level 2 (covers ES, IT).
-    const region = (_c = findRegionMatch(adminLevel1, regions)) !== null && _c !== void 0 ? _c : findRegionMatch(adminLevel2, regions);
-    if (!region) {
-        return {
-            longText: (adminLevel1 === null || adminLevel1 === void 0 ? void 0 : adminLevel1.longText) || null, // for preview in the address suggestion.
-            shortText: null,
-        };
-    }
-    return {
-        shortText: region.value,
-        longText: region.label,
-    };
-};
-/**
- * Transforms the place address components into an address object.
- */
-function transformPlaceDetails(addressComponents, regions) {
-    var _a, _b, _c, _d, _e;
-    return {
-        line_2: ((_a = findAddressComponent(addressComponents, 'sublocality')) === null || _a === void 0 ? void 0 : _a.shortText) || null,
-        postal_code: ((_b = findAddressComponent(addressComponents, 'postal_code')) === null || _b === void 0 ? void 0 : _b.shortText) || null,
-        city: ((_c = findCity(addressComponents)) === null || _c === void 0 ? void 0 : _c.longText) || null,
-        state: ((_d = getState(addressComponents, regions)) === null || _d === void 0 ? void 0 : _d.shortText) || null,
-        country: ((_e = findAddressComponent(addressComponents, 'country')) === null || _e === void 0 ? void 0 : _e.shortText) || null,
-    };
-}
-/**
- * Transforms the place address components into an address object for display.
- */
-function getAddressLabels(addressComponents, regions) {
-    var _a, _b;
-    const country = (_a = findAddressComponent(addressComponents, 'country')) !== null && _a !== void 0 ? _a : null;
-    if (!country) {
-        return {
-            country: null,
-            state: null,
-            city: null,
-        };
-    }
-    const state = getState(addressComponents, regions);
-    const labels = {
-        country: country.longText || null,
-        state: (state === null || state === void 0 ? void 0 : state.longText) || null,
-        city: ((_b = findCity(addressComponents)) === null || _b === void 0 ? void 0 : _b.longText) || null,
-    };
-    switch (country === null || country === void 0 ? void 0 : country.shortText) {
-        case 'US':
-            return {
-                ...labels,
-                country: 'USA',
-                state: (state === null || state === void 0 ? void 0 : state.shortText) || null,
-            };
-        case 'GB':
-            return {
-                ...labels,
-                country: 'UK',
-            };
-        default:
-            return labels;
-    }
-}
-/**
- * Fetch the user's geolocation using the Google Geolocation API.
- */
-async function fetchGeoLocation() {
-    var _a;
-    const response = await fetch(`https://www.googleapis.com/geolocation/v1/geolocate?key=${(_a = window === null || window === void 0 ? void 0 : window.scData) === null || _a === void 0 ? void 0 : _a.google_map_api_key}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            considerIp: true,
-        }),
-    });
-    return response.json();
-}
-/**
- * Fetch the country information based on latitude and longitude using the Google Geocode API.
- */
-async function fetchCountryFromCoordinates(lat, lng) {
-    var _a;
-    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${(_a = window === null || window === void 0 ? void 0 : window.scData) === null || _a === void 0 ? void 0 : _a.google_map_api_key}`);
-    return response.json();
-}
-/**
- * Get the user's country code based on Google Geolocation and GeoCode APIs.
- * Caches the result in sessionStorage to avoid repeat API calls.
- */
-async function getCurrentUserCountryCode() {
-    var _a, _b, _c, _d, _e;
-    if (!((_a = window === null || window === void 0 ? void 0 : window.scData) === null || _a === void 0 ? void 0 : _a.google_map_api_key)) {
-        return null;
-    }
-    const cached = sessionStorage.getItem('surecart_user_country');
-    if (cached)
-        return cached;
-    try {
-        const geoLocateResponse = await fetchGeoLocation();
-        if (!(geoLocateResponse === null || geoLocateResponse === void 0 ? void 0 : geoLocateResponse.location)) {
-            return null;
-        }
-        const { lat, lng } = geoLocateResponse.location;
-        const countryData = await fetchCountryFromCoordinates(lat, lng);
-        if (countryData === null || countryData === void 0 ? void 0 : countryData.error_message) {
-            return null;
-        }
-        const countryCode = ((_e = (_d = (_c = (_b = countryData === null || countryData === void 0 ? void 0 : countryData.results) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.address_components) === null || _d === void 0 ? void 0 : _d.find(component => component.types.includes('country'))) === null || _e === void 0 ? void 0 : _e.short_name) || null;
-        if (countryCode) {
-            sessionStorage.setItem('surecart_user_country', countryCode);
-        }
-        return countryCode;
-    }
-    catch {
-        return null;
-    }
-}
 
 const scAddressCss = ":host{display:block}.sc-address{display:block;position:relative}.sc-address [hidden]{display:none}.sc-address--loading{min-height:230px}.sc-address sc-skeleton{display:block;margin-bottom:1em}.sc-address__control{display:block}.sc-address__control>*{margin-bottom:var(--sc-address-column-spacing, -1px)}.sc-address__collapsible{opacity:0;pointer-events:none;position:absolute;transform:translateY(-8px);width:100%}.sc-address__collapsible>*{margin-bottom:var(--sc-address-column-spacing, -1px)}.sc-address__collapsible--expanded{opacity:1;pointer-events:auto;position:relative;transform:translateY(0);transition:opacity 0.2s ease-in, transform 0.2s ease-in;z-index:var(--sc-address-collapsible-z-index, 9)}.sc-address__collapsible:focus-within{z-index:var(--sc-address-collapsible-focus-z-index, 10)}.sc-address__columns{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;justify-content:space-between}.sc-address__columns>*{flex:1;width:50%;margin-right:var(--sc-address-column-spacing, -1px)}.sc-address__columns>*:last-child{margin-right:0}";
 const ScAddressStyle0 = scAddressCss;
@@ -17773,7 +17578,7 @@ async function fetchPlaceDetails(placeId, addressSuggestions, address, regions) 
     };
 }
 
-const scAddressSuggestionsCss = ":host{position:relative;display:block}sc-input{margin-bottom:var(--sc-address-column-spacing, -1px)}.sc-address__suggestions{position:absolute;right:0px;z-index:9;background:var(--sc-panel-background-color);box-shadow:0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);max-height:var(--sc-panel-height, 350px);width:100%;border:solid 1px var(--sc-panel-border-color);border-radius:var(--sc-border-radius-medium);opacity:0;visibility:hidden;transform:translateY(2px);transition:opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;display:flex;flex-direction:column;min-height:0;overflow:hidden}.sc-address__suggestions--visible{opacity:1;visibility:visible;transform:translateY(0)}.sc-address__suggestions--body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;max-height:100%;overflow:hidden}.sc-address__suggestions--scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}.sc-address__suggestions--footer{flex-shrink:0;padding:10px 20px;font-size:var(--sc-font-size-small);border-top:solid 1px var(--sc-color-gray-200);background-color:var(--sc-panel-background-color)}.sc-address__suggestions--footer button{background:none;border:none;color:var(--sc-color-gray-600);font-size:var(--sc-font-size-small);padding:0;cursor:pointer}.sc-address__suggestions--footer button:hover{text-decoration:underline}.sc-address__suggestions--footer button:focus-visible{outline:2px solid var(--sc-focus-ring-color, var(--sc-color-primary));outline-offset:2px}.sc-address__suggestions--list{list-style:none;padding:0;margin:0}.sc-address__suggestions--item{padding:10px 20px;cursor:pointer;font-family:var(--sc-font-sans);font-size:var(--sc-font-size-medium);font-weight:var(--sc-font-weight-normal);color:var(--color);background-color:var(--sc-panel-background-color);transition:background-color 0.2s ease}.sc-address__suggestions--item:hover,.sc-address__suggestions--item.focused{background-color:var(--sc-color-gray-100);color:var(--sc-color-primary)}.sc-address__suggestions--item:active{background-color:var(--sc-color-primary-light);color:var(--sc-color-primary)}.sc-address__suggestions--item:focus-visible{outline:2px solid var(--sc-focus-ring-color, var(--sc-color-primary));outline-offset:-2px}.sc-address__suggestions--item:focus:not(:focus-visible){outline:none}.sc-address__suggestions--item--no-select{cursor:auto}.sc-address__suggestions--item--no-select:hover,.sc-address__suggestions--item--no-select.focused,.sc-address__suggestions--item--no-select:active{background-color:var(--sc-panel-background-color);outline:none}.sc-address__suggestions--item--no-result{color:var(--sc-color-gray-600)}.sc-address__suggestions--item--powered-by{font-size:var(--sc-font-size-small);color:var(--sc-color-gray-600);display:flex;align-items:center;justify-content:space-between;text-align:center;padding:0 0 0 20px;margin-top:1px}.sc-address__suggestions--item--powered-by a{color:var(--sc-color-gray-600);text-decoration:none}.sc-address__suggestions--item--powered-by a span{font-weight:var(--sc-font-weight-bold)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);border:0}";
+const scAddressSuggestionsCss = ":host{position:relative;display:block}sc-input{margin-bottom:var(--sc-address-column-spacing, -1px)}.sc-address__suggestions{position:absolute;right:0px;z-index:var(--sc-address-suggestion-z-index, 11);background:var(--sc-panel-background-color);box-shadow:0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);max-height:var(--sc-panel-height, 350px);width:100%;border:solid 1px var(--sc-panel-border-color);border-radius:var(--sc-border-radius-medium);opacity:0;visibility:hidden;transform:translateY(2px);transition:opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;display:flex;flex-direction:column;min-height:0;overflow:hidden}.sc-address__suggestions--visible{opacity:1;visibility:visible;transform:translateY(0)}.sc-address__suggestions--body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;max-height:100%;overflow:hidden}.sc-address__suggestions--scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}.sc-address__suggestions--footer{flex-shrink:0;padding:10px 20px;font-size:var(--sc-font-size-small);border-top:solid 1px var(--sc-color-gray-200);background-color:var(--sc-panel-background-color)}.sc-address__suggestions--footer button{background:none;border:none;color:var(--sc-color-gray-600);font-size:var(--sc-font-size-small);padding:0;cursor:pointer}.sc-address__suggestions--footer button:hover{text-decoration:underline}.sc-address__suggestions--footer button:focus-visible{outline:2px solid var(--sc-focus-ring-color, var(--sc-color-primary));outline-offset:2px}.sc-address__suggestions--list{list-style:none;padding:0;margin:0}.sc-address__suggestions--item{padding:10px 20px;cursor:pointer;font-family:var(--sc-font-sans);font-size:var(--sc-font-size-medium);font-weight:var(--sc-font-weight-normal);color:var(--color);background-color:var(--sc-panel-background-color);transition:background-color 0.2s ease}.sc-address__suggestions--item:hover,.sc-address__suggestions--item.focused{background-color:var(--sc-color-gray-100);color:var(--sc-color-primary)}.sc-address__suggestions--item:active{background-color:var(--sc-color-primary-light);color:var(--sc-color-primary)}.sc-address__suggestions--item:focus-visible{outline:2px solid var(--sc-focus-ring-color, var(--sc-color-primary));outline-offset:-2px}.sc-address__suggestions--item:focus:not(:focus-visible){outline:none}.sc-address__suggestions--item--no-select{cursor:auto}.sc-address__suggestions--item--no-select:hover,.sc-address__suggestions--item--no-select.focused,.sc-address__suggestions--item--no-select:active{background-color:var(--sc-panel-background-color);outline:none}.sc-address__suggestions--item--no-result{color:var(--sc-color-gray-600)}.sc-address__suggestions--item--powered-by{font-size:var(--sc-font-size-small);color:var(--sc-color-gray-600);display:flex;align-items:center;justify-content:space-between;text-align:center;padding:0 0 0 20px;margin-top:1px}.sc-address__suggestions--item--powered-by a{color:var(--sc-color-gray-600);text-decoration:none}.sc-address__suggestions--item--powered-by a span{font-weight:var(--sc-font-weight-bold)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);border:0}";
 const ScAddressSuggestionsStyle0 = scAddressSuggestionsCss;
 
 const ScAddressSuggestions = class {

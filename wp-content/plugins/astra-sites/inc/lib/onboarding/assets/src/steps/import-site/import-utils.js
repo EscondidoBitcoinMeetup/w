@@ -2,6 +2,63 @@ import { __ } from '@wordpress/i18n';
 const { themeStatus } = starterTemplates;
 import apiFetch from '@wordpress/api-fetch';
 
+/**
+ * Parse a fetch Response as JSON, but throw a clear human-readable error when
+ * the server returns an HTML page (e.g. a 504 timeout or PHP fatal) instead of
+ * JSON. Without this guard, response.json() throws a cryptic SyntaxError.
+ *
+ * @param {Response} response Fetch API Response object.
+ * @return {Promise<*>} Parsed JSON value.
+ */
+export const safeParseJson = ( response ) => {
+	const contentType = response.headers.get( 'content-type' ) || '';
+	const nonJsonError = new Error(
+		__(
+			"Server returned a non-JSON response. This usually means the server timed out or encountered a fatal error. Check your server's max_execution_time and PHP error log, then try again.",
+			'astra-sites'
+		)
+	);
+	if ( ! contentType.includes( 'application/json' ) ) {
+		throw nonJsonError;
+	}
+	return response.json().catch( () => {
+		throw nonJsonError;
+	} );
+};
+
+/**
+ * Pull a human-readable message out of the various error shapes the
+ * plugin install/activate endpoints can return.
+ *
+ * @param {*}      err      Anything thrown / rejected — string, Error, jQuery xhr, parsed JSON.
+ * @param {string} fallback Message to use when nothing usable is found.
+ * @return {string} Best-effort error string.
+ */
+export const extractPluginError = ( err, fallback ) => {
+	if ( ! err ) {
+		return fallback;
+	}
+	if ( typeof err === 'string' ) {
+		return err;
+	}
+	const json = err.responseJSON;
+	if ( json?.data?.message ) {
+		return json.data.message;
+	}
+	if ( err.data?.message ) {
+		return err.data.message;
+	}
+	if ( err.errorMessage ) {
+		return err.errorCode
+			? `${ err.errorCode }: ${ err.errorMessage }`
+			: err.errorMessage;
+	}
+	if ( err.message ) {
+		return err.message;
+	}
+	return fallback;
+};
+
 export const getDemo = async ( id, storedState ) => {
 	const [ , dispatch ] = storedState; // Destructuring assignment only for dispatch method.
 
@@ -14,7 +71,7 @@ export const getDemo = async ( id, storedState ) => {
 		method: 'post',
 		body: generateData,
 	} )
-		.then( ( response ) => response.json() )
+		.then( safeParseJson )
 		.then( ( response ) => {
 			if ( response.success ) {
 				const isEcommerce = response?.data[ 'required-plugins' ]?.some(
@@ -125,7 +182,7 @@ export const getDemo = async ( id, storedState ) => {
 					secondaryText:
 						astraSitesVars?.ajax_request_failed_secondary,
 					errorCode: '',
-					errorText: error,
+					errorText: error?.message || error,
 					solutionText: '',
 					tryAgain: false,
 				},
@@ -180,8 +237,14 @@ export const getAiDemo = async (
 };
 
 export const checkRequiredPlugins = async ( storedState ) => {
-	const [ { enabledFeatureIds, selectedEcommercePlugin }, dispatch ] =
-		storedState;
+	const [
+		{
+			enabledFeatureIds,
+			selectedEcommercePlugin,
+			pluginStatuses: prevPluginStatuses = {},
+		},
+		dispatch,
+	] = storedState;
 	const reqPlugins = new FormData();
 	reqPlugins.append( 'action', 'astra-sites-required_plugins' );
 	reqPlugins.append( '_ajax_nonce', astraSitesVars?._ajax_nonce );
@@ -200,16 +263,67 @@ export const checkRequiredPlugins = async ( storedState ) => {
 		method: 'post',
 		body: reqPlugins,
 	} )
-		.then( ( response ) => response.json() )
+		.then( safeParseJson )
 		.then( ( response ) => {
 			const rPlugins = response.data?.required_plugins;
-			const notInstalledPlugin = rPlugins.notinstalled || '';
-			const notActivePlugins = rPlugins.inactive || '';
+			const notInstalledPlugin = rPlugins.notinstalled || [];
+			const notActivePlugins = rPlugins.inactive || [];
+			const activePlugins = rPlugins.active || [];
+
+			// Build per-plugin status map for the install screen.
+			// Carry forward attempts / error / failedAt from the prior status
+			// map so a Refresh (manual or tab-focus) doesn't reset the
+			// per-plugin retry counter — otherwise a user could bypass
+			// MAX_RETRIES by clicking Refresh between failed attempts.
+			// Plugins now reported as 'active' overwrite any prior failed
+			// state with a clean success entry.
+			const pluginStatuses = {};
+			const buildStatus = ( plugins, defaultState ) => {
+				plugins.forEach( ( p ) => {
+					const prev = prevPluginStatuses[ p.slug ];
+					const carry =
+						prev && defaultState !== 'success'
+							? {
+									error: prev.error || null,
+									failedAt: prev.failedAt || null,
+									attempts: prev.attempts || 0,
+							  }
+							: { error: null, failedAt: null, attempts: 0 };
+					// Don't visually regress a plugin that is already mid-install
+					// or mid-activate — a re-check (Refresh or tab-focus) can fire
+					// while wp.updates is still processing, and overwriting to
+					// 'pending' makes the status pill flicker unnecessarily.
+					const state =
+						defaultState !== 'success' &&
+						( prev?.state === 'installing' ||
+							prev?.state === 'activating' )
+							? prev.state
+							: defaultState;
+					pluginStatuses[ p.slug ] = {
+						state,
+						type: p.optional ? 'optional' : 'required',
+						...carry,
+						name: p.name,
+						slug: p.slug,
+						init: p.init,
+						// Server-built one-click install URL (update.php?action=install-plugin&plugin=...&_wpnonce=...)
+						// for plugins not yet installed; activation URL for inactive ones. Used as the
+						// manual-install fallback link after MAX_RETRIES so the user lands directly on
+						// the install/activate confirmation page instead of a plugin search.
+						installUrl: p.action || null,
+					};
+				} );
+			};
+			buildStatus( activePlugins, 'success' );
+			buildStatus( notInstalledPlugin, 'pending' );
+			buildStatus( notActivePlugins, 'pending' );
+
 			dispatch( {
 				type: 'set',
 				requiredPlugins: response.data,
 				notInstalledList: notInstalledPlugin,
 				notActivatedList: notActivePlugins,
+				pluginStatuses,
 				// Clear the flag so requiredPluginsDone can be set when lists are empty.
 				awaitingPluginCheck: false,
 			} );
@@ -337,6 +451,13 @@ export function getFeaturePluginList(
 					init: 'wp-live-chat-support/wp-live-chat-support.php',
 				} );
 				break;
+			case 'crm-contacts':
+				requiredPlugins.push( {
+					name: 'SureContact',
+					slug: 'surecontact',
+					init: 'surecontact/surecontact.php',
+				} );
+				break;
 			default:
 				break;
 		}
@@ -356,7 +477,7 @@ export const activateAstra = ( storedState ) => {
 		method: 'post',
 		body: data,
 	} )
-		.then( ( response ) => response.json() )
+		.then( safeParseJson )
 		.then( ( response ) => {
 			if ( response.success ) {
 				dispatch( {
@@ -578,7 +699,7 @@ export const checkFileSystemPermissions = async ( [ , dispatch ] ) => {
 			method: 'POST',
 			body: formData,
 		} );
-		const data = await response.json();
+		const data = await safeParseJson( response );
 
 		dispatch( {
 			type: 'set',

@@ -4,8 +4,7 @@ import { X } from 'lucide-react';
 import { createPortal, memo, useEffect, useState } from '@wordpress/element';
 import PageCheckStatusIndicator from '@AdminComponents/page-check-status-indicator';
 import { usePageCheckStatus } from '@SeoPopup/hooks';
-
-/* global MutationObserver */
+import IndexingStatus from '@SeoPopup/components/indexing-status';
 
 const PageChecksStatus = () => {
 	const [ host, setHost ] = useState( null );
@@ -74,6 +73,7 @@ const Header = ( { onClose } ) => {
 			</div>
 			<div className="h-full flex items-center mr-auto gap-2"></div>
 			<div className="flex items-center py-3.5 px-4 gap-2">
+				<IndexingStatus />
 				<Button
 					variant="ghost"
 					size="sm"
