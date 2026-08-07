@@ -13,11 +13,11 @@ const ScSkeleton = class {
         this.effect = 'sheen';
     }
     render() {
-        return (index.h("div", { key: 'f552dcff016cdb326cf95736d46cbca953ff730f', part: "base", class: {
+        return (index.h("div", { key: '621e547822641d4e82c7dfacc1785a10a486a34f', part: "base", class: {
                 'skeleton': true,
                 'skeleton--pulse': this.effect === 'pulse',
                 'skeleton--sheen': this.effect === 'sheen',
-            }, "aria-busy": "true", "aria-live": "polite" }, index.h("div", { key: '8ec1430b1872d41a8f519768aa49231cbdcd0983', part: "indicator", class: "skeleton__indicator" })));
+            }, "aria-busy": "true", "aria-live": "polite" }, index.h("div", { key: 'f34011445b8b91f6f1a11e7a6eac02cca58ae0ed', part: "indicator", class: "skeleton__indicator" })));
     }
 };
 ScSkeleton.style = ScSkeletonStyle0;

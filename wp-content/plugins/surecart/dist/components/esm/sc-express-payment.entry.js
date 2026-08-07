@@ -1,10 +1,10 @@
 import { r as registerInstance, h, H as Host } from './index-25e5af33.js';
-import { g as getProcessorByType } from './getters-1a2ca4c5.js';
+import { g as getProcessorByType } from './getters-80f582ec.js';
 import { f as formBusy } from './getters-4bb6cc1b.js';
 import './util-dfbf863e.js';
 import './index-18f5a1bc.js';
 import './utils-f84b2118.js';
-import './mutations-9546b051.js';
+import './mutations-017e8c92.js';
 import './remove-query-args-938c53ea.js';
 import './add-query-args-0e2a8393.js';
 import './index-c5a96d53.js';
@@ -33,7 +33,7 @@ const ScExpressPayment = class {
         return h("sc-stripe-payment-request", { debug: this.debug, stripeAccountId: processor_data === null || processor_data === void 0 ? void 0 : processor_data.account_id, publishableKey: processor_data === null || processor_data === void 0 ? void 0 : processor_data.publishable_key });
     }
     render() {
-        return (h(Host, { key: '03d79ade65f62e194567328e2110be7685c833ce', class: { 'is-empty': !this.hasPaymentOptions && !this.debug } }, this.renderStripePaymentRequest(), (this.hasPaymentOptions || this.debug) && h("sc-divider", { key: '57d20315a41736e2bb259182052a9217c8bd82c4', style: { '--spacing': 'calc(var(--sc-form-row-spacing)/2)' } }, this.dividerText), !!formBusy() && h("sc-block-ui", { key: '1fca0a7a58721ae3ec8569744c609be941ef52e7' })));
+        return (h(Host, { key: '6908614bce697360d66e04ecd8ef42f7158b265d', class: { 'is-empty': !this.hasPaymentOptions && !this.debug } }, this.renderStripePaymentRequest(), (this.hasPaymentOptions || this.debug) && h("sc-divider", { key: 'f9b0bc2de48e292d0c3d1182710487be459d04f4', style: { '--spacing': 'calc(var(--sc-form-row-spacing)/2)' } }, this.dividerText), !!formBusy() && h("sc-block-ui", { key: '6a86cffc1c0375372cb5bf0d4918f330c0632e49' })));
     }
 };
 ScExpressPayment.style = ScExpressPaymentStyle0;

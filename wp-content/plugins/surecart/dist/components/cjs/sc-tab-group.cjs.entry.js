@@ -135,9 +135,9 @@ const ScTabGroup = class {
         return this.getAllChildren().filter((el) => el.tagName.toLowerCase() === 'sc-tab-panel');
     }
     render() {
-        return (index.h("div", { key: '5a37110919d5dfb81b236d3127e992eff58afe34', part: "base", class: {
+        return (index.h("div", { key: '87a04e3ca975a297b689145c9907356c829a5e38', part: "base", class: {
                 'tab-group': true,
-            }, onClick: e => this.handleClick(e), onKeyDown: e => this.handleKeyDown(e) }, index.h("div", { key: 'c6ac6495a1f0f2eb9beff194a968561a0a62bb0a', class: "tab-group__nav-container", part: "nav" }, index.h("div", { key: '93e39fd17f0b26f1e31661871c680d0e0a69bfff', class: "tab-group__nav" }, index.h("div", { key: '688ad7b6d25a7599c02465c68d1a3e5918d25d22', part: "tabs", class: "tab-group__tabs", role: "tablist" }, index.h("slot", { key: '63e1418defc60a4c6a34cc623cc3c08d37835b1d', onSlotchange: () => this.syncTabsAndPanels(), name: "nav" })))), index.h("div", { key: '457bcb1fc934511293953fb7e41319c4c033d334', part: "body", class: "tab-group__body" }, index.h("slot", { key: 'ed6ff665584b2333097f5246e142e849224f046f', onSlotchange: () => this.syncTabsAndPanels() }))));
+            }, onClick: e => this.handleClick(e), onKeyDown: e => this.handleKeyDown(e) }, index.h("div", { key: '210d69ce49ea51441efbd82ccc7466b544c6eb50', class: "tab-group__nav-container", part: "nav" }, index.h("div", { key: '33334fa6e839405e247f3be6c24bcbc1a6ce468b', class: "tab-group__nav" }, index.h("div", { key: '0d3691d2c3f7c08f8f23cfc393b61761781d689f', part: "tabs", class: "tab-group__tabs", role: "tablist" }, index.h("slot", { key: 'c5a2e8b764fc3606913371cbc7b780804d597b7f', onSlotchange: () => this.syncTabsAndPanels(), name: "nav" })))), index.h("div", { key: '91749258a2c452e542d4a03337a31229c73e8c01', part: "body", class: "tab-group__body" }, index.h("slot", { key: '7c8346a06753e7528fe995f455880ba60f13e442', onSlotchange: () => this.syncTabsAndPanels() }))));
     }
     get el() { return index.getElement(this); }
 };

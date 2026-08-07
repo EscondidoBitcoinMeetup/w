@@ -20,6 +20,7 @@
 // @codekit-prepend "bin/admin/_steps.js";
 // @codekit-prepend "bin/admin/_orders.js";
 // @codekit-prepend "bin/admin/_stripe_connect.js";
+// @codekit-prepend "bin/admin/_paypal_connect.js";
 // @codekit-prepend "bin/admin/_razorpay_connect.js";
 
 
@@ -40,6 +41,7 @@ jQuery(document).ready(function( $ ) {
   latepoint_init_reminders_form();
   latepoint_init_coupons_form();
   latepoint_init_copy_on_click_elements();
+  latepoint_init_mcp_client_connect();
   latepoint_init_side_menu();
   latepoint_init_color_picker();
   latepoint_init_clickable_cells();

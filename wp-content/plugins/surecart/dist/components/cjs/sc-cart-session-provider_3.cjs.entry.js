@@ -3,10 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
-const mutations$1 = require('./mutations-edaa53ae.js');
-const index$1 = require('./index-a583f78f.js');
+const mutations$1 = require('./mutations-927be23d.js');
+const index$1 = require('./index-92023a2d.js');
 const mutations$2 = require('./mutations-d5d6ddf1.js');
-const mutations = require('./mutations-54e7599d.js');
+const mutations = require('./mutations-06bf0ea4.js');
 const animationRegistry = require('./animation-registry-b597d2f4.js');
 const getters = require('./getters-68a0d178.js');
 require('./index-c3de642f.js');
@@ -91,7 +91,7 @@ const ScCartSessionProvider = class {
         }
     }
     render() {
-        return (index.h("sc-line-items-provider", { key: '0fb44376b6b31203f0a66b4837959864a11a3a92', order: mutations$1.state.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, index.h("slot", { key: '8f70d3215e9f9ac52002d9c06e434c53d6203d28' })));
+        return (index.h("sc-line-items-provider", { key: '4f389805680c0bba62eb5a90cc326aaad4e2fc31', order: mutations$1.state.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, index.h("slot", { key: '45559f39cf7a79348a0fa5b89dd567ecb368b4d6' })));
     }
     get el() { return index.getElement(this); }
 };
@@ -226,7 +226,7 @@ const ScDrawer = class {
         }
     }
     render() {
-        return (index.h("div", { key: '06c11bd341502b2ecd810f0b4a57002d7fca9167', part: "base", class: {
+        return (index.h("div", { key: '780ee1379d8c5544673b1ceb0b4b680e3164e032', part: "base", class: {
                 'drawer': true,
                 'drawer--open': this.open,
                 'drawer--top': this.placement === 'top',
@@ -236,9 +236,9 @@ const ScDrawer = class {
                 'drawer--contained': this.contained,
                 'drawer--fixed': !this.contained,
                 'drawer--has-footer': this.el.querySelector('[slot="footer"]') !== null,
-            }, ref: el => (this.drawer = el), onKeyDown: (e) => this.handleKeyDown(e) }, index.h("div", { key: 'f79fefcc122682244e90c162844b729079f09633', part: "overlay", class: "drawer__overlay", onClick: () => this.requestClose('overlay'), tabindex: "-1", ref: el => (this.overlay = el) }), index.h("div", { key: 'e848a71618418854a421c01947d576085fe73a14', part: "panel", class: "drawer__panel", role: "dialog", "aria-modal": "true", "aria-hidden": this.open ? 'false' : 'true', "aria-label": this.noHeader ? this.label : undefined, "aria-labelledby": !this.noHeader ? 'title' : undefined, tabindex: "0", ref: el => (this.panel = el) }, !this.noHeader && (index.h("header", { key: '394ad574696e21ba863b9e2b24b619a6b89423ad', part: "header", class: this.stickyHeader ? 'header__sticky' : '' }, index.h("slot", { key: 'c050621a4169f877428a4351f6b2521cf3046136', name: "header" }, index.h("div", { key: '90a59c724c33ab638e9cdfbb97c42fbe36b049d4', class: "drawer__header" }, index.h("h2", { key: '3993bb0584139772a283b7bb055fb6b520601425', part: "title", class: "drawer__title", id: "title" }, index.h("slot", { key: '8df38e2c8c1b44fe17ec9f14476cd5cc23bf8eda', name: "label" }, this.label.length > 0 ? this.label : ' ', " ")), index.h("sc-icon", { key: '23eb7681d7ef34093439047acddf3e5b6004a4c1', part: "close-button", exportparts: "base:close-button__base", class: "drawer__close", name: "x", label: 
+            }, ref: el => (this.drawer = el), onKeyDown: (e) => this.handleKeyDown(e) }, index.h("div", { key: '37e451e88c3f852898e35e643636c3a57d5580c3', part: "overlay", class: "drawer__overlay", onClick: () => this.requestClose('overlay'), tabindex: "-1", ref: el => (this.overlay = el) }), index.h("div", { key: '6891cc43d79fccf48ece953a846884b67b43d7de', part: "panel", class: "drawer__panel", role: "dialog", "aria-modal": "true", "aria-hidden": this.open ? 'false' : 'true', "aria-label": this.noHeader ? this.label : undefined, "aria-labelledby": !this.noHeader ? 'title' : undefined, tabindex: "0", ref: el => (this.panel = el) }, !this.noHeader && (index.h("header", { key: 'e88aebab0a41d3718b81505513529087b236cc60', part: "header", class: this.stickyHeader ? 'header__sticky' : '' }, index.h("slot", { key: '6f3ac20a27d7cbeb9aa0ee9b334065a004959a5d', name: "header" }, index.h("div", { key: '08f3602305519b53ef8897d0ff6be9b59766a90b', class: "drawer__header" }, index.h("h2", { key: '7a8b4b29bf6f15d229465f2aa68602cd8c261b9f', part: "title", class: "drawer__title", id: "title" }, index.h("slot", { key: '898abde5f12380d03c145af61a0d041f7286dc03', name: "label" }, this.label.length > 0 ? this.label : ' ', " ")), index.h("sc-icon", { key: '51f403579b8a6afac1173313dc5cc4f2104f32e4', part: "close-button", exportparts: "base:close-button__base", class: "drawer__close", name: "x", label: 
             /** translators: Close this modal window. */
-            wp.i18n.__('Close', 'surecart'), onClick: () => this.requestClose('close-button') }))))), index.h("footer", { key: 'd65c03ed26460f2a3f3001ab6aaa68c6b352d811', part: "header-suffix", class: "drawer__header-suffix" }, index.h("slot", { key: '30e59247299752dd1c43681ef8ca9c062beaaae3', name: "header-suffix" })), index.h("div", { key: 'a8d4033cf969aa8b24784ca47b393f4c7b0753db', part: "body", class: "drawer__body" }, index.h("slot", { key: '6dab2278c94d35c1fd36a667db16e83b2c87490d' })), index.h("footer", { key: '83ace6dc67e3c0c6bef844dd988dd862d86d82fa', part: "footer", class: this.stickyFooter ? 'drawer__footer is-sticky' : 'drawer__footer' }, index.h("slot", { key: '3c17877f96125b1696c8e2fcd339efd258c0a571', name: "footer" })))));
+            wp.i18n.__('Close', 'surecart'), onClick: () => this.requestClose('close-button') }))))), index.h("footer", { key: 'd681a8d1a8652062c45ad0b285da0af95de15d8d', part: "header-suffix", class: "drawer__header-suffix" }, index.h("slot", { key: '0ae6c3129238b1c89a7fa920fde5bf93f75e08d3', name: "header-suffix" })), index.h("div", { key: '0c86dac4bf3ad211541fa4a1d1611a38ccb2a538', part: "body", class: "drawer__body" }, index.h("slot", { key: 'c87fb8253579e77244643633b9128946b563f175' })), index.h("footer", { key: '706560ac939f2b815b981f55844e1dda52eb7049', part: "footer", class: this.stickyFooter ? 'drawer__footer is-sticky' : 'drawer__footer' }, index.h("slot", { key: 'a4bb85fea755de3ecbbeabff5d310835e9e4d705', name: "footer" })))));
     }
     get el() { return index.getElement(this); }
     static get watchers() { return {

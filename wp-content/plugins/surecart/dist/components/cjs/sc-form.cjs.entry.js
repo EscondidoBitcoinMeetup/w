@@ -81,7 +81,7 @@ const ScForm = class {
         }
     }
     render() {
-        return (index.h("div", { key: '1fb893f44dc0f8234860e86ee28aa7e508b6bfb8', part: "base", class: "form", role: "form" }, index.h("form", { key: 'd87c2f63c9dd7e357503a7d5f31208e8330ac8e7', part: "form", ref: el => (this.formElement = el), class: "test", onSubmit: async (e) => {
+        return (index.h("div", { key: '8820047721895e36c396303023c4e4edb13da816', part: "base", class: "form", role: "form" }, index.h("form", { key: '78a397734a84dd2a498081e9c076acbeac7f2d8d', part: "form", ref: el => (this.formElement = el), class: "test", onSubmit: async (e) => {
                 e.preventDefault();
                 const isValid = await this.validate();
                 if (!isValid) {
@@ -89,7 +89,7 @@ const ScForm = class {
                 }
                 this.scSubmit.emit();
                 this.scFormSubmit.emit();
-            }, novalidate: this.novalidate }, index.h("slot", { key: 'a83c35ed20fadfab9a8dd00b3e82f1a159f03670' }))));
+            }, novalidate: this.novalidate }, index.h("slot", { key: 'f41b3e63b451baaa2a631b279172c4b6f1b0eab0' }))));
     }
     get form() { return index.getElement(this); }
 };

@@ -1,6 +1,6 @@
 import { r as registerInstance, c as createEvent, h, F as Fragment, a as getElement } from './index-25e5af33.js';
-import { g as getLineItemByPriceId } from './index-1db2635f.js';
-import { s as state } from './mutations-9546b051.js';
+import { b as getLineItemByPriceId } from './index-17aac936.js';
+import { s as state } from './mutations-017e8c92.js';
 import './index-18f5a1bc.js';
 import './utils-f84b2118.js';
 import './remove-query-args-938c53ea.js';
@@ -37,7 +37,7 @@ const ScPriceChoices = class {
         });
     }
     render() {
-        return (h(Fragment, { key: 'e70d6ebfce58c91e8150b536e395b21da02229e9' }, h("sc-choices", { key: '0341d15d7b9f01bd49570f777bd411de318fa752', label: this.label, required: this.required, class: "loaded price-selector", style: { '--columns': this.columns.toString() } }, h("slot", { key: '9b74bb26fd5629592d460b36a847074eec60df5c' }))));
+        return (h(Fragment, { key: '0777df0b6cf3730fc7ff8a21d7edb8282695a248' }, h("sc-choices", { key: 'b7f5c26e41ca1e3c084fc8b6b531923099d00c99', label: this.label, required: this.required, class: "loaded price-selector", style: { '--columns': this.columns.toString() } }, h("slot", { key: 'eb65ff447fc37c960cb74e92e34c22174707477a' }))));
     }
     get el() { return getElement(this); }
 };

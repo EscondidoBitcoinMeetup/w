@@ -18,11 +18,11 @@ const ScBreadcrumb = class {
     }
     render() {
         const Tag = this.href ? 'a' : 'div';
-        return (h("div", { key: '4b79c3c7fa9690a6a6764d9f3c060eb7c5a8185d', part: "base", class: {
+        return (h("div", { key: 'aa7d27608e2c8a261fc16e93ba30d29be1e940fa', part: "base", class: {
                 'breadcrumb-item': true,
                 'breadcrumb-item--has-prefix': this.hasPrefix,
                 'breadcrumb-item--has-suffix': this.hasSuffix,
-            } }, h("span", { key: '77e4d0b0c426dab56a2e22855a37d990cc64dbf1', part: "prefix", class: "breadcrumb-item__prefix" }, h("slot", { key: '3e32322090483a7261f949762f3e177f3db73362', name: "prefix" })), h(Tag, { key: 'eaf2021791d3f6e193682fb6ab4dc6d0006154bf', part: "label", class: "breadcrumb-item__label breadcrumb-item__label--link", href: this.href, target: this.target, rel: this.rel }, h("slot", { key: '51e8f31215fb0448a21cd196d26fb3555a007c0d' })), h("span", { key: '9c9acdf10473207be02cdc67ccb43562bfa90790', part: "suffix", class: "breadcrumb-item__suffix" }, h("slot", { key: '2556f255c1043dff317d6051c80ba244c0ca304d', name: "suffix", onSlotchange: () => this.handleSlotChange() })), h("span", { key: 'dba168e91a980b94fe932f56075263ae5ad412fc', part: "separator", class: "breadcrumb-item__separator", "aria-hidden": "true" }, h("slot", { key: '4e688d4c15c131b33b02456482b6ee85386349fd', name: "separator", onSlotchange: () => this.handleSlotChange() }, h("sc-icon", { key: 'e25f6b58ef088caa681d1f737d41235b93779c56', name: "chevron-right" })))));
+            } }, h("span", { key: 'd3acb541f4ad03ad2c05ff1055d7b50c939a0c65', part: "prefix", class: "breadcrumb-item__prefix" }, h("slot", { key: '9511e5c62a62a459b304bd04c3bd6a2ac8beff3d', name: "prefix" })), h(Tag, { key: '87b58f93291ef70118f841c59c914cb4c7718dfa', part: "label", class: "breadcrumb-item__label breadcrumb-item__label--link", href: this.href, target: this.target, rel: this.rel }, h("slot", { key: 'c098ee4f5d3ae2505269facbcfb8a16607e49ed3' })), h("span", { key: '806498ae36575f1dd55ed0b260bfa4c3c469f53b', part: "suffix", class: "breadcrumb-item__suffix" }, h("slot", { key: '644088c3e4a811df41cf1c1756278da444c24ec2', name: "suffix", onSlotchange: () => this.handleSlotChange() })), h("span", { key: '581cba5cafbfb07e135dfa6d072e4a46076f85f6', part: "separator", class: "breadcrumb-item__separator", "aria-hidden": "true" }, h("slot", { key: '25c23f009e8b0accd44900303be754c4976471aa', name: "separator", onSlotchange: () => this.handleSlotChange() }, h("sc-icon", { key: '96afb354c792816f2672de7811cddaf2269d4fc2', name: "chevron-right" })))));
     }
     get el() { return getElement(this); }
 };

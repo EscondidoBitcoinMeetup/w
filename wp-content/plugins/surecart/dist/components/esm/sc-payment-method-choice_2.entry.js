@@ -35,11 +35,11 @@ const ScPaymentMethodChoice = class {
     }
     render() {
         const Tag = this.hasOthers() ? 'sc-toggle' : 'div';
-        return (h(Tag, { key: '919bbc8ad9a818244c4141136bba39eda9a49da1', "show-control": true, borderless: true, open: this.isSelected(), onScShow: () => {
+        return (h(Tag, { key: '72fbfc1164fe8268f787641961d2ece3bc7a1675', "show-control": true, borderless: true, open: this.isSelected(), onScShow: () => {
                 state.id = this.processorId;
                 state.manual = !!this.isManual;
                 state.method = this.methodId;
-            } }, this.hasOthers() && h("slot", { key: '1188191a6547b45c96b32157c4e2fa7f4a502009', name: "summary", slot: "summary" }), this.card && !this.hasOthers() ? (h("sc-card", null, h("slot", null))) : (h("slot", null))));
+            } }, this.hasOthers() && h("slot", { key: 'ab0269d6b1115b0d44fc29ab121796e824cd1195', name: "summary", slot: "summary" }), this.card && !this.hasOthers() ? (h("sc-card", null, h("slot", null))) : (h("slot", null))));
     }
     get el() { return getElement(this); }
 };
@@ -55,7 +55,7 @@ const ScPaymentSelected = class {
         this.label = undefined;
     }
     render() {
-        return (h("div", { key: '6c1fb55529042e93e695e3056872c10a6d4d03ac', class: "payment-selected", part: "base" }, h("slot", { key: '7e57b0c9c61df0a8cb6db66bff60e7f78f3b886e', name: "icon" }), h("div", { key: '0882f97a40113c31279026e93e4fe63504e3a5dc', class: "payment-selected__label" }, this.label), h("sc-divider", { key: '67b54d4bac6c2f57731d962beca13d882d3824ca', style: { '--spacing': 'var(--sc-spacing-xx-small)' }, exportparts: "base:divider, line:divider__line" }), h("div", { key: '9bbe66be3ad6b253fe4fdb524921f2f1391c370a', part: "instructions", class: "payment-selected__instructions" }, h("svg", { key: '354ed47093e33272bf36c434559e2144ba369a88', part: "icon", viewBox: "0 0 48 40", fill: "var(--sc-color-gray-500)", xmlns: "http://www.w3.org/2000/svg", role: "presentation" }, h("path", { key: 'd9bfe4f7aabe08e141652c3f21b45db206fe5afb', opacity: ".6", "fill-rule": "evenodd", "clip-rule": "evenodd", d: "M43 5a4 4 0 00-4-4H17a4 4 0 00-4 4v11a1 1 0 102 0V5a2 2 0 012-2h22a2 2 0 012 2v30a2 2 0 01-2 2H17a2 2 0 01-2-2v-9a1 1 0 10-2 0v9a4 4 0 004 4h22a4 4 0 004-4V5zM17.992 16.409L21.583 20H6a1 1 0 100 2h15.583l-3.591 3.591a1 1 0 101.415 1.416l5.3-5.3a1 1 0 000-1.414l-5.3-5.3a1 1 0 10-1.415 1.416zM17 6a1 1 0 011-1h15a1 1 0 011 1v2a1 1 0 01-1 1H18a1 1 0 01-1-1V6zm21-1a1 1 0 100 2 1 1 0 000-2z" })), h("div", { key: 'f42fa10f2dcf161055f0c40790673b473a11d419', part: "text", class: "payment-selected__instructions-text" }, h("slot", { key: 'd550faf27c75e77e57450c5e27368036734f102e' })))));
+        return (h("div", { key: '7ddd74e550b999fa8494c45ca290278c0b47d364', class: "payment-selected", part: "base" }, h("slot", { key: 'f422358779e84de6c05f03992c500d04aebd5079', name: "icon" }), h("div", { key: '17e66ceea20b2ac684c003cd6107304bfd54e337', class: "payment-selected__label" }, this.label), h("sc-divider", { key: '0832cbf39628ca901b543c540530cd938df12a1f', style: { '--spacing': 'var(--sc-spacing-xx-small)' }, exportparts: "base:divider, line:divider__line" }), h("div", { key: '68a34af48ef32a2730697f7d0b8401154d5cdf3c', part: "instructions", class: "payment-selected__instructions" }, h("svg", { key: 'fa68d360ca7f65d2adc55242c2c3b2427adf948d', part: "icon", viewBox: "0 0 48 40", fill: "var(--sc-color-gray-500)", xmlns: "http://www.w3.org/2000/svg", role: "presentation" }, h("path", { key: '13157804814f3bf6cab78451088623673008d2fa', opacity: ".6", "fill-rule": "evenodd", "clip-rule": "evenodd", d: "M43 5a4 4 0 00-4-4H17a4 4 0 00-4 4v11a1 1 0 102 0V5a2 2 0 012-2h22a2 2 0 012 2v30a2 2 0 01-2 2H17a2 2 0 01-2-2v-9a1 1 0 10-2 0v9a4 4 0 004 4h22a4 4 0 004-4V5zM17.992 16.409L21.583 20H6a1 1 0 100 2h15.583l-3.591 3.591a1 1 0 101.415 1.416l5.3-5.3a1 1 0 000-1.414l-5.3-5.3a1 1 0 10-1.415 1.416zM17 6a1 1 0 011-1h15a1 1 0 011 1v2a1 1 0 01-1 1H18a1 1 0 01-1-1V6zm21-1a1 1 0 100 2 1 1 0 000-2z" })), h("div", { key: 'dde2c37b23d6194a485dbd40b3d98ab89170b10d', part: "text", class: "payment-selected__instructions-text" }, h("slot", { key: '83f0dda573eecb19662276f664bc233a07c90327' })))));
     }
 };
 ScPaymentSelected.style = ScPaymentSelectedStyle0;

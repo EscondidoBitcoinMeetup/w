@@ -1,13 +1,13 @@
 import { r as registerInstance, c as createEvent, h, a as getElement } from './index-25e5af33.js';
 import { p as pure } from './pure-963214cb.js';
 import { s as state$2 } from './watchers-c7bbc6b2.js';
-import { o as onChange, s as state, u as updateFormState } from './mutations-9546b051.js';
+import { o as onChange, s as state, u as updateFormState } from './mutations-017e8c92.js';
 import { o as onChange$1 } from './store-b1758b00.js';
-import './watchers-0d3d45ce.js';
-import { s as state$1, g as getProcessorByType } from './getters-1a2ca4c5.js';
+import './watchers-ba73ceab.js';
+import { s as state$1, g as getProcessorByType } from './getters-80f582ec.js';
 import { c as currentFormState } from './getters-4bb6cc1b.js';
 import { c as createErrorNotice } from './mutations-7458343f.js';
-import { b as getResolvedBillingEmail, t as toStripeAddress, d as getResolvedBillingAddress } from './getters-0152f4f0.js';
+import { b as getResolvedBillingEmail, t as toStripeAddress, d as getResolvedBillingAddress } from './getters-8ecca822.js';
 import { a as addQueryArgs } from './add-query-args-0e2a8393.js';
 import './index-18f5a1bc.js';
 import './utils-f84b2118.js';
@@ -17,7 +17,7 @@ import './google-a86aa761.js';
 import './currency-a0c9bff4.js';
 import './price-1ff6aa07.js';
 import './util-dfbf863e.js';
-import './store-02394e82.js';
+import './store-ac90a769.js';
 import './address-b8e2e4c8.js';
 
 const scStripePaymentElementCss = "sc-stripe-payment-element{display:block}sc-stripe-payment-element [hidden]{display:none}.loader{display:grid;height:128px;gap:2em}.loader__row{display:flex;align-items:flex-start;justify-content:space-between;gap:1em}.loader__details{display:grid;gap:0.5em}";
@@ -346,11 +346,11 @@ const ScStripePaymentElement = class {
         }
     }
     render() {
-        return (h("div", { key: '5561c02398477c9c913efa5b943c6d2a708b4324', class: "sc-stripe-payment-element", "data-testid": "stripe-payment-element" }, !!this.error && (h("sc-text", { key: '4311d98d09f33c8f7504e34bfc8d9ca0367b4a91', style: {
+        return (h("div", { key: 'c0016a393f1aa445b51da4a530b7edf698e563bf', class: "sc-stripe-payment-element", "data-testid": "stripe-payment-element" }, !!this.error && (h("sc-text", { key: 'c09a6e1d635731857dc31a5fc25ad04935a8913c', style: {
                 'color': 'var(--sc-color-danger-500)',
                 '--font-size': 'var(--sc-font-size-small)',
                 'marginBottom': '0.5em',
-            } }, this.error)), h("div", { key: '7f1994ad2bdc9765dafe3c350408b873d79a7db3', class: "loader", hidden: this.loaded }, h("div", { key: '7aafd50a04e4eb8e4a3be9728b1d1dc4bc6373a2', class: "loader__row" }, h("div", { key: '2b44975be57cafea9f4d064daea050a977d991dd', style: { width: '50%' } }, h("sc-skeleton", { key: '18c042a42a1f8593ceff606b54bc8ec2562d43de', style: { width: '50%', marginBottom: '0.5em' } }), h("sc-skeleton", { key: 'e552ca35965dacbacff1ab21d0be0000437ce2e9' })), h("div", { key: '28f884b984a92b4819944e690624dfa85dbd8178', style: { flex: '1' } }, h("sc-skeleton", { key: '4ef54d80cf3989e5eb8e341bc05232a59e276dc8', style: { width: '50%', marginBottom: '0.5em' } }), h("sc-skeleton", { key: '62b158f467503d5c505b20ff6b6ddc4830959a9c' })), h("div", { key: 'e23be40d13549377ff73e5559d4fe8752332f9b2', style: { flex: '1' } }, h("sc-skeleton", { key: '9d913e413a8920554a087b194a813a7e3574dd30', style: { width: '50%', marginBottom: '0.5em' } }), h("sc-skeleton", { key: '25ca3cc684eaf258e722c9120829e397b3140bf9' }))), h("div", { key: '6807a611245b7a41a2a0f9347856cb3dab961ecc', class: "loader__details" }, h("sc-skeleton", { key: '60414a249477e6ad0a0b67ee1c7f5f0001877c80', style: { height: '1rem' } }), h("sc-skeleton", { key: '93b481a338f28be56c91be28ca6fa11235ab6edb', style: { height: '1rem', width: '30%' } }))), h("div", { key: '2eb2e06170b556b98cf98d438c422f32e59870b2', hidden: !this.loaded, class: "sc-payment-element-container", ref: el => (this.container = el) })));
+            } }, this.error)), h("div", { key: '57a220e93ee306dc86fc6df7bab71bd346f66783', class: "loader", hidden: this.loaded }, h("div", { key: 'afd6786da88edbf811a375090e4df66ca98846be', class: "loader__row" }, h("div", { key: 'a862e3f18cda04a3c1f1ea7bb075288945099c31', style: { width: '50%' } }, h("sc-skeleton", { key: '61aa058d7abed5538cca62c6db05c76fa1254f67', style: { width: '50%', marginBottom: '0.5em' } }), h("sc-skeleton", { key: '0295966e246a0cd057a3ff94188408051bef066a' })), h("div", { key: 'b22e9fc235cb89d749403ba43b4da200af7d82f9', style: { flex: '1' } }, h("sc-skeleton", { key: '5268d2c1f509a430822806a2d454f1d7d0397674', style: { width: '50%', marginBottom: '0.5em' } }), h("sc-skeleton", { key: '470436ac76f63fa7b5c7120776642f4d8d2a1633' })), h("div", { key: 'aa3e3a12bb063778c0fe5b8335125c929ba1634c', style: { flex: '1' } }, h("sc-skeleton", { key: '5a11fdc0424cec4f5c0ceb8c0f232b7736e51662', style: { width: '50%', marginBottom: '0.5em' } }), h("sc-skeleton", { key: 'ee169a25cc29f740f26c70afa227c30a23564ed0' }))), h("div", { key: '6b6b2038705990671d39c2b79673a9b41a8a3046', class: "loader__details" }, h("sc-skeleton", { key: 'f23185d310d18cfb008de7d8323b79f600faa599', style: { height: '1rem' } }), h("sc-skeleton", { key: '93d333bf62b776b455bc18919150ca005d891dcc', style: { height: '1rem', width: '30%' } }))), h("div", { key: 'ebda57e66939b559a2d8e647bc89c04028c6c037', hidden: !this.loaded, class: "sc-payment-element-container", ref: el => (this.container = el) })));
     }
     get el() { return getElement(this); }
     static get watchers() { return {

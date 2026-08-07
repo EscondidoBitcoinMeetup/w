@@ -3,12 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
-const getters = require('./getters-1712a1d0.js');
+const getters = require('./getters-6818073e.js');
 const getters$1 = require('./getters-d68c08ed.js');
 require('./util-a15c420c.js');
 require('./index-c3de642f.js');
 require('./utils-a9d13080.js');
-require('./mutations-edaa53ae.js');
+require('./mutations-927be23d.js');
 require('./remove-query-args-b57e8cd3.js');
 require('./add-query-args-49dcb630.js');
 require('./index-fb76df07.js');
@@ -37,7 +37,7 @@ const ScExpressPayment = class {
         return index.h("sc-stripe-payment-request", { debug: this.debug, stripeAccountId: processor_data === null || processor_data === void 0 ? void 0 : processor_data.account_id, publishableKey: processor_data === null || processor_data === void 0 ? void 0 : processor_data.publishable_key });
     }
     render() {
-        return (index.h(index.Host, { key: '03d79ade65f62e194567328e2110be7685c833ce', class: { 'is-empty': !this.hasPaymentOptions && !this.debug } }, this.renderStripePaymentRequest(), (this.hasPaymentOptions || this.debug) && index.h("sc-divider", { key: '57d20315a41736e2bb259182052a9217c8bd82c4', style: { '--spacing': 'calc(var(--sc-form-row-spacing)/2)' } }, this.dividerText), !!getters$1.formBusy() && index.h("sc-block-ui", { key: '1fca0a7a58721ae3ec8569744c609be941ef52e7' })));
+        return (index.h(index.Host, { key: '6908614bce697360d66e04ecd8ef42f7158b265d', class: { 'is-empty': !this.hasPaymentOptions && !this.debug } }, this.renderStripePaymentRequest(), (this.hasPaymentOptions || this.debug) && index.h("sc-divider", { key: 'f9b0bc2de48e292d0c3d1182710487be459d04f4', style: { '--spacing': 'calc(var(--sc-form-row-spacing)/2)' } }, this.dividerText), !!getters$1.formBusy() && index.h("sc-block-ui", { key: '6a86cffc1c0375372cb5bf0d4918f330c0632e49' })));
     }
 };
 ScExpressPayment.style = ScExpressPaymentStyle0;

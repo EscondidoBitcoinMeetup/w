@@ -4,11 +4,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
 const watchers = require('./watchers-517825ae.js');
-require('./watchers-ffd63353.js');
-const getters = require('./getters-1712a1d0.js');
-const mutations = require('./mutations-edaa53ae.js');
-const getters$1 = require('./getters-91b741f2.js');
-const mutations$1 = require('./mutations-54e7599d.js');
+require('./watchers-dcd346b7.js');
+const getters = require('./getters-6818073e.js');
+const mutations = require('./mutations-927be23d.js');
+const getters$1 = require('./getters-a7cb114b.js');
+const mutations$1 = require('./mutations-06bf0ea4.js');
 require('./fetch-5e8dc1d5.js');
 const MockProcessor = require('./MockProcessor-ad11752f.js');
 const mutations$2 = require('./mutations-d5d6ddf1.js');
@@ -26,9 +26,9 @@ require('./index-fb76df07.js');
 require('./google-59d23803.js');
 require('./currency-71fce0f0.js');
 require('./price-da3cab3d.js');
-require('./store-257cd191.js');
+require('./store-9c215436.js');
 require('./address-7404695f.js');
-require('./index-a583f78f.js');
+require('./index-92023a2d.js');
 
 const listenTo = (prop, propKey, callback) => mutations.on('set', (key, newValue, oldValue) => {
     // ignore non-keys

@@ -3,8 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
-const index$1 = require('./index-3d000d76.js');
-const mutations = require('./mutations-edaa53ae.js');
+const index$1 = require('./index-f3933112.js');
+const mutations = require('./mutations-927be23d.js');
 require('./index-c3de642f.js');
 require('./utils-a9d13080.js');
 require('./remove-query-args-b57e8cd3.js');
@@ -41,7 +41,7 @@ const ScPriceChoices = class {
         });
     }
     render() {
-        return (index.h(index.Fragment, { key: 'e70d6ebfce58c91e8150b536e395b21da02229e9' }, index.h("sc-choices", { key: '0341d15d7b9f01bd49570f777bd411de318fa752', label: this.label, required: this.required, class: "loaded price-selector", style: { '--columns': this.columns.toString() } }, index.h("slot", { key: '9b74bb26fd5629592d460b36a847074eec60df5c' }))));
+        return (index.h(index.Fragment, { key: '0777df0b6cf3730fc7ff8a21d7edb8282695a248' }, index.h("sc-choices", { key: 'b7f5c26e41ca1e3c084fc8b6b531923099d00c99', label: this.label, required: this.required, class: "loaded price-selector", style: { '--columns': this.columns.toString() } }, index.h("slot", { key: 'eb65ff447fc37c960cb74e92e34c22174707477a' }))));
     }
     get el() { return index.getElement(this); }
 };

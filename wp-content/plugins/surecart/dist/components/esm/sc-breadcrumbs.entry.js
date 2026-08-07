@@ -39,7 +39,7 @@ const ScBreadcrumbs = class {
         });
     }
     render() {
-        return (h(Fragment, { key: 'f3a773ae3dec02fd61ae08b2f8db4ea6019b860e' }, h("nav", { key: 'c7dda1a4eb6ccc9367ff3e11379fbf78170b4ed6', part: "base", class: "breadcrumb", "aria-label": this.label }, h("slot", { key: 'e776e91b492658ba252f94df00f8693da587c84c', onSlotchange: () => this.handleSlotChange() })), h("div", { key: '7621cc453369d38647299e30eb2a9f5f3fdc5d8c', part: "separator", hidden: true, "aria-hidden": "true" }, h("slot", { key: '2cc02d684909e8a9d443bf1003131dd827841227', name: "separator" }, h("sc-icon", { key: '25cc937dac95fedb4d8d7374226eec6c1847c036', name: "chevron-right" })))));
+        return (h(Fragment, { key: 'd06e34fd092616580595553ad370322bcc0a2af8' }, h("nav", { key: 'c8b85c6dd6ba1a2cf4e220ead2b4287e5595e3ae', part: "base", class: "breadcrumb", "aria-label": this.label }, h("slot", { key: 'd29471f6a52e24fcc980f24a783eed6bd74bbdbe', onSlotchange: () => this.handleSlotChange() })), h("div", { key: '2d92d9a2715dffa22c85591b95f482c8f870bfdd', part: "separator", hidden: true, "aria-hidden": "true" }, h("slot", { key: '2e7f25418cc36d5199826d1263bf6fa430cb1ac0', name: "separator" }, h("sc-icon", { key: 'f73ddbf8ab67935bef34933f5ddaf4eb4b612291', name: "chevron-right" })))));
     }
     get el() { return getElement(this); }
 };

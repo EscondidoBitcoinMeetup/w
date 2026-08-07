@@ -18,7 +18,7 @@ const ScFlex = class {
         this.stack = undefined;
     }
     render() {
-        return (index.h("div", { key: '387dae8418e70163d9bcdff1f90369161f202e5f', part: "base", class: {
+        return (index.h("div", { key: 'e03e59be977c3ed0a8a0cefcea3c7ce634ba9923', part: "base", class: {
                 flex: true,
                 ...(this.justifyContent ? { [`justify-${this.justifyContent}`]: true } : {}),
                 ...(this.alignItems ? { [`align-${this.alignItems}`]: true } : {}),
@@ -26,7 +26,7 @@ const ScFlex = class {
                 ...(this.columnGap ? { [`column-gap-${this.columnGap}`]: true } : {}),
                 ...(this.flexWrap ? { [`wrap-${this.flexWrap}`]: true } : {}),
                 ...(this.stack ? { [`stack-${this.stack}`]: true } : {}),
-            } }, index.h("slot", { key: '34f625711adf756f4cb6cbbe9644d2228a882159' })));
+            } }, index.h("slot", { key: '830c8bdde14cc74a764cb5602087f1241153a0e4' })));
     }
 };
 ScFlex.style = ScFlexStyle0;

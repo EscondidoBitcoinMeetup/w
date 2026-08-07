@@ -28,9 +28,9 @@ const ScUpsellCountdownTimer = class {
         }, 1000);
     }
     render() {
-        return (index.h(index.Host, { key: '727b55154fbf1fe61aa56ad7d6d0ed9a0a0909b6', role: "timer", class: {
+        return (index.h(index.Host, { key: '3494bf984bd24e5fac3d8d2c30cb88ac225a36ca', role: "timer", class: {
                 'sc-upsell-countdown-timer': true,
-            } }, this.showIcon && index.h("sc-icon", { key: '302324b2900e8c7488c75e6502395e700f364e06', name: "clock" }), index.h("span", { key: '73bc4a1a8d8a0f54f459aba3f3169dc58d39aaa6' }, index.h("slot", { key: '01c95848cd1822ca64c74de17b55be7a4150e252', name: "offer-expire-text" }), " ", index.h("strong", { key: '38ecb7b7c6b098bbe5e65642a628cf22a702d374' }, this.formattedTime))));
+            } }, this.showIcon && index.h("sc-icon", { key: 'cbc5fab4d5152f10a549ac869cfa8e36f42bbe0c', name: "clock" }), index.h("span", { key: '6341a0a1df3542dc60b973b06c8ebe2b0f8df13e' }, index.h("slot", { key: '6e9d40ed94611a86810ba6c1fee82eb512a566ee', name: "offer-expire-text" }), " ", index.h("strong", { key: '6690bdd080931561c855d508d311f0e27660322a' }, this.formattedTime))));
     }
 };
 ScUpsellCountdownTimer.style = ScUpsellCountdownTimerStyle0;
