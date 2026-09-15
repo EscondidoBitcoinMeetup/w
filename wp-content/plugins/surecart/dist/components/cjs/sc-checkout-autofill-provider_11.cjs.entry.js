@@ -3,18 +3,18 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
-const mutations = require('./mutations-927be23d.js');
-const mutations$1 = require('./mutations-06bf0ea4.js');
+const mutations = require('./mutations-98f05402.js');
+const mutations$1 = require('./mutations-627c79a0.js');
 const store = require('./store-9c215436.js');
-const index$2 = require('./index-92023a2d.js');
+const index$2 = require('./index-c2d0eb49.js');
 const index$1 = require('./index-a4a4f390.js');
 const geoPermission = require('./geo-permission-8128c254.js');
 const getters = require('./getters-d68c08ed.js');
 const index$3 = require('./index-f3933112.js');
-require('./watchers-dcd346b7.js');
-const getters$1 = require('./getters-6818073e.js');
+require('./watchers-c1bcf0a8.js');
+const getters$1 = require('./getters-4e5fc4d4.js');
 const watchers = require('./watchers-517825ae.js');
-const getters$2 = require('./getters-a7cb114b.js');
+const getters$2 = require('./getters-c3cd6c93.js');
 const store$1 = require('./store-01e8edc2.js');
 require('./fetch-5e8dc1d5.js');
 const index$4 = require('./index-7ced8198.js');
@@ -25,7 +25,7 @@ const formData = require('./form-data-0da9940f.js');
 const removeQueryArgs = require('./remove-query-args-b57e8cd3.js');
 require('./index-c3de642f.js');
 require('./utils-a9d13080.js');
-require('./google-59d23803.js');
+require('./google-8dbad1a6.js');
 require('./currency-71fce0f0.js');
 require('./price-da3cab3d.js');
 require('./util-a15c420c.js');
@@ -565,6 +565,8 @@ const ScCheckoutUnsavedChangesWarning = class {
 const ScFormComponentsValidator = class {
     constructor(hostRef) {
         index.registerInstance(this, hostRef);
+        /** Whether *we* escalated the phone to required (vs. the merchant's own config), so we can undo it. */
+        this.phoneRequiredByShipping = false;
         this.disabled = undefined;
         this.taxProtocol = undefined;
         this.hasAddress = undefined;
@@ -588,6 +590,8 @@ const ScFormComponentsValidator = class {
         if (getters$2.shippingAddressRequired()) {
             this.addAddressField();
         }
+        // require the phone when the checkout needs a shipping label.
+        this.handlePhoneRequiredForShipping();
         // add order bumps.
         if ((_c = (_b = (_a = mutations.state.checkout) === null || _a === void 0 ? void 0 : _a.recommended_bumps) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.length) {
             this.addBumps();
@@ -702,6 +706,30 @@ const ScFormComponentsValidator = class {
         payment.parentNode.insertBefore(taxInput, payment);
         this.hasTaxIDField = true;
     }
+    handlePhoneRequiredForShipping() {
+        const existing = this.el.querySelector('sc-customer-phone');
+        // needed only when the checkout requires a shipping label (live carrier rates).
+        const needed = getters$2.fullShippingAddressRequired();
+        if (!needed) {
+            // undo only our own escalation — if the merchant already placed a required phone block, we don't touch it.
+            if (this.phoneRequiredByShipping && existing) {
+                existing.required = false;
+                this.phoneRequiredByShipping = false;
+            }
+            return;
+        }
+        // if the merchant already placed the optional phone block, escalate it.
+        if (existing) {
+            if (!existing.required) {
+                existing.required = true;
+                this.phoneRequiredByShipping = true;
+            }
+            return;
+        }
+        // otherwise add a required phone field.
+        this.addCustomerPhone();
+        this.phoneRequiredByShipping = true;
+    }
     addCustomerPhone() {
         if (this.hasCustomerPhone)
             return;
@@ -805,7 +833,7 @@ const ScFormComponentsValidator = class {
         this.hasTrialLineItem = true;
     }
     render() {
-        return index.h("slot", { key: 'd6784d5b5d6bd353fd77b07e87f441ed8f6799a8' });
+        return index.h("slot", { key: '8a6fa5b922f635e11a27fe7c39ee54db7bff3e8a' });
     }
     get el() { return index.getElement(this); }
     static get watchers() { return {
@@ -1061,6 +1089,8 @@ const ScSessionProvider = class {
         this.scUpdateDraftState = index.createEvent(this, "scUpdateDraftState", 7);
         this.scPaid = index.createEvent(this, "scPaid", 7);
         this.scSetState = index.createEvent(this, "scSetState", 7);
+        /** Disposers for the geolocation re-price subscriptions. */
+        this.removeGeoListeners = [];
         this.prices = [];
         this.persist = true;
     }
@@ -1186,6 +1216,35 @@ const ScSessionProvider = class {
     /** Find or create session on load. */
     componentDidLoad() {
         this.findOrCreateOrder();
+        this.watchGeoCoordinates();
+    }
+    disconnectedCallback() {
+        this.removeGeoListeners.forEach(dispose => dispose());
+    }
+    /**
+     * Re-price the checkout when the browser resolves the shopper's location.
+     *
+     * Watches both the coordinates and the checkout so bailing is always safe — a
+     * later change re-runs the check. It converges because the platform echoes the
+     * coordinates back onto the checkout, which quiets the mismatch guard.
+     */
+    watchGeoCoordinates() {
+        if (!mutations.state.captureGeoAddressEnabled)
+            return;
+        this.removeGeoListeners = [mutations.onChange('geoCoordinates', () => this.maybeRepriceForGeo()), mutations.onChange('checkout', () => this.maybeRepriceForGeo())];
+    }
+    /** Patch the checkout if the platform hasn't seen the resolved coordinates yet. */
+    maybeRepriceForGeo() {
+        var _a;
+        const coordinates = mutations.state.geoCoordinates;
+        if (!coordinates || !((_a = mutations.state.checkout) === null || _a === void 0 ? void 0 : _a.id))
+            return;
+        if (mutations.state.checkout.latitude === coordinates.latitude && mutations.state.checkout.longitude === coordinates.longitude)
+            return;
+        if (getters.formLoading() || getters.formBusy())
+            return; // the in-flight request carries them via withDefaultData.
+        // An empty patch is enough: withDefaultData attaches the coordinates and the platform re-prices.
+        this.loadUpdate({});
     }
     /** Find or create an order */
     async findOrCreateOrder() {
@@ -1568,7 +1627,7 @@ const ScSessionProvider = class {
         }
     }
     render() {
-        return (index.h("sc-line-items-provider", { key: '3f3e2b8570b16d272135364bf84373106a15d564', order: mutations.state === null || mutations.state === void 0 ? void 0 : mutations.state.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, index.h("slot", { key: '4aab176d4e7477428008d314765658692cbf2630' })));
+        return (index.h("sc-line-items-provider", { key: '51e958f5f4c7939cb9922223966a47e0c82202ca', order: mutations.state === null || mutations.state === void 0 ? void 0 : mutations.state.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, index.h("slot", { key: 'c14bbdb9d579dd1fd7e8cf4d24ee5039e8fa6c89' })));
     }
     get el() { return index.getElement(this); }
     static get watchers() { return {

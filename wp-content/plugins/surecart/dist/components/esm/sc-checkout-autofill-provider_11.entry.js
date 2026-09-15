@@ -1,16 +1,16 @@
 import { r as registerInstance, h, H as Host, c as createEvent, a as getElement } from './index-25e5af33.js';
-import { o as onChange$1, s as state$1, u as updateFormState } from './mutations-017e8c92.js';
-import { l as lockCheckout, b as unLockCheckout, c as clearCheckout } from './mutations-96351e28.js';
+import { o as onChange$1, s as state$1, u as updateFormState } from './mutations-9ffd30f4.js';
+import { l as lockCheckout, b as unLockCheckout, c as clearCheckout } from './mutations-ae7167ad.js';
 import { o as onChange, s as state } from './store-ac90a769.js';
-import { c as createOrUpdateCheckout, d as updateCheckout, e as expand, f as finalizeCheckout, g as fetchCheckout, h as createCheckout } from './index-86fa6913.js';
+import { c as createOrUpdateCheckout, d as updateCheckout, e as expand, f as finalizeCheckout, g as fetchCheckout, h as createCheckout } from './index-a786f689.js';
 import { g as getCurrentCustomer, h as hasAddressData, i as isAddressEmpty } from './index-d602bc13.js';
 import { g as getGeoPermissionDefaults } from './geo-permission-62aea8ee.js';
-import { c as currentFormState } from './getters-4bb6cc1b.js';
+import { c as currentFormState, a as formLoading, f as formBusy } from './getters-4bb6cc1b.js';
 import { d as getPerBundleQuantity } from './index-17aac936.js';
-import './watchers-ba73ceab.js';
-import { s as state$2, f as getAvailableProcessor } from './getters-80f582ec.js';
+import './watchers-843c3dbe.js';
+import { s as state$2, f as getAvailableProcessor } from './getters-9cfeb0de.js';
 import { s as state$3 } from './watchers-c7bbc6b2.js';
-import { s as shippingAddressRequired, f as fullShippingAddressRequired } from './getters-8ecca822.js';
+import { s as shippingAddressRequired, f as fullShippingAddressRequired } from './getters-7090a9c1.js';
 import { v, c as checkoutMachine, s as state$4 } from './store-b1758b00.js';
 import './fetch-cdff67be.js';
 import { a as apiFetch } from './index-824c562b.js';
@@ -21,7 +21,7 @@ import { p as parseFormData } from './form-data-76641f16.js';
 import { r as removeQueryArgs, g as getQueryArg } from './remove-query-args-938c53ea.js';
 import './index-18f5a1bc.js';
 import './utils-f84b2118.js';
-import './google-a86aa761.js';
+import './google-e9085e27.js';
 import './currency-a0c9bff4.js';
 import './price-1ff6aa07.js';
 import './util-dfbf863e.js';
@@ -561,6 +561,8 @@ const ScCheckoutUnsavedChangesWarning = class {
 const ScFormComponentsValidator = class {
     constructor(hostRef) {
         registerInstance(this, hostRef);
+        /** Whether *we* escalated the phone to required (vs. the merchant's own config), so we can undo it. */
+        this.phoneRequiredByShipping = false;
         this.disabled = undefined;
         this.taxProtocol = undefined;
         this.hasAddress = undefined;
@@ -584,6 +586,8 @@ const ScFormComponentsValidator = class {
         if (shippingAddressRequired()) {
             this.addAddressField();
         }
+        // require the phone when the checkout needs a shipping label.
+        this.handlePhoneRequiredForShipping();
         // add order bumps.
         if ((_c = (_b = (_a = state$1.checkout) === null || _a === void 0 ? void 0 : _a.recommended_bumps) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.length) {
             this.addBumps();
@@ -698,6 +702,30 @@ const ScFormComponentsValidator = class {
         payment.parentNode.insertBefore(taxInput, payment);
         this.hasTaxIDField = true;
     }
+    handlePhoneRequiredForShipping() {
+        const existing = this.el.querySelector('sc-customer-phone');
+        // needed only when the checkout requires a shipping label (live carrier rates).
+        const needed = fullShippingAddressRequired();
+        if (!needed) {
+            // undo only our own escalation — if the merchant already placed a required phone block, we don't touch it.
+            if (this.phoneRequiredByShipping && existing) {
+                existing.required = false;
+                this.phoneRequiredByShipping = false;
+            }
+            return;
+        }
+        // if the merchant already placed the optional phone block, escalate it.
+        if (existing) {
+            if (!existing.required) {
+                existing.required = true;
+                this.phoneRequiredByShipping = true;
+            }
+            return;
+        }
+        // otherwise add a required phone field.
+        this.addCustomerPhone();
+        this.phoneRequiredByShipping = true;
+    }
     addCustomerPhone() {
         if (this.hasCustomerPhone)
             return;
@@ -801,7 +829,7 @@ const ScFormComponentsValidator = class {
         this.hasTrialLineItem = true;
     }
     render() {
-        return h("slot", { key: 'd6784d5b5d6bd353fd77b07e87f441ed8f6799a8' });
+        return h("slot", { key: '8a6fa5b922f635e11a27fe7c39ee54db7bff3e8a' });
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -1057,6 +1085,8 @@ const ScSessionProvider = class {
         this.scUpdateDraftState = createEvent(this, "scUpdateDraftState", 7);
         this.scPaid = createEvent(this, "scPaid", 7);
         this.scSetState = createEvent(this, "scSetState", 7);
+        /** Disposers for the geolocation re-price subscriptions. */
+        this.removeGeoListeners = [];
         this.prices = [];
         this.persist = true;
     }
@@ -1182,6 +1212,35 @@ const ScSessionProvider = class {
     /** Find or create session on load. */
     componentDidLoad() {
         this.findOrCreateOrder();
+        this.watchGeoCoordinates();
+    }
+    disconnectedCallback() {
+        this.removeGeoListeners.forEach(dispose => dispose());
+    }
+    /**
+     * Re-price the checkout when the browser resolves the shopper's location.
+     *
+     * Watches both the coordinates and the checkout so bailing is always safe — a
+     * later change re-runs the check. It converges because the platform echoes the
+     * coordinates back onto the checkout, which quiets the mismatch guard.
+     */
+    watchGeoCoordinates() {
+        if (!state$1.captureGeoAddressEnabled)
+            return;
+        this.removeGeoListeners = [onChange$1('geoCoordinates', () => this.maybeRepriceForGeo()), onChange$1('checkout', () => this.maybeRepriceForGeo())];
+    }
+    /** Patch the checkout if the platform hasn't seen the resolved coordinates yet. */
+    maybeRepriceForGeo() {
+        var _a;
+        const coordinates = state$1.geoCoordinates;
+        if (!coordinates || !((_a = state$1.checkout) === null || _a === void 0 ? void 0 : _a.id))
+            return;
+        if (state$1.checkout.latitude === coordinates.latitude && state$1.checkout.longitude === coordinates.longitude)
+            return;
+        if (formLoading() || formBusy())
+            return; // the in-flight request carries them via withDefaultData.
+        // An empty patch is enough: withDefaultData attaches the coordinates and the platform re-prices.
+        this.loadUpdate({});
     }
     /** Find or create an order */
     async findOrCreateOrder() {
@@ -1564,7 +1623,7 @@ const ScSessionProvider = class {
         }
     }
     render() {
-        return (h("sc-line-items-provider", { key: '3f3e2b8570b16d272135364bf84373106a15d564', order: state$1 === null || state$1 === void 0 ? void 0 : state$1.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, h("slot", { key: '4aab176d4e7477428008d314765658692cbf2630' })));
+        return (h("sc-line-items-provider", { key: '51e958f5f4c7939cb9922223966a47e0c82202ca', order: state$1 === null || state$1 === void 0 ? void 0 : state$1.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, h("slot", { key: 'c14bbdb9d579dd1fd7e8cf4d24ee5039e8fa6c89' })));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
