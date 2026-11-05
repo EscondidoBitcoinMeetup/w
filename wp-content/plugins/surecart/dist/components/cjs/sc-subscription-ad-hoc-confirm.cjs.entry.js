@@ -3,9 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
-const price = require('./price-da3cab3d.js');
+const price = require('./price-9dddd853.js');
 const addQueryArgs = require('./add-query-args-49dcb630.js');
-require('./currency-71fce0f0.js');
+require('./currency-b438c76d.js');
 
 const scSubscriptionAdHocConfirmCss = ":host{display:block}";
 const ScSubscriptionAdHocConfirmStyle0 = scSubscriptionAdHocConfirmCss;
@@ -27,7 +27,7 @@ const ScSubscriptionAdHocConfirm = class {
         }));
     }
     render() {
-        return (index.h("sc-dashboard-module", { key: 'da83e00c7cd3bf2ee128f8a93a4529c055492c25', heading: this.heading || wp.i18n.__('Enter An Amount', 'surecart'), class: "subscription-switch" }, index.h("sc-card", { key: '5bebb597b231cfb2902b414cc85e6d5ac10d37bf' }, index.h("sc-form", { key: '7fcc7104b0df71156d9b2e154098e4619cf0d39d', onScSubmit: e => this.handleSubmit(e) }, index.h("sc-price-input", { key: '0a9ac97efa255d8ab6f3ad05343814681a63a4d5', label: "Amount", name: "ad_hoc_amount", currencyCode: this.currencyCode, autofocus: true, required: true }, index.h("span", { key: 'f6508d8acb67b8a76d3c472194eb51cb3a816618', slot: "suffix", style: { opacity: '0.75' } }, price.intervalString(this.price))), index.h("sc-button", { key: '1aca8cefb2c5bb70455fba2d7c196760be563c6e', type: "primary", full: true, submit: true, loading: this.busy }, wp.i18n.__('Next', 'surecart'), " ", index.h("sc-icon", { key: 'f1f747f9b880d98cc95692d7cc6a659d6e3422c9', name: "arrow-right", slot: "suffix" })))), this.busy && index.h("sc-block-ui", { key: '469340f496da0a5bb3cdfad2678cc4a0885b0a0a', style: { zIndex: '9' } })));
+        return (index.h("sc-dashboard-module", { key: 'c91541886d66ddeb53a23f0dcf19ed2118ee56ac', heading: this.heading || wp.i18n.__('Enter An Amount', 'surecart'), class: "subscription-switch" }, index.h("sc-card", { key: '85ab84b8f2e6ea262a9eae375a47e18b6b2aa201' }, index.h("sc-form", { key: '749b49cd84a6ff8b6782f2e7f05df2bd20bd63f9', onScSubmit: e => this.handleSubmit(e) }, index.h("sc-price-input", { key: 'c4e7d7038c1d1ba5c20806d2578f591188d77957', label: "Amount", name: "ad_hoc_amount", currencyCode: this.currencyCode, autofocus: true, required: true }, index.h("span", { key: 'ba9de40eefaad5db6a55af8009cae12feb2d1583', slot: "suffix", style: { opacity: '0.75' } }, price.intervalString(this.price))), index.h("sc-button", { key: '7b7ad7fd472b8c6da4768ef7cfdd0c9300be271b', type: "primary", full: true, submit: true, loading: this.busy }, wp.i18n.__('Next', 'surecart'), " ", index.h("sc-icon", { key: '42e168926d1c569914d4a355c0cf0c79d8c76f89', name: "arrow-right", slot: "suffix" })))), this.busy && index.h("sc-block-ui", { key: 'c5046a131b1a1cdf285690a211d744d8b0eae872', style: { zIndex: '9' } })));
     }
 };
 ScSubscriptionAdHocConfirm.style = ScSubscriptionAdHocConfirmStyle0;

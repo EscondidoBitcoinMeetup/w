@@ -1,10 +1,10 @@
 import { r as registerInstance, h, F as Fragment } from './index-25e5af33.js';
-import { s as state, e as isOptionSoldOut, h as isOptionMissing, b as setProduct } from './watchers-81f32d01.js';
+import { s as state, e as isOptionSoldOut, h as isOptionMissing, b as setProduct } from './watchers-43c9573f.js';
 import './index-18f5a1bc.js';
-import './google-52867ad8.js';
-import './currency-a0c9bff4.js';
+import './google-5e2052e8.js';
+import './currency-eb33deae.js';
 import './google-e9085e27.js';
-import './utils-f84b2118.js';
+import './utils-2fd36c2c.js';
 import './util-dfbf863e.js';
 import './index-c5a96d53.js';
 
@@ -19,7 +19,7 @@ const ScProductPillsVariantOption = class {
         this.productId = undefined;
     }
     render() {
-        return (h("sc-form-control", { key: '125baefe2b88d9c2eea35b13d59b3c6412f4af3e', label: this.label }, h("span", { key: '0e08d93c8aae556bad0ae36a538b7b93a1439966', slot: "label" }, this.label), h("div", { key: '891fc231b975e294870ce1296b788e55dfffdf21', class: "sc-product-pills-variant-option__wrapper" }, (state[this.productId].variant_options[this.optionNumber - 1].values || []).map(value => {
+        return (h("sc-form-control", { key: '2c21c288660383566bc002f81323e156411879b5', label: this.label }, h("span", { key: 'd7b163a9263543a77f37bffe1386351b7a4dce0c', slot: "label" }, this.label), h("div", { key: 'cd2abe12d57998cd2ca815021780acd4d1bb58bc', class: "sc-product-pills-variant-option__wrapper" }, (state[this.productId].variant_options[this.optionNumber - 1].values || []).map(value => {
             const isUnavailable = isOptionSoldOut(this.productId, this.optionNumber, value) || isOptionMissing(this.productId, this.optionNumber, value);
             return (h("sc-pill-option", { isUnavailable: isUnavailable, isSelected: state[this.productId].variantValues[`option_${this.optionNumber}`] === value, onClick: () => setProduct(this.productId, {
                     variantValues: {

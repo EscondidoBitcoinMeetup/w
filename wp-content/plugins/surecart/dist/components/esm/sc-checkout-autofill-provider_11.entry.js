@@ -1,29 +1,30 @@
 import { r as registerInstance, h, H as Host, c as createEvent, a as getElement } from './index-25e5af33.js';
-import { o as onChange$1, s as state$1, u as updateFormState } from './mutations-9ffd30f4.js';
-import { l as lockCheckout, b as unLockCheckout, c as clearCheckout } from './mutations-ae7167ad.js';
-import { o as onChange, s as state } from './store-ac90a769.js';
-import { c as createOrUpdateCheckout, d as updateCheckout, e as expand, f as finalizeCheckout, g as fetchCheckout, h as createCheckout } from './index-a786f689.js';
+import { o as onChange$1, s as state$1, u as updateFormState } from './mutations-54fc7af1.js';
+import { l as lockCheckout, b as unLockCheckout, c as clearCheckout } from './mutations-b69dbe80.js';
+import { o as onChange, s as state } from './store-ea636731.js';
+import { c as createOrUpdateCheckout, d as updateCheckout, e as expand, f as finalizeCheckout, g as fetchCheckout, h as createCheckout } from './index-5658daa7.js';
 import { g as getCurrentCustomer, h as hasAddressData, i as isAddressEmpty } from './index-d602bc13.js';
-import { g as getGeoPermissionDefaults } from './geo-permission-62aea8ee.js';
-import { c as currentFormState, a as formLoading, f as formBusy } from './getters-4bb6cc1b.js';
+import { a as isIpCountryCapturable, g as getGeoPermissionDefaults } from './geo-permission-b221a71a.js';
+import { c as currentFormState, a as formLoading, f as formBusy } from './getters-3801a0c9.js';
 import { d as getPerBundleQuantity } from './index-17aac936.js';
-import './watchers-843c3dbe.js';
-import { s as state$2, f as getAvailableProcessor } from './getters-9cfeb0de.js';
+import './watchers-c2958e52.js';
+import { s as state$2, f as getAvailableProcessor } from './getters-476a5a84.js';
 import { s as state$3 } from './watchers-c7bbc6b2.js';
-import { s as shippingAddressRequired, f as fullShippingAddressRequired } from './getters-7090a9c1.js';
-import { v, c as checkoutMachine, s as state$4 } from './store-b1758b00.js';
+import { s as shippingAddressRequired, f as fullShippingAddressRequired, p as phoneRequired } from './getters-ed04d1c9.js';
+import { v, c as checkoutMachine, s as state$4 } from './store-fd165874.js';
 import './fetch-cdff67be.js';
 import { a as apiFetch } from './index-824c562b.js';
 import { s as speak } from './index-c5a96d53.js';
 import { c as createErrorNotice, r as removeNotice, a as createInfoNotice } from './mutations-7458343f.js';
 import { a as addQueryArgs, g as getQueryArgs } from './add-query-args-0e2a8393.js';
+import { p as pure } from './pure-963214cb.js';
 import { p as parseFormData } from './form-data-76641f16.js';
 import { r as removeQueryArgs, g as getQueryArg } from './remove-query-args-938c53ea.js';
 import './index-18f5a1bc.js';
-import './utils-f84b2118.js';
+import './utils-2fd36c2c.js';
 import './google-e9085e27.js';
-import './currency-a0c9bff4.js';
-import './price-1ff6aa07.js';
+import './currency-eb33deae.js';
+import './price-39d60d32.js';
 import './util-dfbf863e.js';
 import './address-b8e2e4c8.js';
 
@@ -103,7 +104,7 @@ const ScCheckoutAutofillProvider = class {
         }
     }
     render() {
-        return (h(Host, { key: '9c330e8ab3d753d44009663266b94c7f07492230' }, h("slot", { key: '408db421d26ecaa8df18c8d2ac7c1ac9be170a23' })));
+        return (h(Host, { key: 'ffebf9993c96bcbf74e208923c7c06d3294c708f' }, h("slot", { key: 'bf23b4641caaab47d68f7e9a0881ced32882b662' })));
     }
 };
 
@@ -136,10 +137,15 @@ const ScCheckoutGeoPermission = class {
         registerInstance(this, hostRef);
         this.open = false;
     }
-    /** Whether the cart currently has at least one line item. */
-    cartHasItems() {
+    /**
+     * Whether the checkout is ready to be asked about: it has items to price, and the
+     * IP-resolved country is one the merchant captures for. Both arrive async — the
+     * persisted checkout may predate the `ip_geo_address` expansion — so callers wait
+     * for the first checkout that passes rather than judging one snapshot.
+     */
+    isReady() {
         var _a, _b, _c;
-        return !!((_c = (_b = (_a = state$1.checkout) === null || _a === void 0 ? void 0 : _a.line_items) === null || _b === void 0 ? void 0 : _b.pagination) === null || _c === void 0 ? void 0 : _c.count);
+        return !!((_c = (_b = (_a = state$1.checkout) === null || _a === void 0 ? void 0 : _a.line_items) === null || _b === void 0 ? void 0 : _b.pagination) === null || _c === void 0 ? void 0 : _c.count) && isIpCountryCapturable(state$1.checkout, state$1.geoAddressCapturableCountries);
     }
     /** Whether the customer dismissed our explainer ("Not now") on a previous visit. */
     wasDismissed() {
@@ -180,25 +186,25 @@ const ScCheckoutGeoPermission = class {
             return;
         if (!(window === null || window === void 0 ? void 0 : window.isSecureContext) || !(navigator === null || navigator === void 0 ? void 0 : navigator.geolocation))
             return;
-        // Don't request location for an empty cart — there's nothing to price yet, and a
-        // full-screen prompt before adding items feels premature. The cart loads async, so
-        // if it's not ready we wait for the first change that adds an item.
-        if (this.cartHasItems()) {
+        // Don't request location for an empty cart (nothing to price yet, and a full-screen
+        // prompt before adding items feels premature) or for buyers outside the merchant's
+        // target countries. If the checkout isn't ready, wait for the first change that is.
+        if (this.isReady()) {
             this.maybePromptForLocation();
             return;
         }
-        this.removeCartListener = onChange$1('checkout', () => {
+        this.removeCheckoutListener = onChange$1('checkout', () => {
             var _a;
-            if (!this.cartHasItems())
+            if (!this.isReady())
                 return;
-            (_a = this.removeCartListener) === null || _a === void 0 ? void 0 : _a.call(this);
-            this.removeCartListener = undefined;
+            (_a = this.removeCheckoutListener) === null || _a === void 0 ? void 0 : _a.call(this);
+            this.removeCheckoutListener = undefined;
             this.maybePromptForLocation();
         });
     }
     disconnectedCallback() {
         var _a;
-        (_a = this.removeCartListener) === null || _a === void 0 ? void 0 : _a.call(this);
+        (_a = this.removeCheckoutListener) === null || _a === void 0 ? void 0 : _a.call(this);
     }
     /** Decide, based on the browser permission, whether to capture silently, explain, or do nothing. */
     async maybePromptForLocation() {
@@ -242,7 +248,7 @@ const ScCheckoutGeoPermission = class {
         const content = (geoCapture === null || geoCapture === void 0 ? void 0 : geoCapture.content) || defaults.content;
         const allowLabel = (geoCapture === null || geoCapture === void 0 ? void 0 : geoCapture.allowLabel) || defaults.allowLabel;
         const declineLabel = (geoCapture === null || geoCapture === void 0 ? void 0 : geoCapture.declineLabel) || defaults.declineLabel;
-        return (h(Host, { key: '0ad4ae587e752158efb5c99d8c8fcb14930997bb' }, h("sc-dialog", { key: '2fc8c24f596da900c5c9ab489a4e57b2d884ee7e', open: this.open, noHeader: true, onScRequestClose: () => this.onDecline(), class: "geo-permission" }, h("sc-dashboard-module", { key: '45f9bcc6b76f56ad5bae67eac7e8c5cb063a7f30', style: { '--sc-dashboard-module-spacing': '1em' } }, h("sc-flex", { key: '7d7fb2fc9a4e3d8beb9347b2a714f7d209b7bbd5', slot: "heading", "align-items": "center", "justify-content": "flex-start" }, h("sc-icon", { key: '588595f82cdcda2b20ba59f0b47378d3f309eddd', name: "map-pin", style: { color: 'var(--sc-color-primary-500)' } }), title), h("div", { key: 'b2ab9bc87c22b19f2540f3e5574f9e336a5d97f7', slot: "description", class: "geo-permission__content", innerHTML: content })), h("sc-button", { key: '3994b2422d57fba69b9f147b9a65e9740c7daf36', slot: "footer", type: "text", onClick: () => this.onDecline() }, declineLabel), h("sc-button", { key: 'e7b2b56522060bd72732e65e61e201d03c5e3748', slot: "footer", type: "primary", onClick: () => this.onAllow() }, allowLabel, h("sc-icon", { key: '7a93908aacf286ccdf684e4822e1490535b38d2d', name: "map-pin", slot: "suffix" })))));
+        return (h(Host, { key: '0d45b5dae4c9360b480c4974804e795e248ba7c2' }, h("sc-dialog", { key: 'df1fe4f09f3277b6c130273eeb0583c1c1ea87d8', open: this.open, noHeader: true, onScRequestClose: () => this.onDecline(), class: "geo-permission" }, h("sc-dashboard-module", { key: 'a9f984d81450c9590294b79ca2c3f8d21eccb2f9', style: { '--sc-dashboard-module-spacing': '1em' } }, h("sc-flex", { key: 'bd04904dcaf49bded24d7e595ce98270a20de720', slot: "heading", "align-items": "center", "justify-content": "flex-start" }, h("sc-icon", { key: 'cacf91cca40dfc1f717dcdb3a573016907322546', name: "map-pin", style: { color: 'var(--sc-color-primary-500)' } }), title), h("div", { key: 'c083947e2f61f38862b44f5e90ce08d781d63acd', slot: "description", class: "geo-permission__content", innerHTML: content })), h("sc-button", { key: '5d11154a47ee136a0bc199fcb7bfb1bfc55ec3a6', slot: "footer", type: "text", onClick: () => this.onDecline() }, declineLabel), h("sc-button", { key: '9d95e4fc5ea72a989edee552cea41457e7b55b07', slot: "footer", type: "primary", onClick: () => this.onAllow() }, allowLabel, h("sc-icon", { key: 'af6f9f5ad7cea70659b0cd4ca0422e2775283359', name: "map-pin", slot: "suffix" })))));
     }
 };
 ScCheckoutGeoPermission.style = ScCheckoutGeoPermissionStyle0;
@@ -704,8 +710,9 @@ const ScFormComponentsValidator = class {
     }
     handlePhoneRequiredForShipping() {
         const existing = this.el.querySelector('sc-customer-phone');
-        // needed only when the checkout requires a shipping label (live carrier rates).
-        const needed = fullShippingAddressRequired();
+        // The platform sets this when the checkout will be fulfilled via a label
+        // provider that requires a recipient phone.
+        const needed = phoneRequired();
         if (!needed) {
             // undo only our own escalation — if the merchant already placed a required phone block, we don't touch it.
             if (this.phoneRequiredByShipping && existing) {
@@ -829,7 +836,7 @@ const ScFormComponentsValidator = class {
         this.hasTrialLineItem = true;
     }
     render() {
-        return h("slot", { key: '8a6fa5b922f635e11a27fe7c39ee54db7bff3e8a' });
+        return h("slot", { key: '41960ea6ba0bc03430797a8ffe6db9d7b32b2d24' });
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -852,7 +859,7 @@ const ScFormErrorProvider = class {
         (_b = (_a = this.el.querySelector('sc-form')) === null || _a === void 0 ? void 0 : _a.prepend) === null || _b === void 0 ? void 0 : _b.call(_a, errorsComponent);
     }
     render() {
-        return h("slot", { key: '3d8313540ae4b4eaaf3a968a7edc6b6ccf1efe79' });
+        return h("slot", { key: '1f35e949cd65cb4be249a43d238257923c26227d' });
     }
     get el() { return getElement(this); }
 };
@@ -971,10 +978,10 @@ const ScLoginProvider = class {
         }
     }
     render() {
-        return (h(Host, { key: 'a7955874f1327b383868e7b96f827aa361f1b674' }, h("slot", { key: '89199341bb6bde3f60a356d387f2c30745e148c5' }), !this.loggedIn && (h("sc-dialog", { key: '4598d2a3e739c9020d36698469b64473437a6838', label: wp.i18n.__('Login to your account', 'surecart'), open: this.open, onScRequestClose: () => (this.open = false) }, h("sc-form", { key: '3b155a0713dad930ea33aea118fa3481ddb95275', ref: el => (this.loginForm = el), onScFormSubmit: e => {
+        return (h(Host, { key: '02f6ec244cf0293783ab8396e8f9c99445171a6d' }, h("slot", { key: 'f11822dc451dd1d0d9a99b559e31573870f72522' }), !this.loggedIn && (h("sc-dialog", { key: 'a56f8afd71381494a0278557f11332cec69bdc0e', label: wp.i18n.__('Login to your account', 'surecart'), open: this.open, onScRequestClose: () => (this.open = false) }, h("sc-form", { key: '1759621f060fe1d8e20b08f24ba231ea440347d8', ref: el => (this.loginForm = el), onScFormSubmit: e => {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-            }, onScSubmit: e => this.handleFormSubmit(e) }, !!this.error && (h("sc-alert", { key: '6d69d5146e29e655db7c0866bd717fc6312831cb', type: "danger", open: !!this.error }, this.error)), h("sc-input", { key: '2e4159fabd323c600c155ea7781129c82549988e', label: wp.i18n.__('Email or Username', 'surecart'), type: "text", name: "login", required: true, autofocus: this.open }), h("sc-input", { key: '104370ec20b6e55e73a3e82f08b29b3447a0da8f', label: wp.i18n.__('Password', 'surecart'), type: "password", name: "password", required: true }), h("sc-button", { key: '15238c5a73e3600bc06d5c6ca1bdabf2115aa985', type: "primary", full: true, loading: this.loading, submit: true }, wp.i18n.__('Login', 'surecart')))))));
+            }, onScSubmit: e => this.handleFormSubmit(e) }, !!this.error && (h("sc-alert", { key: 'bdd0432ed04c16ccd60268dfd414293890d46dca', type: "danger", open: !!this.error }, this.error)), h("sc-input", { key: 'f9168c69378aeaf17f8b6c57c2cc52024de56e6e', label: wp.i18n.__('Email or Username', 'surecart'), type: "text", name: "login", required: true, autofocus: this.open }), h("sc-input", { key: '780036e78c69d74518a4ca04a8734896ef98a19a', label: wp.i18n.__('Password', 'surecart'), type: "password", name: "password", required: true }), h("sc-button", { key: 'c50335604faeefd5d56e16c8d26d6353f0b9adde', type: "primary", full: true, loading: this.loading, submit: true }, wp.i18n.__('Login', 'surecart')))))));
     }
     static get watchers() { return {
         "open": ["handleLoginDialogChange"],
@@ -1068,7 +1075,7 @@ const ScOrderConfirmProvider = class {
     }
     render() {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-        return (h(Host, { key: '23ea682f197a8dba118628be80b95fcd6bca042f' }, h("slot", { key: 'b49138493aa4b86147ca69fec428dab62af8fd82' }), h("sc-dialog", { key: 'f9fb9fe80452e7d397f7b4b5d639615ffde6f5d9', open: !!this.showSuccessModal, style: { '--body-spacing': 'var(--sc-spacing-xxx-large)', '--width': '400px' }, noHeader: true, onScRequestClose: e => e.preventDefault() }, h("div", { key: '70ce3e2764616a1ec685e5176f41e2381c462f82', class: "confirm__icon" }, h("div", { key: '8b07ac141660edbdca3855473b0060e37d40955c', class: "confirm__icon-container" }, h("sc-icon", { key: 'dd3362a844697ae077420671c82ad0b5658cbff8', name: "check" }))), h("sc-dashboard-module", { key: '178cb4426acb703c033eb0769498ac0de8763ef6', heading: ((_b = (_a = state$4 === null || state$4 === void 0 ? void 0 : state$4.text) === null || _a === void 0 ? void 0 : _a.success) === null || _b === void 0 ? void 0 : _b.title) || wp.i18n.__('Thanks for your order!', 'surecart'), style: { '--sc-dashboard-module-spacing': 'var(--sc-spacing-x-large)', 'textAlign': 'center' } }, h("span", { key: '44b6d8fcf9dbebdfdc0cbc351fa899a69eb47466', slot: "description" }, ((_d = (_c = state$4 === null || state$4 === void 0 ? void 0 : state$4.text) === null || _c === void 0 ? void 0 : _c.success) === null || _d === void 0 ? void 0 : _d.description) || wp.i18n.__('Your payment was successful. A receipt is on its way to your inbox.', 'surecart')), !!((_e = this.manualPaymentMethod) === null || _e === void 0 ? void 0 : _e.name) && !!((_f = this.manualPaymentMethod) === null || _f === void 0 ? void 0 : _f.instructions) && (h("sc-alert", { key: '7d464418bcd7baa53b6145843a431c3625cdc15d', type: "info", open: true, style: { 'text-align': 'left' } }, h("span", { key: '5b4278490c3c21116ec9e83b625a04acf743f251', slot: "title" }, (_g = this.manualPaymentMethod) === null || _g === void 0 ? void 0 : _g.name), h("div", { key: '61c09fb86c656dc77acb31c56d68f10e7e50b2e7', innerHTML: (_h = this.manualPaymentMethod) === null || _h === void 0 ? void 0 : _h.instructions }))), h("sc-button", { key: '77d3d960fbd46b5a951d321ee201f34835aed439', href: this.getSuccessUrl(), size: "large", type: "primary", ref: el => (this.continueButton = el) }, ((_k = (_j = state$4 === null || state$4 === void 0 ? void 0 : state$4.text) === null || _j === void 0 ? void 0 : _j.success) === null || _k === void 0 ? void 0 : _k.button) || wp.i18n.__('Continue', 'surecart'), h("sc-icon", { key: '80b3621d1cf7e6669f7ff471f6fc024f5378b4d8', name: "arrow-right", slot: "suffix" }))))));
+        return (h(Host, { key: 'd994308466aeee5553b205934d4942f0367c4ca8' }, h("slot", { key: 'c3c95b9bea914988eeb4b067e4f48b1b94ba722a' }), h("sc-dialog", { key: '28fc222a76aca3e16b8bea444059979b6d2ca39e', open: !!this.showSuccessModal, style: { '--body-spacing': 'var(--sc-spacing-xxx-large)', '--width': '400px' }, noHeader: true, onScRequestClose: e => e.preventDefault() }, h("div", { key: 'b668fb5bb4effcfe2ef096915ebdf7ef813351a0', class: "confirm__icon" }, h("div", { key: '3c51cd3be9ca89170b6115ffd7a1fcb8f791702d', class: "confirm__icon-container" }, h("sc-icon", { key: '6c43b0eceedec6ec315f3d7f3603b9012b6e1d83', name: "check" }))), h("sc-dashboard-module", { key: '2979427b1de30dbb2f33c8b863e39f103f09bc8d', heading: ((_b = (_a = state$4 === null || state$4 === void 0 ? void 0 : state$4.text) === null || _a === void 0 ? void 0 : _a.success) === null || _b === void 0 ? void 0 : _b.title) || wp.i18n.__('Thanks for your order!', 'surecart'), style: { '--sc-dashboard-module-spacing': 'var(--sc-spacing-x-large)', 'textAlign': 'center' } }, h("span", { key: '168bf1c1f41863638ef94698490086962e6b2025', slot: "description" }, ((_d = (_c = state$4 === null || state$4 === void 0 ? void 0 : state$4.text) === null || _c === void 0 ? void 0 : _c.success) === null || _d === void 0 ? void 0 : _d.description) || wp.i18n.__('Your payment was successful. A receipt is on its way to your inbox.', 'surecart')), !!((_e = this.manualPaymentMethod) === null || _e === void 0 ? void 0 : _e.name) && !!((_f = this.manualPaymentMethod) === null || _f === void 0 ? void 0 : _f.instructions) && (h("sc-alert", { key: '5d09a59ebc2effeda803142a05fc795d215931a8', type: "info", open: true, style: { 'text-align': 'left' } }, h("span", { key: 'f990d30cc684cdfa179f6a1b1281348f09cc94d6', slot: "title" }, (_g = this.manualPaymentMethod) === null || _g === void 0 ? void 0 : _g.name), h("div", { key: '7c89903831e052fbd427aa9916236b27d2bc9b7a', innerHTML: (_h = this.manualPaymentMethod) === null || _h === void 0 ? void 0 : _h.instructions }))), h("sc-button", { key: 'e066dbdc86032bd54c4509ef51ef0ebad54487c8', href: this.getSuccessUrl(), size: "large", type: "primary", ref: el => (this.continueButton = el) }, ((_k = (_j = state$4 === null || state$4 === void 0 ? void 0 : state$4.text) === null || _j === void 0 ? void 0 : _j.success) === null || _k === void 0 ? void 0 : _k.button) || wp.i18n.__('Continue', 'surecart'), h("sc-icon", { key: '87b506059ba9b7ca2133508de2a4f55dca3087dc', name: "arrow-right", slot: "suffix" }))))));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -1272,6 +1279,9 @@ const ScSessionProvider = class {
         // we have an existing saved checkout id in the session, and we are persisting.
         const id = (_a = state$1 === null || state$1 === void 0 ? void 0 : state$1.checkout) === null || _a === void 0 ? void 0 : _a.id;
         if (id && this.persist) {
+            // A coupon in the url means a new attempt, which the regular flow applies.
+            if (!coupon && (await this.maybeResumeStripePayment()))
+                return;
             return this.handleExistingCheckout(id, coupon);
         }
         return this.handleNewCheckout(coupon);
@@ -1309,6 +1319,43 @@ const ScSessionProvider = class {
         }
         catch (e) {
             this.handleErrorResponse(e);
+        }
+    }
+    /**
+     * Reopen a 3D Secure challenge the page lost mid-flight, e.g. a mobile browser reloading the tab
+     * while the shopper approves in their banking app.
+     *
+     * Returns false unless Stripe confirms a challenge is pending, so every other case keeps the regular flow.
+     */
+    async maybeResumeStripePayment() {
+        var _a, _b, _c, _d;
+        const stripeData = (_c = (_b = (_a = state$1.checkout) === null || _a === void 0 ? void 0 : _a.payment_intent) === null || _b === void 0 ? void 0 : _b.processor_data) === null || _c === void 0 ? void 0 : _c.stripe;
+        if (((_d = state$1.checkout) === null || _d === void 0 ? void 0 : _d.status) !== 'finalized' || (stripeData === null || stripeData === void 0 ? void 0 : stripeData.type) !== 'payment' || !(stripeData === null || stripeData === void 0 ? void 0 : stripeData.client_secret))
+            return false;
+        let stripe;
+        try {
+            stripe = await pure.loadStripe(stripeData.publishable_key, { stripeAccount: stripeData.account_id });
+            const { paymentIntent } = await stripe.retrievePaymentIntent(stripeData.client_secret);
+            if ((paymentIntent === null || paymentIntent === void 0 ? void 0 : paymentIntent.status) !== 'requires_action')
+                return false;
+        }
+        catch (e) {
+            console.error(e);
+            return false;
+        }
+        try {
+            updateFormState('FINALIZE');
+            const { error } = await stripe.handleNextAction({ clientSecret: stripeData.client_secret });
+            if (error)
+                throw error;
+            this.scPaid.emit();
+            return true;
+        }
+        catch (e) {
+            console.error(e);
+            createErrorNotice(e);
+            updateFormState('REJECT');
+            return false; // Let the regular flow refresh the checkout for a new attempt.
         }
     }
     /** Handle abandoned checkout from URL */
@@ -1623,7 +1670,7 @@ const ScSessionProvider = class {
         }
     }
     render() {
-        return (h("sc-line-items-provider", { key: '51e958f5f4c7939cb9922223966a47e0c82202ca', order: state$1 === null || state$1 === void 0 ? void 0 : state$1.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, h("slot", { key: 'c14bbdb9d579dd1fd7e8cf4d24ee5039e8fa6c89' })));
+        return (h("sc-line-items-provider", { key: 'a28483004483f7d565086bc300bc764d96b53d75', order: state$1 === null || state$1 === void 0 ? void 0 : state$1.checkout, onScUpdateLineItems: e => this.loadUpdate({ line_items: e.detail }) }, h("slot", { key: '53725d7fb43b7ffb3d55bb5471534ff6cabbde02' })));
     }
     get el() { return getElement(this); }
     static get watchers() { return {

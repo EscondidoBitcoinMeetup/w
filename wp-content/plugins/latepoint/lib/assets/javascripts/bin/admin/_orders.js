@@ -139,6 +139,7 @@ function latepoint_reload_balance_and_payments(){
 function latepoint_cancel_adding_new_order_item_to_quick_edit_form(){
   jQuery('.order-items-list').removeClass('is-blurred');
   jQuery('.new-order-item-list-bundles-wrapper').removeClass('is-open');
+  jQuery('.new-order-item-list-extra-picker-wrapper').removeClass('is-open');
   jQuery('.new-order-item-variant-selector-wrapper').removeClass('is-open');
   jQuery('.order-form-add-item-btn').removeClass('is-cancelling').find('span').text(jQuery('.order-form-add-item-btn').data('add-label'));
 }
@@ -150,7 +151,7 @@ function latepoint_build_new_booking_order_item(){
 
   var data = {
     action: 'latepoint_route_call',
-    route_name: jQuery('.order-form-add-item-btn').data('booking-form-route-name'),
+    route_name: jQuery('.quick-order-form-w').data('booking-form-route-name'),
     params: params,
     return_format: 'json'
   }
@@ -183,7 +184,7 @@ function latepoint_build_booking_data_form_for_bundle($slot_for_booking){
 
   var data = {
     action: 'latepoint_route_call',
-    route_name: jQuery('.order-form-add-item-btn').data('booking-form-route-name'),
+    route_name: jQuery('.quick-order-form-w').data('booking-form-route-name'),
     params: {
       order_item_id: $slot_for_booking.data('order-item-id'),
       order_item_variant: $slot_for_booking.data('order-item-variant'),
@@ -242,7 +243,7 @@ function latepoint_fold_booking_data_form_in_order_quick_edit($booking_data_form
   form_data.set('booking_id', booking_id);
   var data = {
     action: 'latepoint_route_call',
-    route_name: jQuery('.order-form-add-item-btn').data('fold-booking-data-route-name'),
+    route_name: jQuery('.quick-order-form-w').data('fold-booking-data-route-name'),
     params: latepoint_formdata_to_url_encoded_string(form_data),
     return_format: 'json'
   }

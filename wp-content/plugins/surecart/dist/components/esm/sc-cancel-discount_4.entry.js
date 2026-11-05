@@ -1,11 +1,11 @@
 import { r as registerInstance, c as createEvent, h, F as Fragment, a as getElement } from './index-25e5af33.js';
 import './fetch-cdff67be.js';
-import { a as getHumanDiscount } from './price-1ff6aa07.js';
+import { a as getHumanDiscount } from './price-39d60d32.js';
 import { a as addQueryArgs } from './add-query-args-0e2a8393.js';
 import { a as apiFetch } from './index-824c562b.js';
 import { F as FormSubmitController } from './form-data-76641f16.js';
 import './remove-query-args-938c53ea.js';
-import './currency-a0c9bff4.js';
+import './currency-eb33deae.js';
 
 /**
  * Replace the {{ name }} in a string with a new value
@@ -85,7 +85,7 @@ const ScCancelDiscount = class {
     render() {
         var _a, _b;
         const { title, description, button, cancel_link } = getCurrentBehaviourContent(this.protocol, (_b = (_a = this.subscription) === null || _a === void 0 ? void 0 : _a.discount) === null || _b === void 0 ? void 0 : _b.id);
-        return (h("div", { key: 'f475776785d88156748e76fa0dbdbbe92c46c18f', class: "cancel-discount" }, h("sc-dashboard-module", { key: 'f5ccc3a5c3c126b944ecfb911a31e76fe5d6c370', heading: title, style: { '--sc-dashboard-module-spacing': '2em' } }, h("span", { key: '6f22f03d47845c33857b0be9f19d0b314aa88d33', slot: "description" }, description), h("sc-flex", { key: '47018fb1dfbb5e22919dec6a8d65ebfd4c435eb0', justifyContent: "flex-start" }, h("sc-button", { key: 'fec7d85439d197373aed86bfc46336ae113539ee', type: "primary", onClick: () => this.addDiscount() }, button), h("sc-button", { key: '5850cee34d4985ec4d9cf03a45794eed0125aec2', class: "cancel-discount__abort-link", type: "text", onClick: () => this.scCancel.emit() }, cancel_link)), !!this.loading && h("sc-block-ui", { key: '265fde6ecb1ef2ecbe5a66754c4c27088360138e', spinner: true }))));
+        return (h("div", { key: 'acfe511f280dc9a1dfe4439c7bfa82e7b80b0d16', class: "cancel-discount" }, h("sc-dashboard-module", { key: '563711138fc31b56a58ff0579baf0bf1b30486cc', heading: title, style: { '--sc-dashboard-module-spacing': '2em' } }, h("span", { key: 'bb0bae77f04460c003dd7dec1f31f0820d1f6a8c', slot: "description" }, description), h("sc-flex", { key: 'f6c18d2b0de7ffc7d8eb9e5e5bddfe5dcd1967d1', justifyContent: "flex-start" }, h("sc-button", { key: '83d052ba0437db0854cc47c21b687d85017e44b7', type: "primary", onClick: () => this.addDiscount() }, button), h("sc-button", { key: '60318bd0ebf0601a3df0c970b198e13edac86581', class: "cancel-discount__abort-link", type: "text", onClick: () => this.scCancel.emit() }, cancel_link)), !!this.loading && h("sc-block-ui", { key: '2011efcffc052ed4ed81d928faee20092ab69e18', spinner: true }))));
     }
 };
 ScCancelDiscount.style = ScCancelDiscountStyle0;
@@ -230,7 +230,7 @@ const ScSubscriptionCancel = class {
             keepButtonText = window.wp.hooks.applyFilters('surecart_dashboard_subscription_cancel_popup_keep_button_text', keepButtonText, this === null || this === void 0 ? void 0 : this.subscription);
             content = window.wp.hooks.applyFilters('surecart_dashboard_subscription_cancel_popup_content', content, this === null || this === void 0 ? void 0 : this.subscription);
         }
-        return (h("sc-dashboard-module", { key: '2ab232987ba6a6c549a5ede203c66dc64719a022', heading: heading, class: "subscription-cancel", error: this.error, style: { '--sc-dashboard-module-spacing': '1em' } }, h("div", { key: '1650111f3e5d498592b5cf8c8dd6267428b75f4b', slot: "description" }, content, h("slot", { key: 'e17ff0f1a64014b68f5df53141841a4177479540', name: "cancel-popup-content" })), h("sc-flex", { key: 'fbfbdea23a3a41b9edd5f1c514d3645d7cf689ed', justifyContent: "flex-start" }, h("sc-button", { key: '1551fe6e6fb3c871854eff9408d2993ea81783db', type: "primary", loading: this.loading || this.busy, disabled: this.loading || this.busy, onClick: () => this.cancelSubscription() }, cancelButtonText), h("sc-button", { key: '259bec891dcc6e0b09f7101eb2898d7905e3913d', type: "text", onClick: () => this.scAbandon.emit(), loading: this.loading || this.busy, disabled: this.loading || this.busy }, keepButtonText)), this.busy && h("sc-block-ui", { key: '6522bf5c93ca5cc4dc4da58aa39c61848666b8f7' })));
+        return (h("sc-dashboard-module", { key: '1755bc9505dbc504ee58d5f74010ba1c2d020295', heading: heading, class: "subscription-cancel", error: this.error, style: { '--sc-dashboard-module-spacing': '1em' } }, h("div", { key: 'f85d035e90bb20470570322684e10f1e45bc45a0', slot: "description" }, content, h("slot", { key: '3e63e626ae30eb2e41c231ab55b3ede41578b79a', name: "cancel-popup-content" })), h("sc-flex", { key: '762619c2920c3892537b2cc33dce44286979fd89', justifyContent: "flex-start" }, h("sc-button", { key: '05882a62ce6b2fb1b56eecd4045913ca94b0f343', type: "primary", loading: this.loading || this.busy, disabled: this.loading || this.busy, onClick: () => this.cancelSubscription() }, cancelButtonText), h("sc-button", { key: 'f184d55dcab64511f5d51850f582409a24bdcdfc', type: "text", onClick: () => this.scAbandon.emit(), loading: this.loading || this.busy, disabled: this.loading || this.busy }, keepButtonText)), this.busy && h("sc-block-ui", { key: '0c7b7ffabe14f0f5620747e52c9637c721e8ce28' })));
     }
 };
 ScSubscriptionCancel.style = ScSubscriptionCancelStyle0;
@@ -396,12 +396,12 @@ const ScTextarea = class {
     }
     render() {
         var _a;
-        return (h("div", { key: 'a57ff524400dc6d5f6e6cf995f8fe76c311196ae', part: "form-control", class: {
+        return (h("div", { key: 'bb119b3fd3e950a2a0ec6ce6943a0695edee38be', part: "form-control", class: {
                 'form-control': true,
                 'form-control--small': this.size === 'small',
                 'form-control--medium': this.size === 'medium',
                 'form-control--large': this.size === 'large',
-            } }, h("sc-form-control", { key: '06a227433e876f84708ed85d6999553c0739c35a', exportparts: "label, help-text, form-control", size: this.size, required: this.required, label: this.label, showLabel: this.showLabel, help: this.help, inputId: this.inputId, helpId: this.helpId, labelId: this.labelId, name: this.name }, h("div", { key: '927832c9f3380a010974f94a1d094ebfc595596b', part: "form-control-input", class: "form-control-input" }, h("div", { key: '787d7364c059f150ca718b3f95f6efc5e5db06ed', part: "base", class: {
+            } }, h("sc-form-control", { key: 'c795b610df65eece16efaccd76b30913f64f66fe', exportparts: "label, help-text, form-control", size: this.size, required: this.required, label: this.label, showLabel: this.showLabel, help: this.help, inputId: this.inputId, helpId: this.helpId, labelId: this.labelId, name: this.name }, h("div", { key: 'f32bb5237acc0787ab6330a5e1baf36139efb7c4', part: "form-control-input", class: "form-control-input" }, h("div", { key: '131a521fcef5a61abeeed14ca4f2fdd9ddbfaa52', part: "base", class: {
                 'textarea': true,
                 'textarea--small': this.size === 'small',
                 'textarea--medium': this.size === 'medium',
@@ -415,7 +415,7 @@ const ScTextarea = class {
                 'textarea--resize-none': this.resize === 'none',
                 'textarea--resize-vertical': this.resize === 'vertical',
                 'textarea--resize-auto': this.resize === 'auto',
-            } }, h("textarea", { key: '0e7f9a8dd030bd0bc5b81e321a93c38177c66a4b', part: "textarea", ref: el => (this.input = el), id: "input", class: "textarea__control", name: this.name, value: this.value, disabled: this.disabled, readonly: this.readonly, required: this.required, placeholder: this.placeholder, rows: this.rows, minlength: this.minlength, maxlength: this.maxlength, autocapitalize: this.autocapitalize, autocorrect: this.autocorrect, autofocus: this.autofocus, spellcheck: this.spellcheck, enterkeyhint: this.enterkeyhint, inputmode: this.inputmode, "aria-describedby": "help-text", onChange: () => this.handleChange(), onInput: () => this.handleInput(), onFocus: () => this.handleFocus(), onBlur: () => this.handleBlur(), onKeyDown: (e) => e.stopPropagation() })), this.showCharLimit && (h("div", { key: 'bc48a2eec43d2e28d456d0f8fb896c1022f89767', slot: "help", class: 'textarea__char-limit-warning' }, wp.i18n.sprintf(wp.i18n.__('%d characters remaining', 'surecart'), this.maxlength && ((_a = this.input) === null || _a === void 0 ? void 0 : _a.value) ? this.maxlength - this.input.value.length : this.maxlength)))))));
+            } }, h("textarea", { key: '525792393263148e6f2de6d4a1127842eb76cd21', part: "textarea", ref: el => (this.input = el), id: "input", class: "textarea__control", name: this.name, value: this.value, disabled: this.disabled, readonly: this.readonly, required: this.required, placeholder: this.placeholder, rows: this.rows, minlength: this.minlength, maxlength: this.maxlength, autocapitalize: this.autocapitalize, autocorrect: this.autocorrect, autofocus: this.autofocus, spellcheck: this.spellcheck, enterkeyhint: this.enterkeyhint, inputmode: this.inputmode, "aria-describedby": "help-text", onChange: () => this.handleChange(), onInput: () => this.handleInput(), onFocus: () => this.handleFocus(), onBlur: () => this.handleBlur(), onKeyDown: (e) => e.stopPropagation() })), this.showCharLimit && (h("div", { key: '1a17baf0eea085dc3fda55ab85f0ecfb587f21d7', slot: "help", class: 'textarea__char-limit-warning' }, wp.i18n.sprintf(wp.i18n.__('%d characters remaining', 'surecart'), this.maxlength && ((_a = this.input) === null || _a === void 0 ? void 0 : _a.value) ? this.maxlength - this.input.value.length : this.maxlength)))))));
     }
     get el() { return getElement(this); }
     static get watchers() { return {

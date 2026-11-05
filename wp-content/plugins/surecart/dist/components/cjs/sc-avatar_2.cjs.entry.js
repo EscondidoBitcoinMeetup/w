@@ -5,18 +5,18 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const index = require('./index-be4abba1.js');
 const index$2 = require('./index-7ced8198.js');
 const index$1 = require('./index-fb76df07.js');
-const store = require('./store-9c215436.js');
-const mutations = require('./mutations-98f05402.js');
+const store = require('./store-5cd165ea.js');
+const mutations = require('./mutations-4133422f.js');
 const util = require('./util-a15c420c.js');
 const verification = require('./verification-19455819.js');
 require('./add-query-args-49dcb630.js');
 require('./remove-query-args-b57e8cd3.js');
 require('./index-c3de642f.js');
-require('./utils-a9d13080.js');
+require('./utils-f5ea3c23.js');
 require('./google-8dbad1a6.js');
-require('./currency-71fce0f0.js');
-require('./store-01e8edc2.js');
-require('./price-da3cab3d.js');
+require('./currency-b438c76d.js');
+require('./store-29627d6b.js');
+require('./price-9dddd853.js');
 
 const scAvatarCss = ":host{display:inline-block;--sc-avatar-size:3rem}.avatar{display:inline-flex;align-items:center;justify-content:center;position:relative;width:var(--sc-avatar-size);height:var(--sc-avatar-size);background-color:var(--sc-color-gray-400);font-family:var(--sc-font-sans);font-size:calc(var(--sc-avatar-size) * 0.5);font-weight:var(--sc-font-weight-normal);color:var(--sc-color-white);user-select:none;vertical-align:middle}.avatar--circle,.avatar--circle .avatar__image{border-radius:var(--sc-border-radius-circle)}.avatar--rounded,.avatar--rounded .avatar__image{border-radius:var(--sc-border-radius-medium)}.avatar--square{border-radius:0}.avatar__icon{display:flex;align-items:center;justify-content:center;position:absolute;top:0;left:0;width:100%;height:100%}.avatar__initials{line-height:1;text-transform:uppercase}.avatar__image{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;overflow:hidden}";
 const ScAvatarStyle0 = scAvatarCss;
@@ -36,12 +36,12 @@ const ScAvatar = class {
         this.hasError = false;
     }
     render() {
-        return (index.h("div", { key: 'b9d5edc2dc385d19826d08dafde22a6f777adfb6', part: "base", class: {
+        return (index.h("div", { key: 'da737fda47d527e7ce56312e652d33f61aa3610e', part: "base", class: {
                 'avatar': true,
                 'avatar--circle': this.shape === 'circle',
                 'avatar--rounded': this.shape === 'rounded',
                 'avatar--square': this.shape === 'square',
-            }, role: "img", "aria-label": this.label }, this.initials ? (index.h("div", { part: "initials", class: "avatar__initials" }, this.initials)) : (index.h("div", { part: "icon", class: "avatar__icon", "aria-hidden": "true" }, index.h("slot", { name: "icon" }, index.h("sl-icon", { name: "person-fill", library: "system" })))), this.image && !this.hasError && index.h("img", { key: 'b4dd0031282277abe94eca4b2cdc54a0d6a0ea9e', part: "image", class: "avatar__image", src: this.image, loading: this.loading, alt: "", onError: () => (this.hasError = true) })));
+            }, role: "img", "aria-label": this.label }, this.initials ? (index.h("div", { part: "initials", class: "avatar__initials" }, this.initials)) : (index.h("div", { part: "icon", class: "avatar__icon", "aria-hidden": "true" }, index.h("slot", { name: "icon" }, index.h("sl-icon", { name: "person-fill", library: "system" })))), this.image && !this.hasError && index.h("img", { key: '8c4a6a63796d5bf64de09ac67210da1227977d57', part: "image", class: "avatar__image", src: this.image, loading: this.loading, alt: "", onError: () => (this.hasError = true) })));
     }
     static get watchers() { return {
         "image": ["handleImageChange"]
@@ -122,12 +122,7 @@ const ScCustomerLogin = class {
                 index$1.speak(this.error, 'assertive');
             }
             else {
-                if (e.code === 'not_found') {
-                    this.error = wp.i18n.__('Incorrect code. Please try again.', 'surecart');
-                }
-                else {
-                    this.error = (e === null || e === void 0 ? void 0 : e.message) || wp.i18n.__('Incorrect code. Please try again.', 'surecart');
-                }
+                this.error = (e === null || e === void 0 ? void 0 : e.message) || wp.i18n.__('Incorrect code. Please try again.', 'surecart');
                 store.state.verificationStatus = store.UNVERIFIED;
                 index$1.speak(this.error, 'assertive');
             }
@@ -306,7 +301,7 @@ const ScCustomerLogin = class {
             } }, wp.i18n.__('Send new code', 'surecart')))), !isExpired && (!!this.error || !!this.codeError) && index.h("p", { class: "customer-code__error", role: "alert", innerHTML: this.error || this.codeError }), this.renderCodeFooter()));
     }
     render() {
-        return (index.h(index.Host, { key: '6060769aa096e03774f0b4dea7a81082cf5adeaf' }, index.h("div", { key: '348c822b81d84c15b5dcba5cf080e1cd3047901a', class: "customer-login" }, this.mode === 'code' ? this.renderCodeView() : this.renderPasswordView())));
+        return (index.h(index.Host, { key: '5fa1e02e88b31202460eb4f2a29f7049a1213504' }, index.h("div", { key: 'e3c30e459cf6848943f302b6d9a78ee03d49eaa4', class: "customer-login" }, this.mode === 'code' ? this.renderCodeView() : this.renderPasswordView())));
     }
     static get watchers() { return {
         "mode": ["handleModeChange"]

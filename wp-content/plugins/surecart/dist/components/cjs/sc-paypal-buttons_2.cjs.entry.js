@@ -5,19 +5,19 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const index = require('./index-be4abba1.js');
 const functions = require('./functions-033a6a55.js');
 require('./fetch-5e8dc1d5.js');
-const index$1 = require('./index-c2d0eb49.js');
+const index$1 = require('./index-7e8821a7.js');
 const mutations = require('./mutations-d5d6ddf1.js');
 const index$2 = require('./index-7ced8198.js');
 require('./add-query-args-49dcb630.js');
 require('./remove-query-args-b57e8cd3.js');
-require('./mutations-98f05402.js');
+require('./mutations-4133422f.js');
 require('./index-c3de642f.js');
-require('./utils-a9d13080.js');
+require('./utils-f5ea3c23.js');
 require('./index-fb76df07.js');
 require('./google-8dbad1a6.js');
-require('./currency-71fce0f0.js');
-require('./store-01e8edc2.js');
-require('./price-da3cab3d.js');
+require('./currency-b438c76d.js');
+require('./store-29627d6b.js');
+require('./price-9dddd853.js');
 
 const paypalButtonsCss = ":host{display:block}.paypal-buttons{position:relative;line-height:0;text-align:center}.paypal-buttons:not(.paypal-buttons--busy):after{content:\" \";border-bottom:1px solid var(--sc-input-border-color);width:100%;height:0;top:50%;left:0;right:0;position:absolute}";
 const ScPaypalButtonsStyle0 = paypalButtonsCss;
@@ -46,6 +46,12 @@ const ScPaypalButtons = class {
         if ((val === null || val === void 0 ? void 0 : val.currency) === (prev === null || prev === void 0 ? void 0 : prev.currency) && Boolean(val === null || val === void 0 ? void 0 : val.reusable_payment_method_required) === Boolean(prev === null || prev === void 0 ? void 0 : prev.reusable_payment_method_required)) {
             return;
         }
+        this.loadScript();
+    }
+    handleButtonsChange(val, prev) {
+        // The parent passes a fresh array literal every render.
+        if ((val === null || val === void 0 ? void 0 : val.join()) === (prev === null || prev === void 0 ? void 0 : prev.join()))
+            return;
         this.loadScript();
     }
     /** Load the script */
@@ -199,11 +205,12 @@ const ScPaypalButtons = class {
         }
     }
     render() {
-        return (index.h("div", { key: 'f681d1010c35f672f46a4c5f737f759e573d1a4a', part: `base ${this.busy || (!this.loaded && 'base--busy')}`, class: { 'paypal-buttons': true, 'paypal-buttons--busy': this.busy || !this.loaded } }, (!this.loaded || this.busy) && index.h("sc-skeleton", { key: 'a85b9f0aa7defe49024c3c41f2e0c577191df877', style: { 'height': '55px', '--border-radius': '4px', 'cursor': 'wait' } }), index.h("div", { key: '6306ac9b752f4701d773c73afa586361eb5bbbae', class: "sc-paypal-button-container", hidden: !this.loaded || this.busy }, index.h("div", { key: '69c70f93ce4ff3ca4ae19d6575f436a0913c71f8', part: "paypal-card-button", hidden: !this.buttons.includes('card'), class: "sc-paypal-card-button", ref: el => (this.cardContainer = el) }), index.h("div", { key: '7f8af65055e23fc39316737e619d4ddd77b62aec', part: "paypal-button", hidden: !this.buttons.includes('paypal'), class: "sc-paypal-button", ref: el => (this.paypalContainer = el) }))));
+        return (index.h("div", { key: 'b3157e1b376976219e2aaf806ddae33b4773de97', part: `base ${this.busy || (!this.loaded && 'base--busy')}`, class: { 'paypal-buttons': true, 'paypal-buttons--busy': this.busy || !this.loaded } }, (!this.loaded || this.busy) && index.h("sc-skeleton", { key: '6718cdeb1aa36f1db25db8f4c15875ed27f1e02e', style: { 'height': '55px', '--border-radius': '4px', 'cursor': 'wait' } }), index.h("div", { key: '1140d5203820e1581d473fb3c6f8bc076ea1f577', class: "sc-paypal-button-container", hidden: !this.loaded || this.busy }, index.h("div", { key: '383046c87558c40bfb517ddcd1b0d2942f40512d', part: "paypal-card-button", hidden: !this.buttons.includes('card'), class: "sc-paypal-card-button", ref: el => (this.cardContainer = el) }), index.h("div", { key: '61aec56d76b14b60093dc5213431f6fe320c7ba6', part: "paypal-button", hidden: !this.buttons.includes('paypal'), class: "sc-paypal-button", ref: el => (this.paypalContainer = el) }))));
     }
     get el() { return index.getElement(this); }
     static get watchers() { return {
-        "order": ["handleOrderChange"]
+        "order": ["handleOrderChange"],
+        "buttons": ["handleButtonsChange"]
     }; }
 };
 ScPaypalButtons.style = ScPaypalButtonsStyle0;
@@ -216,7 +223,7 @@ const ScSecureNotice = class {
         index.registerInstance(this, hostRef);
     }
     render() {
-        return (index.h("div", { key: 'ae73fd89aad081ab32ba575f9e9116226cbcf855', class: "notice", part: "base" }, index.h("svg", { key: '34b1bd815392d7d9b6aae77574f6a2575b4c55ef', class: "notice__icon", part: "icon", xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 512 512", fill: "currentColor" }, index.h("path", { key: '7d3085568edf591f6fb6e43aeebd78aa8a82379a', d: "M368,192H352V112a96,96,0,1,0-192,0v80H144a64.07,64.07,0,0,0-64,64V432a64.07,64.07,0,0,0,64,64H368a64.07,64.07,0,0,0,64-64V256A64.07,64.07,0,0,0,368,192Zm-48,0H192V112a64,64,0,1,1,128,0Z" })), index.h("span", { key: '32127abd73cbd43f720161ee8d789377019969cb', class: "notice__text", part: "text" }, index.h("slot", { key: 'e05ebd2f3a873185072cb40577f4bcf4e4e6716f', name: "prefix" }), index.h("slot", { key: 'cf1333caa00bdc4402e1efa96f0cecb8fa905c4a' }), index.h("slot", { key: 'dcbc649f7f642a189afbc54064a8ceb5de914d2e', name: "suffix" }))));
+        return (index.h("div", { key: '0a7415001dd7d32c03073ecd0a16e20207552b10', class: "notice", part: "base" }, index.h("svg", { key: '61ca5defd459c5552a026c3e1c0954bc26fa48b7', class: "notice__icon", part: "icon", xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 512 512", fill: "currentColor" }, index.h("path", { key: 'd439c6c8775e6b32b3cdf0679da68d8928c171e9', d: "M368,192H352V112a96,96,0,1,0-192,0v80H144a64.07,64.07,0,0,0-64,64V432a64.07,64.07,0,0,0,64,64H368a64.07,64.07,0,0,0,64-64V256A64.07,64.07,0,0,0,368,192Zm-48,0H192V112a64,64,0,1,1,128,0Z" })), index.h("span", { key: 'f0684909fed6fade6c615ce30389545c928369fd', class: "notice__text", part: "text" }, index.h("slot", { key: '0171cdf6ae159dcc6afc7a5db85fd3d6e524a2d1', name: "prefix" }), index.h("slot", { key: '64baf61e6cf6c15da9495a9a9dd6b7168bc0b33a' }), index.h("slot", { key: '41629d1d4df88dfbc254ef53b3f905eff0745077', name: "suffix" }))));
     }
 };
 ScSecureNotice.style = ScSecureNoticeStyle0;

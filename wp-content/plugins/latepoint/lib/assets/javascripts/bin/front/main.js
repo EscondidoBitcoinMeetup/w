@@ -130,7 +130,7 @@ function latepoint_init_manage_booking_by_key() {
 }
 
 function latepoint_init_form_masks() {
-    if (('lp_intlTelInput' in window) && ('lp_intlTelInputGlobals' in window)) {
+    if ('lp_intlTelInput' in window) {
         jQuery('.os-mask-phone').each(function () {
             latepoint_mask_phone(jQuery(this));
         });
@@ -297,6 +297,14 @@ function latepoint_remove_coupon($elem) {
 function latepoint_restart_booking_process($booking_form_element) {
     // first first step
     let first_step_code = $booking_form_element.find('.latepoint-step-content').first().data('step-code');
+    if (!$booking_form_element.find('.latepoint-step-content[data-step-code^="booking__"]').length) {
+        // presets removed every booking step, so there is none rendered to rewind to - drop the presets
+        // that described the removed item and restart from the top of the booking process
+        latepoint_clear_presets($booking_form_element);
+        latepoint_reset_active_cart_item($booking_form_element);
+        $booking_form_element.find('.latepoint-step-content').remove();
+        first_step_code = 'booking';
+    }
     latepoint_reload_step($booking_form_element, first_step_code);
     return false;
 }
@@ -1419,10 +1427,10 @@ async function latepoint_resend_customer_otp_code($booking_form_element, $resend
     let form_data = new FormData($booking_form_element.find('.latepoint-form')[0]);
 
         // get values from phone number fields
-      if (('lp_intlTelInputGlobals' in window) && ('lp_intlTelInputUtils' in window)) {
+      if (latepoint_iti_is_ready()) {
         $booking_form_element.find('input.os-mask-phone').each(function () {
           const phoneInputName = this.getAttribute('name');
-          const phoneInputValue = window.lp_intlTelInputGlobals.getInstance(this).getNumber(window.lp_intlTelInputUtils.numberFormat.E164);
+          const phoneInputValue = latepoint_iti_get_e164(this);
           // override value generated automatically by formdata with a formatted value of a phone field with country code
           form_data.set(phoneInputName, phoneInputValue);
         });
@@ -1465,10 +1473,10 @@ async function latepoint_request_customer_otp_code($booking_form_element, $reque
 
 
         // get values from phone number fields
-      if (('lp_intlTelInputGlobals' in window) && ('lp_intlTelInputUtils' in window)) {
+      if (latepoint_iti_is_ready()) {
         $booking_form_element.find('input.os-mask-phone').each(function () {
           const phoneInputName = this.getAttribute('name');
-          const phoneInputValue = window.lp_intlTelInputGlobals.getInstance(this).getNumber(window.lp_intlTelInputUtils.numberFormat.E164);
+          const phoneInputValue = latepoint_iti_get_e164(this);
           // override value generated automatically by formdata with a formatted value of a phone field with country code
           form_data.set(phoneInputName, phoneInputValue);
         });
@@ -1538,10 +1546,10 @@ async function latepoint_login_customer($booking_form_element, $request_otp_butt
     let form_data = new FormData($form[0]);
 
         // get values from phone number fields
-      if (('lp_intlTelInputGlobals' in window) && ('lp_intlTelInputUtils' in window)) {
+      if (latepoint_iti_is_ready()) {
         $form.find('input.os-mask-phone').each(function () {
           const phoneInputName = this.getAttribute('name');
-          const phoneInputValue = window.lp_intlTelInputGlobals.getInstance(this).getNumber(window.lp_intlTelInputUtils.numberFormat.E164);
+          const phoneInputValue = latepoint_iti_get_e164(this);
           // override value generated automatically by formdata with a formatted value of a phone field with country code
           form_data.set(phoneInputName, phoneInputValue);
         });
@@ -2168,7 +2176,12 @@ function latepoint_init_booking_form($booking_form_element) {
             $booking_form_element.removeClass('step-content-loading').addClass('step-content-mid-loading');
 
 
-            if (new_parent_code_name == 'booking' && current_parent_code_name != 'booking' && active_cart_item_id) {
+            // The event info/tickets steps share the "booking__" prefix by naming convention only —
+            // they're a ticket-quantity selection, not a slot/service selection, so going back into
+            // them should never discard the cart item the way returning to services/datepicker does.
+            let is_event_step = new_current_step_code === 'booking__event' || new_current_step_code === 'booking__event_tickets';
+
+            if (new_parent_code_name == 'booking' && current_parent_code_name != 'booking' && active_cart_item_id && !is_event_step) {
 
                 // we are going back to one of the steps of a booking process, we need to remove the item that was just added to the cart and start over
                 $booking_form_element.find('.latepoint-summary-w').addClass('os-loading');

@@ -6,7 +6,7 @@ import { c as createErrorNotice } from './mutations-7458343f.js';
 import { i as isRtl } from './page-align-0cdacf32.js';
 import { a as applyFilters } from './index-871d88b8.js';
 import { s as speak } from './index-c5a96d53.js';
-import { z as zones } from './tax-a03623ca.js';
+import { z as zones } from './tax-0d5a82ff.js';
 import './add-query-args-0e2a8393.js';
 import './index-18f5a1bc.js';
 
@@ -243,7 +243,10 @@ const ScAddress = class {
             case 'name':
                 return (h("sc-input", { exportparts: "base:input__base, input, form-control, label, help-text", value: (_e = (_d = this === null || this === void 0 ? void 0 : this.address) === null || _d === void 0 ? void 0 : _d.name) !== null && _e !== void 0 ? _e : '', onScChange: (e) => this.updateAddress({ name: e.target.value || null }), onScInput: (e) => this.handleAddressInput({ name: e.target.value || null }), autocomplete: "name", placeholder: field.label, name: (_f = this.names) === null || _f === void 0 ? void 0 : _f.name, disabled: this.disabled, required: this.requireName, "aria-label": field.label, ...roundedProps }));
             case 'line_1':
-                return (h("sc-address-suggestions", { address: this.address, names: this.names, regions: this.regions(), label: field.label, disabled: this.disabled, required: isRequired, inputProps: roundedProps, onScChangeAddress: (e) => this.updateAddress(e.detail), onScShowAddressFields: () => this.toggleAddressFieldsVisibility(true), onScHideAddressFields: () => this.toggleAddressFieldsVisibility(false) }));
+                return (h("sc-address-suggestions", { address: this.address, names: this.names, regions: this.regions(), label: field.label, disabled: this.disabled, required: isRequired, inputProps: roundedProps, onScChangeAddress: (e) => {
+                        e.stopPropagation();
+                        this.updateAddress(e.detail);
+                    }, onScShowAddressFields: () => this.toggleAddressFieldsVisibility(true), onScHideAddressFields: () => this.toggleAddressFieldsVisibility(false) }));
             case 'line_2':
                 return (h("sc-input", { exportparts: "base:input__base, input, form-control, label, help-text", value: (_h = (_g = this === null || this === void 0 ? void 0 : this.address) === null || _g === void 0 ? void 0 : _g.line_2) !== null && _h !== void 0 ? _h : '', onScChange: (e) => this.updateAddress({ line_2: e.target.value || null }), onScInput: (e) => this.handleAddressInput({ line_2: e.target.value || null }), autocomplete: "address-line2", placeholder: field.label, name: (_j = this.names) === null || _j === void 0 ? void 0 : _j.line_2, disabled: this.disabled, "aria-label": field.label, ...roundedProps }));
             case 'city':
@@ -265,10 +268,10 @@ const ScAddress = class {
         const bottomFields = allFields.filter(f => this.collapsibleFieldNames.includes(f.name));
         // Compute rounded props based on visible field count.
         const totalForRounding = isExpanded ? allFields.length : topFields.length;
-        return (h("div", { key: 'ba1ed2067d50196cd0d6c68ee839352d2a72ce64', class: "sc-address", part: "base" }, h("sc-form-control", { key: '105400104fd116ae3500b22d0c7a24e1acda2906', label: this.label, exportparts: "label, help-text, form-control", class: "sc-address__control", required: this.required }, topFields.map((field, index) => {
+        return (h("div", { key: 'b638a5961c0342149d449d8b9a16e3c1f8d70db8', class: "sc-address", part: "base" }, h("sc-form-control", { key: 'd1f78ffa80a7e53c074e20f65892595f3bef7e9c', label: this.label, exportparts: "label, help-text, form-control", class: "sc-address__control", required: this.required }, topFields.map((field, index) => {
             const roundedProps = this.getRoundedProps(index, totalForRounding);
             return this.renderField(field, roundedProps, this.required);
-        }), h("div", { key: '174f812cdc782b42d5f8266e973e8d894221f9da', class: {
+        }), h("div", { key: 'd1d26fae49b333f4d5208ee9404852931bc2c514', class: {
                 'sc-address__collapsible': true,
                 'sc-address__collapsible--expanded': isExpanded,
             }, "aria-hidden": !isExpanded ? 'true' : 'false' }, bottomFields.map((field, index) => {
@@ -277,7 +280,7 @@ const ScAddress = class {
             // Don't require fields when collapsed — prevents hidden required validation errors.
             const isRequired = this.required && isExpanded;
             return this.renderField(field, roundedProps, isRequired);
-        }))), this.loading && h("sc-block-ui", { key: 'f69988f83c0c24371521f4db15a29808052c66b4', exportparts: "base:block-ui, content:block-ui__content" })));
+        }))), this.loading && h("sc-block-ui", { key: '78e4935dc156519f9579927b2c75865f455ca22d', exportparts: "base:block-ui, content:block-ui__content" })));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -17721,6 +17724,8 @@ const ScAddressSuggestions = class {
     }
     handleAddressChange() {
         var _a;
+        // Visibility doesn't depend on country — autofill can fill line_1 before (or without) a country.
+        this.updateFieldVisibility();
         if (!((_a = this.address) === null || _a === void 0 ? void 0 : _a.country))
             return;
         if (this.showSuggestions) {
@@ -17735,14 +17740,11 @@ const ScAddressSuggestions = class {
             this.hasUnsyncedLocalValue = false;
             this.value = this.address.line_1 || '';
         }
-        this.updateFieldVisibility();
     }
-    /** Emit an address update to the parent, merging changes with current address. */
+    /** Emit only the changed fields — the parent merges them. Spreading our `address` prop here would send a stale
+     *  snapshot during browser autofill and wipe sibling fields (country, city…) filled in the same tick. */
     emitAddressUpdate(changes) {
-        this.scChangeAddress.emit({
-            ...this.address,
-            ...changes,
-        });
+        this.scChangeAddress.emit(changes);
     }
     /** Select a suggestion by place ID — used by both click and keyboard. */
     async selectSuggestion(placeId) {
@@ -17891,7 +17893,7 @@ const ScAddressSuggestions = class {
     render() {
         var _a;
         const suggestionsVisible = this.isSuggestionsVisible();
-        return (h("div", { key: 'ebf78e7626cc4f6999fb89550cd5e47abc73e56d', part: "base" }, this.isGoogleMapsActive() && h("span", { key: '9b59550c5d3c707480db05b23c3c4a1885712033', class: "sr-only" }, wp.i18n.__('Start typing to see address suggestions, or select one to auto-fill your address.', 'surecart')), h("sc-input", { key: 'c459045688b9f3a730854ec417ebb4756e5e7e46', ref: el => (this.input = el), exportparts: "base:input__base, input, form-control, label, help-text", value: this === null || this === void 0 ? void 0 : this.value, onScInput: (e) => this.handleInputChange(e), onScChange: (e) => this.handleInputValueChange(e), autocomplete: "address-line1", placeholder: this.label, "aria-label": this.label, "aria-expanded": suggestionsVisible ? 'true' : 'false', "aria-controls": suggestionsVisible ? 'address-suggestions-listbox' : undefined, "aria-activedescendant": this.getActiveDescendantId(), role: "combobox", name: (_a = this.names) === null || _a === void 0 ? void 0 : _a.line_1, disabled: this.disabled, required: this.required, ...this.inputProps }), h("div", { key: '1791345141f4a065ced8506bc48d9fdcd626dcb8', role: "status", "aria-live": "polite", "aria-atomic": "true", class: "sr-only" }, this.getSuggestionsStatusText()), h("div", { key: '8a792cb1397d303e8d2c654fe1ab5ae7e2cfbd01', class: {
+        return (h("div", { key: '465aeb31482d1d688807b5ac611060543b2cb937', part: "base" }, this.isGoogleMapsActive() && h("span", { key: 'e99e324f10c1131f4d3fc0cf338deec98987be54', class: "sr-only" }, wp.i18n.__('Start typing to see address suggestions, or select one to auto-fill your address.', 'surecart')), h("sc-input", { key: '24347468c1e21f6e77f643b6f5adb53d6fec8b61', ref: el => (this.input = el), exportparts: "base:input__base, input, form-control, label, help-text", value: this === null || this === void 0 ? void 0 : this.value, onScInput: (e) => this.handleInputChange(e), onScChange: (e) => this.handleInputValueChange(e), autocomplete: "address-line1", placeholder: this.label, "aria-label": this.label, "aria-expanded": suggestionsVisible ? 'true' : 'false', "aria-controls": suggestionsVisible ? 'address-suggestions-listbox' : undefined, "aria-activedescendant": this.getActiveDescendantId(), role: "combobox", name: (_a = this.names) === null || _a === void 0 ? void 0 : _a.line_1, disabled: this.disabled, required: this.required, ...this.inputProps }), h("div", { key: '59584990d0cd7c4ec1878dc1b334087738655601', role: "status", "aria-live": "polite", "aria-atomic": "true", class: "sr-only" }, this.getSuggestionsStatusText()), h("div", { key: 'cbf04f6b677bcb3a16eb34a1f115fc055b0e2acd', class: {
                 'sc-address__suggestions': true,
                 'sc-address__suggestions--visible': suggestionsVisible,
             }, part: "suggestions", "aria-hidden": !suggestionsVisible ? 'true' : 'false' }, this.renderAddressSuggestions())));
@@ -17954,6 +17956,7 @@ const ScCheckbox = class {
     handleClick() {
         this.checked = !this.checked;
         this.indeterminate = false;
+        this.scChange.emit();
     }
     handleBlur() {
         this.hasFocus = false;
@@ -17971,7 +17974,6 @@ const ScCheckbox = class {
     handleStateChange() {
         this.input.checked = this.checked;
         this.input.indeterminate = this.indeterminate;
-        this.scChange.emit();
     }
     componentDidLoad() {
         this.formController = new FormSubmitController(this.el, {
@@ -17984,7 +17986,7 @@ const ScCheckbox = class {
     }
     render() {
         const Tag = this.edit ? 'div' : 'label';
-        return (h(Tag, { key: '4150edb283e831f750474b12cdfb0276c9d16052', part: "base", class: {
+        return (h(Tag, { key: '9490fcf116fc0f287141215e0f349dff8320b582', part: "base", class: {
                 'checkbox': true,
                 'checkbox--is-required': this.required,
                 'checkbox--checked': this.checked,
@@ -17992,7 +17994,7 @@ const ScCheckbox = class {
                 'checkbox--focused': this.hasFocus,
                 'checkbox--indeterminate': this.indeterminate,
                 'checkbox--is-rtl': isRtl()
-            }, htmlFor: this.inputId, onMouseDown: () => this.handleLabelMouseDown() }, h("span", { key: '629e75c2cbb9720f1ca3802e38af6fa830ad485b', part: "control", class: "checkbox__control" }, this.checked ? (h("span", { part: "checked-icon", class: "checkbox__icon" }, h("svg", { viewBox: "0 0 16 16" }, h("g", { stroke: "none", "stroke-width": "1", fill: "none", "fill-rule": "evenodd", "stroke-linecap": "round" }, h("g", { stroke: "currentColor", "stroke-width": "2" }, h("g", { transform: "translate(3.428571, 3.428571)" }, h("path", { d: "M0,5.71428571 L3.42857143,9.14285714" }), h("path", { d: "M9.14285714,0 L3.42857143,9.14285714" }))))))) : (''), !this.checked && this.indeterminate ? (h("span", { part: "indeterminate-icon", class: "checkbox__icon" }, h("svg", { viewBox: "0 0 16 16" }, h("g", { stroke: "none", "stroke-width": "1", fill: "none", "fill-rule": "evenodd", "stroke-linecap": "round" }, h("g", { stroke: "currentColor", "stroke-width": "2" }, h("g", { transform: "translate(2.285714, 6.857143)" }, h("path", { d: "M10.2857143,1.14285714 L1.14285714,1.14285714" }))))))) : (''), h("input", { key: '186de1dba380ae19fba5f988a6c22a25a28799c2', id: this.inputId, ref: el => (this.input = el), type: "checkbox", name: this.name, value: this.value, checked: this.checked, disabled: this.disabled, required: this.required, role: "checkbox", "aria-checked": this.checked ? 'true' : 'false', "aria-labelledby": this.labelId, onClick: () => this.handleClick(), onBlur: () => this.handleBlur(), onFocus: () => this.handleFocus() })), h("span", { key: '23ac93389a713543ceaefcefd55b12d291a77896', part: "label", id: this.labelId, class: "checkbox__label" }, h("slot", { key: '530548fc007560d0c303a62f57dc0d52835523b5' }))));
+            }, htmlFor: this.inputId, onMouseDown: () => this.handleLabelMouseDown() }, h("span", { key: '67447d3ae4486f39bf725717e90a0485356fd409', part: "control", class: "checkbox__control" }, this.checked ? (h("span", { part: "checked-icon", class: "checkbox__icon" }, h("svg", { viewBox: "0 0 16 16" }, h("g", { stroke: "none", "stroke-width": "1", fill: "none", "fill-rule": "evenodd", "stroke-linecap": "round" }, h("g", { stroke: "currentColor", "stroke-width": "2" }, h("g", { transform: "translate(3.428571, 3.428571)" }, h("path", { d: "M0,5.71428571 L3.42857143,9.14285714" }), h("path", { d: "M9.14285714,0 L3.42857143,9.14285714" }))))))) : (''), !this.checked && this.indeterminate ? (h("span", { part: "indeterminate-icon", class: "checkbox__icon" }, h("svg", { viewBox: "0 0 16 16" }, h("g", { stroke: "none", "stroke-width": "1", fill: "none", "fill-rule": "evenodd", "stroke-linecap": "round" }, h("g", { stroke: "currentColor", "stroke-width": "2" }, h("g", { transform: "translate(2.285714, 6.857143)" }, h("path", { d: "M10.2857143,1.14285714 L1.14285714,1.14285714" }))))))) : (''), h("input", { key: 'be2ffe6a26558b49a82d7f7782a85d0f081b7999', id: this.inputId, ref: el => (this.input = el), type: "checkbox", name: this.name, value: this.value, checked: this.checked, disabled: this.disabled, required: this.required, role: "checkbox", "aria-checked": this.checked ? 'true' : 'false', "aria-labelledby": this.labelId, onClick: () => this.handleClick(), onBlur: () => this.handleBlur(), onFocus: () => this.handleFocus() })), h("span", { key: '50fc814c65ab1b623ef7f208687cd684c1ac03a4', part: "label", id: this.labelId, class: "checkbox__label" }, h("slot", { key: '35a8364c346da6825ea46e18087e9d66f2510e28' }))));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -18114,7 +18116,7 @@ const ScPhoneInput = class {
     }
     render() {
         var _a;
-        return (h(Host, { key: '586c64af189c874e07a385255a5ddbac56c1395b', hidden: this.hidden }, h("sc-form-control", { key: '205eab1829f81e6b88c713fd57affbe17dab7346', exportparts: "label, help-text, form-control", size: this.size, required: this.required, label: this.label, showLabel: this.showLabel, help: this.help, inputId: this.inputId, helpId: this.helpId, labelId: this.labelId, name: this.name, "aria-label": this.label }, h("slot", { key: '21631b07ee6b36e45bd7a5a61a97e93b53856ee2', name: "label-end", slot: "label-end" }), h("div", { key: '255d8a7be7152c290b5f64735414a2698d0d714b', part: "base", class: {
+        return (h(Host, { key: 'e1c3a7374d6b606caacb051225cc6c901c9c305c', hidden: this.hidden }, h("sc-form-control", { key: '1257a8afb5b9abb7917d40b0fd0e9df0435ac9e2', exportparts: "label, help-text, form-control", size: this.size, required: this.required, label: this.label, showLabel: this.showLabel, help: this.help, inputId: this.inputId, helpId: this.helpId, labelId: this.labelId, name: this.name, "aria-label": this.label }, h("slot", { key: '933fb6f18abd41c332758b32412b5d576df1e04e', name: "label-end", slot: "label-end" }), h("div", { key: 'b246b21e55328597563b339c278dfa7ab302535b', part: "base", class: {
                 'input': true,
                 // Sizes
                 'input--small': this.size === 'small',
@@ -18129,9 +18131,9 @@ const ScPhoneInput = class {
                 'input--squared-top': this.squaredTop,
                 'input--squared-left': this.squaredLeft,
                 'input--squared-right': this.squaredRight,
-            } }, h("span", { key: '14a5066ecfb26f5c379c9f05a8fbdedcdeaae662', part: "prefix", class: "input__prefix" }, h("slot", { key: '2e0193f76bfc9417d2d845f9792c045421097f22', name: "prefix" })), h("slot", { key: '7dd63d4c6584fa09cdcc165756de4d2e93976b29' }, h("input", { key: 'afe5bb2bdc229953f69b6dfb025d0c0652746908', part: "input", id: this.inputId, class: "input__control", ref: el => (this.input = el), type: "tel", name: this.name, disabled: this.disabled, readonly: this.readonly, required: this.required, placeholder: this.placeholder, minlength: this.minlength, maxlength: this.maxlength, min: this.min, max: this.max, step: this.step,
+            } }, h("span", { key: '5a2828d1f63c5cb705e17d11ea91322fd5ff39e5', part: "prefix", class: "input__prefix" }, h("slot", { key: '4b982f946ce957aa7094df1c1986699a4fe65ea3', name: "prefix" })), h("slot", { key: '650fad5f0793194485f53952a014529a0d8feaf5' }, h("input", { key: 'b24399493e255d9f0019c588a10f54d50605de82', part: "input", id: this.inputId, class: "input__control", ref: el => (this.input = el), type: "tel", name: this.name, disabled: this.disabled, readonly: this.readonly, required: this.required, placeholder: this.placeholder, minlength: this.minlength, maxlength: this.maxlength, min: this.min, max: this.max, step: this.step,
             // TODO: Test These below
-            autocomplete: 'tel', autocorrect: this.autocorrect, autofocus: this.autofocus, spellcheck: this.spellcheck, pattern: applyFilters('surecart/sc-phone-input/pattern', this.pattern), inputmode: 'numeric', "aria-label": this.label, "aria-labelledby": this.label, "aria-invalid": this.invalid ? true : false, value: this.value, onChange: () => this.handleChange(), onInput: () => this.handleInput(), onFocus: () => this.handleFocus(), onBlur: () => this.handleBlur() })), h("span", { key: '0a995b036a02269e840ba5c5f70defaee84d63ac', part: "suffix", class: "input__suffix" }, h("slot", { key: '0e55211b2800293050b05d553fd6ffe2870e421e', name: "suffix" })), this.clearable && ((_a = this.value) === null || _a === void 0 ? void 0 : _a.length) > 0 && (h("button", { key: 'a27c56e090a09d89c3f24995f99a454f54b44b20', part: "clear-button", class: "input__clear", type: "button", onClick: e => this.handleClearClick(e), tabindex: "-1" }, h("slot", { key: 'ff3760faa1f98c5f5319b500980550178e40bfca', name: "clear-icon" }, h("svg", { key: '388c5e844016a0ee4f8f695f3e3c2bd9ac21cf4c', xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", class: "feather feather-x" }, h("line", { key: '31483b34cd591ae06913b76ea2064d367554ff96', x1: "18", y1: "6", x2: "6", y2: "18" }), h("line", { key: '239dc8710cd573fba99005c7e27f1e9df96b3744', x1: "6", y1: "6", x2: "18", y2: "18" })))))))));
+            autocomplete: 'tel', autocorrect: this.autocorrect, autofocus: this.autofocus, spellcheck: this.spellcheck, pattern: applyFilters('surecart/sc-phone-input/pattern', this.pattern), inputmode: 'numeric', "aria-label": this.label, "aria-labelledby": this.label, "aria-invalid": this.invalid ? true : false, value: this.value, onChange: () => this.handleChange(), onInput: () => this.handleInput(), onFocus: () => this.handleFocus(), onBlur: () => this.handleBlur() })), h("span", { key: '48115877454ad2e804f15533bef64708d13dd985', part: "suffix", class: "input__suffix" }, h("slot", { key: '550deee68f1b7b270ea7dd421b3c18067897908b', name: "suffix" })), this.clearable && ((_a = this.value) === null || _a === void 0 ? void 0 : _a.length) > 0 && (h("button", { key: '5bfbac22fdeea8a1f15c68ede2e2ab3ba7a4de02', part: "clear-button", class: "input__clear", type: "button", onClick: e => this.handleClearClick(e), tabindex: "-1" }, h("slot", { key: '87a262ac7d3f6ecb088d0755db889ce01c80ee61', name: "clear-icon" }, h("svg", { key: '4af6bd9431fc0fc092b7eb31c37a668b34bfd23c', xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", class: "feather feather-x" }, h("line", { key: '0f25e2ac98941e07f18876fc5c30a7202ce7fe06', x1: "18", y1: "6", x2: "6", y2: "18" }), h("line", { key: '8fb3597a33ba9f02768e6d50386138bb931ddd37', x1: "6", y1: "6", x2: "18", y2: "18" })))))))));
     }
     get el() { return getElement(this); }
     static get watchers() { return {
@@ -18213,7 +18215,9 @@ const ScTaxIdInput = class {
     }
     render() {
         var _a, _b, _c, _d, _e;
-        return (h(Fragment, { key: '9420f8158a6ede3cd3b264ffc75d427479bb4e46' }, h("sc-input", { key: 'dab5b64c9c2c75e52f15dabe1cae04dcee7925a6', name: "tax_identifier.number_type", required: this.required, value: this.type, style: { display: 'none' } }), h("sc-input", { key: '94f37db2d89d991458d8f0e83a005ad69bb02e56', ref: el => (this.input = el), label: this.getZoneLabel(), "aria-label": wp.i18n.__('Tax ID', 'surecart'), placeholder: wp.i18n.__('Enter Tax ID', 'surecart'), name: "tax_identifier.number", value: this.number, onScInput: (e) => {
+        return (h(Fragment, { key: '6a02ff23a596c52e40cfcd46626f8f969ecd6e2d' }, h("sc-input", { key: '092d51a1346d061a5ed9312d08e7413f443ded22', name: "tax_identifier.number_type", required: this.required, value: this.type, style: { display: 'none' } }), h("sc-input", { key: 'b22e33d32fa172019ea26bf759c8e73d7aa28f0e', ref: el => (this.input = el), label: this.getZoneLabel(), "aria-label": wp.i18n.__('Tax ID', 'surecart'),
+            // translators: %s is the selected tax ID type label, e.g. "EU VAT".
+            placeholder: wp.i18n.sprintf(wp.i18n.__('Enter %s', 'surecart'), this.getZoneLabel() || wp.i18n.__('Tax ID', 'surecart')), name: "tax_identifier.number", value: this.number, onScInput: (e) => {
                 e.stopImmediatePropagation();
                 this.scInput.emit({
                     number: e.target.value,

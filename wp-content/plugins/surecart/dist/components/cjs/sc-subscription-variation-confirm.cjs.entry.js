@@ -54,7 +54,7 @@ const ScSubscriptionVariationConfirm = class {
     }
     render() {
         var _a, _b;
-        return (index.h("sc-dashboard-module", { key: '2479cd5a7263812752bc04d08dd35d59899b3115', heading: this.heading || wp.i18n.__('Enter An Amount', 'surecart'), class: "subscription-switch" }, index.h("sc-card", { key: '373ccca15a80f68c5a329b2b9e2df22033cd90c7' }, index.h("sc-form", { key: '613e318362f2c383b4ab32734d37a75ee7860f68', onScSubmit: this.handleSubmit }, index.h("div", { key: 'd035b0af942defd3a9ec5cf9ef375261963869ea', class: "sc-product-variation-choice-wrap" }, (((_b = (_a = this.product) === null || _a === void 0 ? void 0 : _a.variant_options) === null || _b === void 0 ? void 0 : _b.data) || []).map(({ name, values, id }, index$1) => {
+        return (index.h("sc-dashboard-module", { key: '3a7348a9e1329a66218e2d9c92b1c5a980f7dc17', heading: this.heading || wp.i18n.__('Enter An Amount', 'surecart'), class: "subscription-switch" }, index.h("sc-card", { key: '7229bcea7aebeb238a186a074126a3819c44f6a3' }, index.h("sc-form", { key: 'f1e7048e2afcbe43fc073192014f450073c96b66', onScSubmit: this.handleSubmit }, index.h("div", { key: '831048c72f672fa09e97df8b85f72abf7f88e982', class: "sc-product-variation-choice-wrap" }, (((_b = (_a = this.product) === null || _a === void 0 ? void 0 : _a.variant_options) === null || _b === void 0 ? void 0 : _b.data) || []).map(({ name, values, id }, index$1) => {
             var _a, _b;
             return (index.h("sc-select", { exportparts: "base:select__base, input, form-control, label, help-text, trigger, panel, caret, menu__base, spinner__base, empty", part: "name__input", value: ((_b = (_a = this.subscription) === null || _a === void 0 ? void 0 : _a.variant_options) === null || _b === void 0 ? void 0 : _b[index$1]) || '', onScChange: (e) => {
                     this.variantValues[index$1] = e.detail.value;
@@ -62,7 +62,7 @@ const ScSubscriptionVariationConfirm = class {
                     label,
                     value: label,
                 })), unselect: false, key: id }));
-        })), index.h("sc-button", { key: 'd4abfc09ef8f898fec2366685e2dd6cd6c62532e', type: "primary", full: true, submit: true, loading: this.busy }, this.buttonText(), " ", index.h("sc-icon", { key: 'c9a7e0baad949142a62e884d0f1c6d52dab741a7', name: "arrow-right", slot: "suffix" })))), this.busy && index.h("sc-block-ui", { key: '47a2e10ba0f48a73a2f48cab1d8938e92b09b948', style: { zIndex: '9' } })));
+        })), index.h("sc-button", { key: 'f590dc418eaabcec0424796b4eff6274037decc3', type: "primary", full: true, submit: true, loading: this.busy }, this.buttonText(), " ", index.h("sc-icon", { key: '4e9c229aff638fa7b7cb3f44ac2d8b4a6dbf969a', name: "arrow-right", slot: "suffix" })))), this.busy && index.h("sc-block-ui", { key: '730c9f899c43a551dc81b27d9c6c2afccc3cfe3a', style: { zIndex: '9' } })));
     }
 };
 ScSubscriptionVariationConfirm.style = ScSubscriptionVariationConfirmStyle0;

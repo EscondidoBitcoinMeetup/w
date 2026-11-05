@@ -5,11 +5,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const index$1 = require('./index-be4abba1.js');
 const consumer = require('./consumer-b58230e6.js');
 const index$2 = require('./index-f3933112.js');
-const price$1 = require('./price-da3cab3d.js');
+const price$1 = require('./price-9dddd853.js');
 require('./fetch-5e8dc1d5.js');
 const addQueryArgs = require('./add-query-args-49dcb630.js');
 const index = require('./index-7ced8198.js');
-require('./currency-71fce0f0.js');
+require('./currency-b438c76d.js');
 require('./remove-query-args-b57e8cd3.js');
 
 function _defineProperties(target, props) {
@@ -641,15 +641,14 @@ const normalizeEntities = (data) => {
 	return {};
 };
 
-const getPricesAndProducts = async ({ ids, archived = false }) => {
-    const prices = (await index.apiFetch({
-        path: addQueryArgs.addQueryArgs('surecart/v1/prices/', {
-            ids,
-            archived,
+// Uses the public find route because listing prices is staff-only; archived prices are dropped as the old list did.
+const getPriceWithProduct = async (id) => {
+    const price = (await index.apiFetch({
+        path: addQueryArgs.addQueryArgs(`surecart/v1/prices/${id}`, {
             expand: ['product'],
         }),
     }));
-    return normalizePrices(prices);
+    return normalizePrices((price === null || price === void 0 ? void 0 : price.archived) ? [] : [price]);
 };
 const normalizePrices = (prices) => {
     const { entities } = normalizeEntities(prices);
@@ -699,9 +698,10 @@ const ScPriceChoice = class {
     /** Keep price up to date. */
     handlePricesChange() {
         var _a, _b, _c;
-        if (!Object.keys(this.prices || {}).length || !Object.keys(this.products || {}).length)
+        const price = (_a = this.prices) === null || _a === void 0 ? void 0 : _a[this.priceId];
+        if (!price)
             return;
-        this.price = (_a = this === null || this === void 0 ? void 0 : this.prices) === null || _a === void 0 ? void 0 : _a[this.priceId];
+        this.price = price;
         this.product = (_b = this === null || this === void 0 ? void 0 : this.products) === null || _b === void 0 ? void 0 : _b[(_c = this === null || this === void 0 ? void 0 : this.price) === null || _c === void 0 ? void 0 : _c.product];
     }
     handlePriseChange() {
@@ -734,10 +734,7 @@ const ScPriceChoice = class {
             return;
         try {
             this.loading = true;
-            const { products, prices } = await getPricesAndProducts({
-                archived: false,
-                ids: [this.priceId],
-            });
+            const { products, prices } = await getPriceWithProduct(this.priceId);
             // add to central store.
             this.scAddEntities.emit({ prices, products });
         }

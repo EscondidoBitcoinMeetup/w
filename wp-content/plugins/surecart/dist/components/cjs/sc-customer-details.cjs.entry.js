@@ -4,7 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-be4abba1.js');
 const address = require('./address-7404695f.js');
-const tax = require('./tax-a4582e73.js');
+const tax = require('./tax-1568db23.js');
 require('./add-query-args-49dcb630.js');
 
 const scCustomerDetailsCss = "";
@@ -55,7 +55,7 @@ const ScCustomerDetails = class {
     }
     render() {
         var _a, _b, _c;
-        return (index.h("sc-dashboard-module", { key: '63caee7f93ad72506397ab931ba1dd95e71fd1dc', exportparts: "base, heading, heading-text, heading-title, heading-description", class: "customer-details", error: this.error }, index.h("span", { key: 'd65cac3e91aa87b9327b2355117d765723b9baa4', slot: "heading" }, this.heading || wp.i18n.__('Billing Details', 'surecart'), ' ', !!((_a = this === null || this === void 0 ? void 0 : this.customer) === null || _a === void 0 ? void 0 : _a.id) && !((_b = this === null || this === void 0 ? void 0 : this.customer) === null || _b === void 0 ? void 0 : _b.live_mode) && (index.h("sc-tag", { key: '985e52e0f5a7590185e82d92b3bb712d3468b6a5', exportparts: "base:test-tag__base, content:test-tag__content", type: "warning", size: "small" }, wp.i18n.__('Test', 'surecart')))), !!this.editLink && !!((_c = this.customer) === null || _c === void 0 ? void 0 : _c.id) && (index.h("sc-button", { key: 'df1f88c88b4ff45a697019e838588021644754b2', exportparts: "base:button__base, label:button__label, prefix:button__prefix", type: "link", href: this.editLink, slot: "end" }, index.h("sc-icon", { key: 'd57ec3293f02603a45605081bf15dee656c879b2', name: "edit-3", slot: "prefix" }), wp.i18n.__('Update', 'surecart'))), this.renderContent()));
+        return (index.h("sc-dashboard-module", { key: '8cb1c562aeaa8a969342ad7a489100b1df235582', exportparts: "base, heading, heading-text, heading-title, heading-description", class: "customer-details", error: this.error }, index.h("span", { key: '1a9ed8fa6e4cb7bac07a2dd9f0216e04a241ae7e', slot: "heading" }, this.heading || wp.i18n.__('Billing Details', 'surecart'), ' ', !!((_a = this === null || this === void 0 ? void 0 : this.customer) === null || _a === void 0 ? void 0 : _a.id) && !((_b = this === null || this === void 0 ? void 0 : this.customer) === null || _b === void 0 ? void 0 : _b.live_mode) && (index.h("sc-tag", { key: '315ae19c86fd0ea29066cfc707fce37f8eff294d', exportparts: "base:test-tag__base, content:test-tag__content", type: "warning", size: "small" }, wp.i18n.__('Test', 'surecart')))), !!this.editLink && !!((_c = this.customer) === null || _c === void 0 ? void 0 : _c.id) && (index.h("sc-button", { key: 'b499ff273de2134577310545cd57219abf5c5b8c', exportparts: "base:button__base, label:button__label, prefix:button__prefix", type: "link", href: this.editLink, slot: "end" }, index.h("sc-icon", { key: '45db63ba0da64a14a9ba9bcdefaac8267eece333', name: "edit-3", slot: "prefix" }), wp.i18n.__('Update', 'surecart'))), this.renderContent()));
     }
     get el() { return index.getElement(this); }
 };

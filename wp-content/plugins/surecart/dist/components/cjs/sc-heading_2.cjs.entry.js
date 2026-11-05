@@ -13,12 +13,12 @@ const ScHeading = class {
         this.size = 'medium';
     }
     render() {
-        return (index.h("div", { key: 'f7bbb3188cdd3e02e7412dfac3402cca9461ec2f', part: "base", class: {
+        return (index.h("div", { key: '291e31704308324a45863c6ee306a8c6b42331e6', part: "base", class: {
                 'heading': true,
                 'heading--small': this.size === 'small',
                 'heading--medium': this.size === 'medium',
                 'heading--large': this.size === 'large',
-            } }, index.h("div", { key: 'f1b41381f1c84498c32aa9289403511883555a6e', class: { heading__text: true } }, index.h("div", { key: '6b893c83338d13711bec2b2d3932a168770230db', class: "heading__title", part: "title" }, index.h("slot", { key: '14b99676706c1ab83486a5bde4205e3e78d1bc55' })), index.h("div", { key: 'f5f1c8b88842651079a99d24d38e4867cc8e3eed', class: "heading__description", part: "description" }, index.h("slot", { key: 'a4c30413d53153fce80fd1991f613598830cf4da', name: "description" }))), index.h("slot", { key: 'af4cf60e160d55f39511df349ac6057d70c0f792', name: "end" })));
+            } }, index.h("div", { key: '159958fc153c917081f9796c5a903c50ad711112', class: { heading__text: true } }, index.h("div", { key: '83b4ca4b7d102b677dc49f323bb6ae06a21d3164', class: "heading__title", part: "title" }, index.h("slot", { key: 'f466496e4ccd4d79b85dbb7f0cf0b954940d34f4' })), index.h("div", { key: 'fb9213231a0cb24ff5ffc67151eec113f2573f02', class: "heading__description", part: "description" }, index.h("slot", { key: '71d487bb0292effe5abba0cbfc6a704acb1afe81', name: "description" }))), index.h("slot", { key: 'c55329b5fae344f3d74d13c7c39468f9ef788f3e', name: "end" })));
     }
     get el() { return index.getElement(this); }
 };
@@ -52,7 +52,7 @@ const ScOrderConfirmComponentsValidator = class {
         this.hasManualInstructions = !!this.el.querySelector('sc-order-manual-instructions');
     }
     render() {
-        return index.h("slot", { key: '4fb757fb52e1d563b45cc2923647a444add57ac1' });
+        return index.h("slot", { key: 'c0d08a5bab3a7dc2320ab6b24fc0be784897ac05' });
     }
     get el() { return index.getElement(this); }
     static get watchers() { return {

@@ -1,7 +1,7 @@
 import { r as registerInstance, h, H as Host } from './index-25e5af33.js';
-import { b as getFormattedRemainingTime } from './getters-1477d792.js';
-import './store-289e460c.js';
-import './utils-f84b2118.js';
+import { b as getFormattedRemainingTime } from './getters-bed0624f.js';
+import './store-3e08528c.js';
+import './utils-2fd36c2c.js';
 import './index-18f5a1bc.js';
 
 const scUpsellCountdownTimerCss = ":host{display:flex;justify-content:var(--sc-upsell-countdown-timer-justify-content, center);align-items:var(--sc-upsell-countdown-timer-align-items, center);text-align:var(--sc-upsell-countdown-timer-text-align, center);flex-wrap:wrap;gap:var(--sc-upsell-countdown-timer-gap, 0.5em);line-height:1;padding:var(--sc-upsell-countdown-timer-padding, var(--sc-spacing-medium));border-radius:var(--sc-upsell-countdown-timer-border-radius, var(--sc-border-radius-pill));background-color:var(--sc-upsell-countdown-timer-background-color, rgb(226, 249, 235));color:var(--sc-upsell-countdown-timer-color, rgb(71, 91, 80))}";
@@ -24,9 +24,9 @@ const ScUpsellCountdownTimer = class {
         }, 1000);
     }
     render() {
-        return (h(Host, { key: '3494bf984bd24e5fac3d8d2c30cb88ac225a36ca', role: "timer", class: {
+        return (h(Host, { key: '1057dc697ffe1c66201f1d5c0638b86ba724e750', role: "timer", class: {
                 'sc-upsell-countdown-timer': true,
-            } }, this.showIcon && h("sc-icon", { key: 'cbc5fab4d5152f10a549ac869cfa8e36f42bbe0c', name: "clock" }), h("span", { key: '6341a0a1df3542dc60b973b06c8ebe2b0f8df13e' }, h("slot", { key: '6e9d40ed94611a86810ba6c1fee82eb512a566ee', name: "offer-expire-text" }), " ", h("strong", { key: '6690bdd080931561c855d508d311f0e27660322a' }, this.formattedTime))));
+            } }, this.showIcon && h("sc-icon", { key: '4e98eafcf79ed3f28f740a48701ef887a1436bca', name: "clock" }), h("span", { key: '48ff5444151dfd4df339ef391e680f3f86620719' }, h("slot", { key: '7c744c229899b530de18d6d9adfb86ef8cc541bf', name: "offer-expire-text" }), " ", h("strong", { key: '88d149f89a1aba1110503b87b6de28441495f617' }, this.formattedTime))));
     }
 };
 ScUpsellCountdownTimer.style = ScUpsellCountdownTimerStyle0;
