@@ -861,8 +861,13 @@ async function latepoint_init_step_datepicker($booking_form_element = false) {
     $booking_form_element.off('keydown', '.os-months .os-day', latepoint_monthly_calendar_day_clicked);
     $booking_form_element.on('keydown', '.os-months .os-day', latepoint_monthly_calendar_day_clicked);
 
-    if ($booking_form_element.find('input[name="booking[start_date]"]').val()) {
-        $booking_form_element.find('.os-day[data-date="' + $booking_form_element.find('input[name="booking[start_date]"]').val() + '"]').trigger('click');
+    let selected_start_date = $booking_form_element.find('input[name="booking[start_date]"]').val();
+    if (selected_start_date) {
+        // show the month of a preselected date instead of the current month
+        for (let i = 0; i < 24 && selected_start_date > $booking_form_element.find('.os-monthly-calendar-days-w.active .os-month-current').last().data('date'); i++) {
+            if (!await latepoint_monthly_calendar_load_next_month($booking_form_element)) break;
+        }
+        $booking_form_element.find('.os-day[data-date="' + selected_start_date + '"]').trigger('click');
     } else {
         if ($booking_form_element.find('.os-dates-and-times-w').hasClass('auto-search')) {
             let max_number_of_months_to_check = 24;

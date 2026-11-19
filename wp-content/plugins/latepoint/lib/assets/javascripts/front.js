@@ -108,9 +108,19 @@ jQuery(document).ready(function ($) {
                     $booking_form_element.find('.latepoint-step-content').addClass('is-hidden').last().removeClass('is-hidden');
                     if ($booking_form_element.find('.latepoint-step-content').length > 1) latepoint_show_prev_btn($booking_form_element);
                     var $booking_form_element = jQuery('.latepoint-lightbox-w .latepoint-booking-form-element');
+                    // server already computed the correct next-btn state for the actual landing step;
+                    // preserve it before the loop below, since initializing earlier (hidden) preloaded
+                    // steps - e.g. re-selecting a datepicker day to restore "Back" button UI state -
+                    // can have side effects that hide the shared next-btn for an unrelated reason
+                    var current_step_next_btn_was_disabled = $booking_form_element.find('.latepoint-next-btn').hasClass('disabled');
                     $booking_form_element.find('.latepoint-step-content').each(function () {
                         latepoint_init_step($(this).data('step-code'), $booking_form_element);
                     });
+                    if (current_step_next_btn_was_disabled) {
+                        latepoint_hide_next_btn($booking_form_element);
+                    } else {
+                        latepoint_show_next_btn($booking_form_element);
+                    }
                     $('body').addClass('latepoint-lightbox-active');
                 } else {
                     // console.log(data.message);

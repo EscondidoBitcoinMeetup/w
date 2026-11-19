@@ -286,7 +286,8 @@ function latepoint_init_reschedule() {
 
     $reschedule_wrapper.on('click', '.os-month-next-btn', function () {
         var $reschedule_calendar_wrapper = jQuery(this).closest('.reschedule-calendar-wrapper');
-        var next_month_route_name = jQuery(this).data('route');
+        // the popup's own route checks ownership/key and excludes this booking from availability
+        var next_month_route_name = $reschedule_calendar_wrapper.find('.reschedule-calendar-datepicker').data('route');
         if ($reschedule_calendar_wrapper.find('.os-monthly-calendar-days-w.active + .os-monthly-calendar-days-w').length) {
             $reschedule_calendar_wrapper.find('.os-monthly-calendar-days-w.active').removeClass('active').next('.os-monthly-calendar-days-w').addClass('active');
             latepoint_calendar_set_month_label($reschedule_calendar_wrapper);
@@ -310,10 +311,8 @@ function latepoint_init_reschedule() {
                     params: {
                         timezone_name: $reschedule_calendar_wrapper.find('input[type="hidden"].latepoint_timezone_name').val(),
                         key: $reschedule_calendar_wrapper.find('input[type="hidden"].latepoint_manage_booking_key').val(),
-                        target_date_string: `${calendar_year}-${calendar_month}-1`,
-                        booking: {
-                            id: $reschedule_calendar_wrapper.find('input[type="hidden"].latepoint_booking_id').val()
-                        }
+                        booking_id: $reschedule_calendar_wrapper.find('input[type="hidden"].latepoint_booking_id').val(),
+                        calendar_start_date: `${calendar_year}-${calendar_month}-1`
                     },
                     layout: 'none',
                     return_format: 'json'
@@ -326,7 +325,7 @@ function latepoint_init_reschedule() {
                     success: function (data) {
                         $btn.removeClass('os-loading');
                         if (data.status === "success") {
-                            $reschedule_calendar_wrapper.find('.os-months').append(data.message);
+                            $reschedule_calendar_wrapper.find('.os-months').append(jQuery(data.message).find('.os-monthly-calendar-days-w').removeClass('active'));
                             $reschedule_calendar_wrapper.find('.os-monthly-calendar-days-w.active').removeClass('active').next('.os-monthly-calendar-days-w').addClass('active');
                             latepoint_calendar_set_month_label($reschedule_calendar_wrapper);
                         } else {
